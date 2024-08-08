@@ -1,0 +1,183 @@
+/* Estilo geral da página */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Container principal com rolagem horizontal */
+.container-listagem {
+    overflow-x: auto; /* Adiciona a rolagem horizontal */
+    white-space: nowrap; /* Garante que o conteúdo não quebre em várias linhas */
+    padding: 20px;
+    max-width: 100%;
+}
+
+/* Estilo do cabeçalho */
+.title-container {
+    margin-top: 20px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.button-item {
+    background-color: #1780e2;
+    transition: 1s ease;
+}
+
+.button-item:hover {
+    background-color: #114b81;
+}
+
+/* Estilo do contêiner da lista de itens */
+.container-listagem-inicio {
+    display: table;
+    border-collapse: collapse;
+    box-shadow: 0 7px 12px rgba(0, 0, 0, 0.411);
+}
+
+/* Estilo das linhas da lista */
+.li-listagem {
+    cursor: pointer;
+    display: table-row;
+    border-bottom: 1px solid #ddd; /* Linha de separação entre os itens */
+}
+
+/* Estilo do cabeçalho da tabela */
+.header {
+    font-weight: bold;
+    border: 1px solid #ddd;
+    background-color: #1780e2;
+    color: white;
+    display: table-row;
+}
+
+/* Estilo das células da tabela */
+li div {
+    display: table-cell;
+    padding: 5px; /* Aumenta o padding para mais espaço vertical */
+    text-align: left;
+    border-right: 1px solid #ddd;
+    max-width: 200px; /* Ajusta a largura máxima para acomodar textos mais longos */
+    overflow: hidden; /* Oculta o conteúdo que excede a largura */
+    text-overflow: ellipsis; /* Adiciona '...' no final do texto longo */
+    word-wrap: break-word; /* Quebra o texto longo para evitar quebra do layout */    
+}
+
+li div {
+    font-size: 13px;
+}
+
+/* Estilo dos botões no menu de contexto */
+.context-menu {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.context-menu button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+.context-menu button:hover {
+    background-color: #f0f0f0;
+}
+
+/* Estilo da sobreposição */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+/* Estilo do menu de exclusão */
+.context-delete {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(226, 220, 220);
+    padding: 20px;
+    height: 150px;
+    border-radius: 8px;
+    z-index: 2;
+}
+
+.context-delete .buttons-delete {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 60px;
+}
+
+.button-cancelar {
+    background-color: #1780e2;
+    padding: 7px;
+    border-radius: 7px;
+    width: 7em;
+    transition: 0.5s ease;
+}
+
+.button-cancelar:hover {
+    background-color: #114b81;
+}
+
+.button-excluir {
+    background-color: #fa0000;
+    padding: 7px;
+    width: 7em;
+    border-radius: 7px;
+    transition: 0.5s ease;
+}
+
+.button-excluir:hover {
+    background-color: #b30e0e;
+}
+
+/* Estilo do menu de criação de volume */
+.contextVolume {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(226, 220, 220);
+    padding: 20px;
+    height: 150px;
+    border-radius: 8px;
+    z-index: 2;
+}
+
+.container-volume {
+    background-color: rgb(206, 206, 206);
+    height: 130px;
+    width: 200px;
+}
+
+.input-tipo-volume {
+    margin-top: 50px;
+}
+
+.buttons-create {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 130px;
+}
+
+.criar-tipo-volume-text {
+    margin-bottom: 30px;
+}

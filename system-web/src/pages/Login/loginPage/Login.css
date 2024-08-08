@@ -1,0 +1,77 @@
+
+.login-aba {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 50px;
+    min-height: 70vh;
+    box-sizing: border-box;
+  }
+
+  .login-bloco {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #e0dddd;
+    border: 3px solid #d1d1d1;
+    border-radius: 5px;
+    padding: 60px;
+  }
+
+  .logo-container img{
+    margin-bottom: 70px;
+  }
+
+
+  .title {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+
+  .login-itens {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 40px;
+    margin-top: 0px;
+    height: 100%;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .login-itens input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .login-container {
+    display: inline;
+  }
+
+  .button-entrar {
+    background-color: rgb(37, 126, 42);
+    width: 100px;
+    transition: transform 0.3;
+  }
+
+  .button-entrar:hover {
+    background-color: rgb(11, 90, 15);
+  }
+
+  .text-cadastro{
+    text-decoration: underline;
+    margin-top: 20px;
+  }
+
+  .text-cadastro:hover {
+    color: rgb(87, 86, 86);
+    background-color: wheat;
+  }
+
+

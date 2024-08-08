@@ -1,0 +1,13 @@
+sequencia para dar commit no git
+
+git init
+git status
+git add . OU git add <nome do arquivo>
+git commit -m "MENSAGEM DO COMMIT"
+git push origin <nome_da_branch> (ex: main)
+
+dependencias: 
+yarn add expo
+npm install @react-navigation/native
+npm install @react-navigation/native-stack
+npm install react-native-screens react-native-safe-area-context

@@ -1,0 +1,93 @@
+/* src/pages/CadastroPackingList/CadastroPackingList.css */
+
+.title-container {
+    margin: 20px;
+    text-align: center;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.form-cadastro-pl{
+    width: 100%;
+    max-width: 800px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+#select-container {
+    padding: 0px;
+    max-height: 56.771px;
+}
+
+.input-group {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.input-group .form-pais-origem,
+.input-group .form-idioma {
+    margin-bottom: 20px;
+}
+
+.input-group input[type="text"],
+.input-group Select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.container-button-save {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-save {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    width: 107.6px;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button-save:hover {
+    background-color: #0056b3;
+}
+
+.button-cancel {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.botoes-finais {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

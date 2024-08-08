@@ -1,0 +1,40 @@
+
+.container-geral {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 100px;
+}
+
+#title {
+    margin-bottom: 50px;
+    color: #1780e2;
+}
+
+.itens-container {
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 100px;
+    border-radius: 6px;
+}
+
+.itens-container p {
+    font-size: 17px;
+    font-weight: bold;
+    color: #1780e2;
+}
+
+.itens-container Input {
+    width: 130%;
+    height: 50px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 15px;
+}

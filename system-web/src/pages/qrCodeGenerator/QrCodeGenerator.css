@@ -1,0 +1,197 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.geral {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.title {
+    margin-top: 30px;
+    width: 100vh;
+    text-align: center;
+    
+}
+
+.container {
+    background-color: #1780e200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+    padding-bottom: 20px;
+    border-radius: 30px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+}
+
+.input-qrcode {
+    margin: 20px;
+}
+
+.input-qrcode input {
+    width: 200px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.input-qrcode input::placeholder {
+    font-size: 15px;
+}
+
+.container Button {
+    background-color: rgb(62, 180, 68);
+}
+
+.button-generator {
+    border: none;
+    transition: transform 0.3s ease;
+    margin: 10px 0;
+}
+
+.button-generator:hover {
+    background-color: rgb(37, 126, 42);
+}
+
+.button-printer {
+    margin-top: 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.3s ease;
+}
+
+.button-printer:hover {
+    background-color: rgb(3, 49, 6);
+}
+
+.button-download {
+    margin: 10px 0; /* Adiciona margem em cima e embaixo */
+    color: white;
+    transition: transform 0.3 ease;
+}
+
+.button-download:hover {
+    background-color: rgb(3, 49, 6);
+}
+
+.qr-code-lista {
+    gap: 20px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.qr-code-item {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    text-align: left;
+    padding: 20px;
+    width: 100mm;
+    height: 41mm;
+    justify-content: space-between;
+    page-break-inside: avoid;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.qr-code-item p {
+    margin-left: 0px;
+}
+
+.qr-code-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.qr-code-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.qr-code-cell {
+    flex: 1;
+    padding: 5px 10px;
+    vertical-align: middle;
+}
+
+.qr-code-label {
+    font-weight: bold;
+}
+
+.qr-code-img {
+    min-width: 39mm;
+    height: 39mm;
+}
+
+@media print {
+
+    @page {
+        size: auto;
+        margin: 0px;
+    }
+
+    .geral {
+        width: auto;
+    }
+
+    .container,
+    .input-qrcode,
+    .button-generator,
+    .input-baixar-qrcode,
+    .title,
+    .button-printer,
+    .button-download,
+    .header
+    {
+        display: none;
+    }
+
+    .qr-code-lista {
+        display: block;
+        width: 100mm;
+        height: 41mm;
+    }
+
+    .qr-code-item {
+        width: 100mm;
+        height: 41mm;
+        margin: 0;
+        page-break-inside: avoid;
+    }
+
+    .qr-code-img {
+        min-width: 36mm;
+        min-height: 36mm;
+    }
+
+    body {
+        background-color: white;
+        margin: 0;
+    }
+
+    header,
+    footer {
+        display: none;
+    }
+
+}

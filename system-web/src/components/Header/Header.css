@@ -1,0 +1,86 @@
+/* src/components/Header/Header.css */
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 60px;
+    background-color: #1780e2;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.header-container a {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    text-decoration: none;
+    color: white;
+    transition: color 0.3s ease;
+}
+
+.header-container a:hover {
+    color: #cce0ff;
+}
+
+.header-inicio,
+.header-conta {
+    display: flex;
+    align-items: center;
+}
+
+.header-conta {
+    margin-left: auto;
+}
+
+.container-voltar {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.container-voltar p {
+    color: #ffffff;
+}
+
+.container-home {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#icon-voltar,
+#icon-home,
+#icon-conta {
+    font-size: 28px;
+    margin-right: 8px;
+}
+
+#icon-voltar {
+    color: #ffffff;
+}
+
+#icon-home {
+    color: #ffffff;
+}
+
+#icon-conta {
+    color: #ffffff;
+}
+
+.header-inicio a {
+    display: flex;
+    align-items: center;
+}
+
+.header-conta a {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+

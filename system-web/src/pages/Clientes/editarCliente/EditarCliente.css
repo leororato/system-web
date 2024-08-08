@@ -1,0 +1,125 @@
+/* Estilos para o container do formulário */
+.form-container-cliente {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Flexbox para layout do formulário */
+.form-container-cliente form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Grupo de inputs - flexível para responsividade */
+.input-grupo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Cada input dentro do grupo */
+.input-grupo > div {
+    flex: 1 1 100%; /* Por padrão, cada div ocupa 100% da largura do container */
+    min-width: 200px; /* Largura mínima para inputs menores */
+    margin-bottom: 15px;
+}
+
+/* Estilo do label */
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Estilo dos inputs */
+.input-grupo input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Estilos específicos para tipos de input */
+.cadastro-cliente-number::-webkit-outer-spin-button,
+.cadastro-cliente-number::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.cadastro-cliente-tel,
+.cadastro-cliente-email {
+    width: 100%;
+}
+
+/* Estilo para o container dos botões */
+.button-save-edit-cliente {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+/* Estilo do botão cancelar */
+.button-cancel {
+    background-color: #fa0000;
+    color: white;
+    transition: background-color 0.5s ease;
+}
+
+.button-cancel:hover {
+    background-color: #b30e0e;
+}
+
+/* Estilo do botão salvar */
+.button-save {
+    background-color: #1780e2;
+    color: white;
+    transition: background-color 0.5s ease;
+}
+
+.button-save:hover {
+    background-color: #0d4c99;
+}
+
+/* Media queries para responsividade */
+@media (max-width: 768px) {
+    .form-container-cliente {
+        padding: 15px;
+    }
+
+    .input-grupo {
+        flex-direction: column;
+    }
+
+    .input-grupo > div {
+        flex: 1 1 100%;
+    }
+
+    .button-save-edit-cliente {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .button-save,
+    .button-cancel {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-container-cliente {
+        padding: 10px;
+    }
+
+    .input-grupo input {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
