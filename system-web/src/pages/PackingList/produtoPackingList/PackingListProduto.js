@@ -45,7 +45,7 @@ function PackingListProduto() {
 
         const fetchProdutos = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/produto`);
+                const response = await axios.get(`http://localhost:8080/api/packinglistproduto/${id}`);
                 setProdutos(response.data);
                 setFilteredProdutos(response.data);
             } catch (error) {
