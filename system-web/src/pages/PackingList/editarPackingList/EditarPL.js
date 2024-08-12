@@ -179,7 +179,7 @@ function EditarPL() {
                             onChange={e => setFormData({ ...formData, idioma: e.target.value })}
                         />
 
-                        <label>Importador ATUAL()</label>
+                        <label>Importador</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idImportador')}

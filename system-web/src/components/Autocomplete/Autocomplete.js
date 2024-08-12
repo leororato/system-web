@@ -1,8 +1,7 @@
-// src/components/Autocomplete/Autocomplete.js
 import React, { useState } from 'react';
 import './Autocomplete.css';
 
-function Autocomplete({ data, onSelect }) {
+function Autocomplete({ data, onSelect, displayField }) {
     const [inputValue, setInputValue] = useState('');
     const [showResults, setShowResults] = useState(false);
 
@@ -14,14 +13,14 @@ function Autocomplete({ data, onSelect }) {
 
     // Função para selecionar um item da lista
     const handleSelect = (item) => {
-        setInputValue(item.nome);
+        setInputValue(item.nome || ''); // Definir um valor padrão vazio se item.nome for undefined
         setShowResults(false);
         onSelect(item);
     };
 
     // Filtrando os dados com base no valor do input
     const filteredData = data.filter(item =>
-        item.nome.toLowerCase().includes(inputValue.toLowerCase())
+        (item.nome || '').toLowerCase().includes(inputValue.toLowerCase()) // Verificar se item.nome é undefined
     );
 
     return (
@@ -41,7 +40,7 @@ function Autocomplete({ data, onSelect }) {
                             className="autocomplete-item"
                             onClick={() => handleSelect(item)}
                         >
-                            {item.nome}
+                            {item[displayField] || 'Nome não disponível'}
                         </div>
                     ))}
                 </div>
