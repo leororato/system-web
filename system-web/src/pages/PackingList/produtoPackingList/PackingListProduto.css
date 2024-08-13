@@ -164,6 +164,10 @@
     border-right: 1px solid #ddd; /* Adicione uma borda direita para separar as colunas */
 }
 
+.ul-lista-produtos {
+    margin-bottom: 200px;
+}
+
 .produto-container-prod li div:last-child {
     border-right: none; /* Remova a borda da última coluna */
 }

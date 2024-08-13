@@ -183,18 +183,21 @@ function EditarPL() {
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idImportador')}
+                            displayField={'idImportador'}
                         />
                         
                         <label>Consignatário:</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idConsignatario')}
+                            displayField={'idConsignatario'}
                         />
                         
                         <label>Notificado:</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idNotificado')}
+                            displayField={'idNotificado'}
                         />
                     </div>
                     <div className="buttons-editar-pl">

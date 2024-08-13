@@ -10,7 +10,6 @@ import Text from "../../../components/Text";
 import Title from "../../../components/Title";
 import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 
-
 function PackingListProduto() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -18,36 +17,25 @@ function PackingListProduto() {
     const [packingList, setPackingList] = useState([]);
     const [produtos, setProdutos] = useState([]);
     const [filteredProdutos, setFilteredProdutos] = useState([]);
-
-    const [ordens, setOrdens] = useState([]);
+    
     const [produtoNomus, setProdutoNomus] = useState([]);
 
     const [buscaIdProduto, setBuscaIdProduto] = useState('');
     const [buscaDescricaoProduto, setBuscaDescricaoProduto] = useState('');
     const [buscaOrdemDeProducao, setBuscaOrdemDeProducao] = useState('');
-
+    
     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedId: null });
     const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedId: null });
     const [botaoAdicionar, setBotaoAdicionar] = useState({ visible: true });
     const [contextAdicionar, setContextAdicionar] = useState({ visible: false });
-
+    
     const [formDataProduto, setFormDataProduto] = useState({
-        idPackingList: id
+        idPackingList: id,
+        idProduto: '',
+        codigoMaquina: '',
+        nomeMaquina: '',
+        codigoOrdem: ''
     });
-
-    const [formDataProdutoNomus, setFormDataProdutoNomus] = useState({
-        id: '',
-        nome: '',
-        descricao: ''
-    });
-
-    const [formDataOrdem, setFormDataOrdem] = useState({
-        id: '',
-        nome: '',
-        idProduto: ''
-    });
-
-
 
     useEffect(() => {
         const fetchPackingList = async () => {
@@ -63,8 +51,9 @@ function PackingListProduto() {
             try {
                 const response = await axios.get(`http://localhost:8080/api/pl-produto`);
                 setProdutos(response.data);
-                setFilteredProdutos(response.data);
-                console.log('Resposta: ', response.data);
+                // Filtra os produtos com base no idPackingList
+                const filtered = response.data.filter(p => p.idPackingList === parseInt(id, 10));
+                setFilteredProdutos(filtered);
             } catch (error) {
                 console.error('Erro ao renderizar o produto:', error);
             }
@@ -75,18 +64,13 @@ function PackingListProduto() {
     }, [id]);
 
     useEffect(() => {
-        console.log('Produtos:', produtos); // Verifique os dados
-    
         const filterProdutos = produtos.filter(p =>
             (p.idProduto?.toString() || '').includes(buscaIdProduto) &&
             (p.descricaoProduto ? p.descricaoProduto.toLowerCase() : '').includes(buscaDescricaoProduto.toLowerCase()) &&
             (p.ordemProducao?.toString() || '').includes(buscaOrdemDeProducao)
         );
-    
         setFilteredProdutos(filterProdutos);
     }, [buscaIdProduto, buscaDescricaoProduto, buscaOrdemDeProducao, produtos]);
-    
-     
 
     const formatarData = (dtCriacao) => {
         if (!dtCriacao) return 'Data inválida';
@@ -107,12 +91,6 @@ function PackingListProduto() {
                 return false;
             }
         }
-        for (const key in formDataOrdem) {
-            if (formDataOrdem[key] === "") {
-                alert(`Por favor, preencha o campo: ${key}`);
-                return false;
-            }
-        }
         return true;
     };
 
@@ -122,8 +100,8 @@ function PackingListProduto() {
             x: 0,
             y: 0,
             selectedId: null
-        })
-    }
+        });
+    };
 
     const handleRightClick = (e, idProduto) => {
         e.preventDefault();
@@ -132,8 +110,8 @@ function PackingListProduto() {
             x: e.pageX,
             y: e.pageY,
             selectedId: idProduto
-        })
-    }
+        });
+    };
 
     const handleEdit = () => {
         setContextMenu({
@@ -141,9 +119,9 @@ function PackingListProduto() {
             x: 0,
             y: 0,
             selectedId: null
-        })
-        navigate(`/editar-sub-volume/${contextMenu.selectedId}`)
-    }
+        });
+        navigate(`/editar-sub-volume/${contextMenu.selectedId}`);
+    };
 
     const handleDelete = (e) => {
         setContextMenu({
@@ -151,14 +129,14 @@ function PackingListProduto() {
             x: 0,
             y: 0,
             selectedId: null
-        })
+        });
         setContextDelete({
             visible: true,
             x: e.pageX,
             y: e.pageY,
             selectedId: contextMenu.selectedId
-        })
-    }
+        });
+    };
 
     const handleDeleteConfirm = () => {
         axios.delete(`http://localhost:8080/api/sub-volume/${contextDelete.selectedId}`)
@@ -169,57 +147,63 @@ function PackingListProduto() {
             .catch((error) => {
                 console.error('Erro ao excluir:', error);
             });
-    }
+    };
 
     const handleAddProduto = () => {
         setContextAdicionar({ visible: true });
-        setBotaoAdicionar({ visible: false })
-    }
+        setBotaoAdicionar({ visible: false });
+    };
 
     const handleSalvarProduto = (e) => {
         e.preventDefault();
-        if(!validateForm()){
+
+        if (!validateForm()) {
             return;
         }
-        axios.post('http://localhost:8080/api/produto', formDataProduto)
-            .then(() => {
-                setContextAdicionar({ visible: false });
+    
+        const payload = {
+            id: {
+                idPackinglist: parseInt(formDataProduto.idPackingList, 10), // Converte para número inteiro
+                idProduto: parseInt(formDataProduto.idProduto, 10) // Converte para número inteiro
+            },
+            produto: formDataProduto.codigoMaquina, // Ajuste conforme o esperado
+            descricaoProduto: formDataProduto.nomeMaquina, // Ajuste conforme o esperado
+            ordemProducao: formDataProduto.codigoOrdem // Ajuste conforme o esperado
+        };
+    
+        console.log('Payload:', payload);
+    
+        axios.post('http://localhost:8080/api/pl-produto', payload)
+            .then(response => {
                 alert('Produto criado com sucesso!');
+                setContextAdicionar({ visible: false });
             })
-            .catch((error) => {
-                alert('Erro ao salvar produto!')
+            .catch(error => {
+                alert('Erro ao salvar produto!');
                 console.error('Erro ao salvar o produto:', error);
             });
-    }
-
+    };
+    
     const handleCancelarAddProduto = () => {
         setContextAdicionar({ visible: false });
         setBotaoAdicionar({ visible: true });
-    }
-
-    const handleAutocompleteChangeProdutoNomus = (field) => (item) => {
-        setFormDataProdutoNomus(prevData => ({
-            ...prevData,
-            [field]: item.id,
-        }));
     };
 
-    const handleAutocompleteChangeOrdem = (field) => (item) => {
-        setFormDataOrdem(prevData => ({
-            ...prevData,
-            [field]: item.id
-        }));
-    };
-
-        useEffect(() => {
-            axios.get(`http://localhost:8080/api/ordem`)
-            .then(response => setOrdens(response.data))
-            .catch(error => console.error('Erro ao buscar todas as ordens: ', error));
-
-            axios.get(`http://localhost:8080/api/produtoNomus`)
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/ordens/details`)
             .then(response => setProdutoNomus(response.data))
-            .catch(error => console.error('Erro ao buscar todos os produtos: ', error));
-        }, []);
+            .catch(error => console.error('Erro ao buscar todos os produtos Nomus: ', error));
+    }, []);
+
+    const handleAutocompleteChange = (item) => {
+        setFormDataProduto(prevData => ({
+            ...prevData,
+            idProduto: item.idProduto,
+            codigoMaquina: item.codigoMaquina,
+            nomeMaquina: item.nomeMaquina,
+            codigoOrdem: item.codigoOrdem
+        }));
+    }
 
     return (
         <div className="container-produto">
@@ -276,30 +260,30 @@ function PackingListProduto() {
                         placeholder={'ID do Produto'}
                         value={buscaIdProduto}
                         onChange={(e) => setBuscaIdProduto(e.target.value)}
-                    /></div>
+                    />
+                </div>
                 <div>
                     <Input
                         type={'text'}
                         placeholder={'Descrição do Produto'}
                         value={buscaDescricaoProduto}
                         onChange={(e) => setBuscaDescricaoProduto(e.target.value)}
-                    /></div>
+                    />
+                </div>
                 <div>
                     <Input
                         type={'text'}
                         placeholder={'Ordem de Produção'}
                         value={buscaOrdemDeProducao}
                         onChange={(e) => setBuscaOrdemDeProducao(e.target.value)}
-                    /></div>
+                    />
+                </div>
             </div>
-
-            {/* INICIO DO CONTAINER DO ADICIONAR PRODUTO */}
 
             <div className="produto-container-prod">
                 <div className="lista-produto">
                     {botaoAdicionar.visible && (
                         <div className="container-button-adicionar-produto">
-
                             <Button
                                 className={'button-adicionar-produto'}
                                 text={'Adicionar Produto'}
@@ -307,69 +291,51 @@ function PackingListProduto() {
                                 fontSize={15}
                                 borderRadius={5}
                                 onClick={handleAddProduto}
-                            /></div>
+                            />
+                        </div>
                     )}
 
-                    <>
-                        {contextAdicionar.visible && (
-                            <div className="container-adicionar-produtos">
-                                <Title
-                                    classname={'title-adicionar-produtos'}
-                                    text={'Criar um novo Produto'}
-                                />
-                                <div className="container-adicionar-produtos-inputs">
-
-                                    <div id="div-desc-prod">
-                                        <Text
-                                            text={'Descrição do Produto:'}
-                                        />
-                                        <Autocomplete 
-                                        data={produtoNomus}
-                                        onSelect={handleAutocompleteChangeProdutoNomus('descricao')}
-                                        displayField={'descricao'}
-                                        />
-                                    </div>
-
-                                    <div id="div-os">
-                                        <Text
-                                            text={'Ordem de Produção:'}
-                                        />
-                                        <Autocomplete 
-                                        data={ordens}
-                                        onSelect={handleAutocompleteChangeOrdem('nome')}
-                                        displayField={'nome'}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="buttons-adicionar-produtos">
-                                    <Button
-                                        className={'button-salvar-add-prod'}
-                                        text={'SALVAR'}
-                                        fontSize={15}
-                                        borderRadius={5}
-                                        padding={10}
-                                        onClick={handleSalvarProduto}
+                    {contextAdicionar.visible && (
+                        <div className="container-adicionar-produtos">
+                            <Title
+                                classname={'title-adicionar-produtos'}
+                                text={'Criar um novo Produto'}
+                            />
+                            <div className="container-adicionar-produtos-inputs">
+                                <div id="div-desc-prod">
+                                    <Text
+                                        text={'Pesquisa alguma informação do Produto:'}
                                     />
-
-                                    <Button
-                                        className={'button-cancelar-add-prod'}
-                                        text={'CANCELAR'}
-                                        fontSize={15}
-                                        borderRadius={5}
-                                        padding={10}
-                                        onClick={handleCancelarAddProduto}
+                                    <Autocomplete 
+                                    data={produtoNomus}
+                                    onSelect={(item) => handleAutocompleteChange(item)} 
+                                    displayField={'itensConcatenados'}
                                     />
                                 </div>
-
                             </div>
-                        )}
-                    </>
-                    {/* FIM DO CONTAINER DO ADICIONAR PRODUTO */}
 
+                            <div className="buttons-adicionar-produtos">
+                                <Button
+                                    className={'button-salvar-add-prod'}
+                                    text={'SALVAR'}
+                                    fontSize={15}
+                                    borderRadius={5}
+                                    padding={10}
+                                    onClick={handleSalvarProduto}
+                                />
 
-
-
+                                <Button
+                                    className={'button-cancelar-add-prod'}
+                                    text={'CANCELAR'}
+                                    fontSize={15}
+                                    borderRadius={5}
+                                    padding={10}
+                                    onClick={handleCancelarAddProduto}
+                                />
+                            </div>
+                        </div>
+                    )}
+<div className="ul-lista-produtos">
                     <ul>
                         <li id="header-lista-prod">
                             <div>Id PackingList</div>
@@ -380,7 +346,7 @@ function PackingListProduto() {
                         </li>
                         {filteredProdutos.length > 0 ? (
                             filteredProdutos.map((p) => (
-                                <li key={p.id.idProduto} onContextMenu={(e) => handleRightClick(e, p.idProduto)}>
+                                <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.idProduto)}>
                                     <div>{packingList.idPackingList}</div>
                                     <div>{p.id.idProduto}</div>
                                     <div>{p.id.seq}</div>
@@ -392,8 +358,8 @@ function PackingListProduto() {
                             <li>Nenhum produto encontrado</li>
                         )}
                     </ul>
+                    </div>
                 </div>
-
 
                 {contextMenu.visible && (
                     <div className="context-menu" style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}>
@@ -418,7 +384,7 @@ function PackingListProduto() {
                                     className={'button-cancelar'}
                                     text={'CANCELAR'}
                                     fontSize={20}
-                                    onClick={(e) => { setContextDelete({ visible: false }); }}
+                                    onClick={() => { setContextDelete({ visible: false }); }}
                                 />
                                 <Button
                                     className={'button-excluir'}
@@ -428,17 +394,26 @@ function PackingListProduto() {
                                 />
                             </div>
                         </div>
-
                     </>
                 )}
-
-
             </div>
         </div>
     );
 }
 
 export default PackingListProduto;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -467,7 +442,6 @@ export default PackingListProduto;
 // import Title from "../../../components/Title";
 // import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 
-
 // function PackingListProduto() {
 //     const { id } = useParams();
 //     const navigate = useNavigate();
@@ -475,22 +449,25 @@ export default PackingListProduto;
 //     const [packingList, setPackingList] = useState([]);
 //     const [produtos, setProdutos] = useState([]);
 //     const [filteredProdutos, setFilteredProdutos] = useState([]);
+    
+//     const [produtoNomus, setProdutoNomus] = useState([]);
 
 //     const [buscaIdProduto, setBuscaIdProduto] = useState('');
 //     const [buscaDescricaoProduto, setBuscaDescricaoProduto] = useState('');
 //     const [buscaOrdemDeProducao, setBuscaOrdemDeProducao] = useState('');
-
+    
 //     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedId: null });
 //     const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedId: null });
 //     const [botaoAdicionar, setBotaoAdicionar] = useState({ visible: true });
 //     const [contextAdicionar, setContextAdicionar] = useState({ visible: false });
-
-//     const [formData, setFormData] = useState({
+    
+//     const [formDataProduto, setFormDataProduto] = useState({
 //         idPackingList: id,
-//         descricaoProduto: '',
-//         ordemProducao: ''
+//         idProduto: '',
+//         codigoMaquina: '',
+//         nomeMaquina: '',
+//         codigoOrdem: ''
 //     });
-
 
 //     useEffect(() => {
 //         const fetchPackingList = async () => {
@@ -507,7 +484,6 @@ export default PackingListProduto;
 //                 const response = await axios.get(`http://localhost:8080/api/pl-produto`);
 //                 setProdutos(response.data);
 //                 setFilteredProdutos(response.data);
-//                 console.log('Resposta: ', response.data);
 //             } catch (error) {
 //                 console.error('Erro ao renderizar o produto:', error);
 //             }
@@ -517,24 +493,23 @@ export default PackingListProduto;
 //         fetchProdutos();
 //     }, [id]);
 
+
+
 //     useEffect(() => {
-//         console.log('Produtos:', produtos); // Verifique os dados
-    
 //         const filterProdutos = produtos.filter(p =>
 //             (p.idProduto?.toString() || '').includes(buscaIdProduto) &&
 //             (p.descricaoProduto ? p.descricaoProduto.toLowerCase() : '').includes(buscaDescricaoProduto.toLowerCase()) &&
 //             (p.ordemProducao?.toString() || '').includes(buscaOrdemDeProducao)
 //         );
-    
 //         setFilteredProdutos(filterProdutos);
 //     }, [buscaIdProduto, buscaDescricaoProduto, buscaOrdemDeProducao, produtos]);
-    
-     
 
 //     const formatarData = (dtCriacao) => {
 //         if (!dtCriacao) return 'Data inválida';
 //         return format(new Date(dtCriacao), 'dd/MM/yyyy - HH:mm');
 //     };
+
+
 
 //     useEffect(() => {
 //         document.addEventListener('click', handleClickOutside);
@@ -543,14 +518,11 @@ export default PackingListProduto;
 //         };
 //     }, []);
 
-//     const handleChange = (e) => {
-//         const { name, value } = e.target;
-//         setFormData({ ...formData, [name]: value });
-//     };
+
 
 //     const validateForm = () => {
-//         for (const key in formData) {
-//             if (formData[key] === "") {
+//         for (const key in formDataProduto) {
+//             if (formDataProduto[key] === "") {
 //                 alert(`Por favor, preencha o campo: ${key}`);
 //                 return false;
 //             }
@@ -558,14 +530,18 @@ export default PackingListProduto;
 //         return true;
 //     };
 
+
+
 //     const handleClickOutside = () => {
 //         setContextMenu({
 //             visible: false,
 //             x: 0,
 //             y: 0,
 //             selectedId: null
-//         })
-//     }
+//         });
+//     };
+
+
 
 //     const handleRightClick = (e, idProduto) => {
 //         e.preventDefault();
@@ -574,8 +550,10 @@ export default PackingListProduto;
 //             x: e.pageX,
 //             y: e.pageY,
 //             selectedId: idProduto
-//         })
-//     }
+//         });
+//     };
+
+
 
 //     const handleEdit = () => {
 //         setContextMenu({
@@ -583,9 +561,11 @@ export default PackingListProduto;
 //             x: 0,
 //             y: 0,
 //             selectedId: null
-//         })
-//         navigate(`/editar-sub-volume/${contextMenu.selectedId}`)
-//     }
+//         });
+//         navigate(`/editar-sub-volume/${contextMenu.selectedId}`);
+//     };
+
+
 
 //     const handleDelete = (e) => {
 //         setContextMenu({
@@ -593,14 +573,16 @@ export default PackingListProduto;
 //             x: 0,
 //             y: 0,
 //             selectedId: null
-//         })
+//         });
 //         setContextDelete({
 //             visible: true,
 //             x: e.pageX,
 //             y: e.pageY,
 //             selectedId: contextMenu.selectedId
-//         })
-//     }
+//         });
+//     };
+
+
 
 //     const handleDeleteConfirm = () => {
 //         axios.delete(`http://localhost:8080/api/sub-volume/${contextDelete.selectedId}`)
@@ -611,42 +593,77 @@ export default PackingListProduto;
 //             .catch((error) => {
 //                 console.error('Erro ao excluir:', error);
 //             });
-//     }
+//     };
+
+
 
 //     const handleAddProduto = () => {
 //         setContextAdicionar({ visible: true });
-//         setBotaoAdicionar({ visible: false })
-//     }
+//         setBotaoAdicionar({ visible: false });
+//     };
+
+
 
 //     const handleSalvarProduto = (e) => {
 //         e.preventDefault();
-//         if(!validateForm()){
+
+//         if (!validateForm()) {
 //             return;
 //         }
-//         axios.post('http://localhost:8080/api/produto', formData)
-//             .then(() => {
-//                 setContextAdicionar({ visible: false });
+    
+//         const payload = {
+//             id: {
+//                 idPackinglist: parseInt(formDataProduto.idPackingList, 10), // Converte para número inteiro
+//                 idProduto: parseInt(formDataProduto.idProduto, 10) // Converte para número inteiro
+//             },
+//             produto: formDataProduto.codigoMaquina, // Ajuste conforme o esperado
+//             descricaoProduto: formDataProduto.nomeMaquina, // Ajuste conforme o esperado
+//             ordemProducao: formDataProduto.codigoOrdem // Ajuste conforme o esperado
+//         };
+    
+//         console.log('Payload:', payload);
+    
+//         axios.post('http://localhost:8080/api/pl-produto', payload)
+//             .then(response => {
 //                 alert('Produto criado com sucesso!');
+//                 setContextAdicionar({ visible: false });
 //             })
-//             .catch((error) => {
-//                 alert('Erro ao salvar produto!')
+//             .catch(error => {
+//                 alert('Erro ao salvar produto!');
 //                 console.error('Erro ao salvar o produto:', error);
 //             });
-//     }
+//     };
+    
+
+        
 
 //     const handleCancelarAddProduto = () => {
 //         setContextAdicionar({ visible: false });
 //         setBotaoAdicionar({ visible: true });
-//     }
-
-//     const handleAutocompleteChange = (field) => (item) => {
-//         setFormData(prevData => ({
-//             ...prevData,
-//             [field]: item.id
-//         }));
 //     };
 
 
+
+//     useEffect(() => {
+//         axios.get(`http://localhost:8080/api/ordens/details`)
+//             .then(response => setProdutoNomus(response.data))
+//             .catch(error => console.error('Erro ao buscar todos os produtos Nomus: ', error));
+//     }, []);
+
+
+
+//     const handleAutocompleteChange = (item) => {
+//         setFormDataProduto(prevData => ({
+//             ...prevData,
+//             idProduto: item.idProduto,
+//             codigoMaquina: item.codigoMaquina,
+//             nomeMaquina: item.nomeMaquina,
+//             codigoOrdem: item.codigoOrdem
+//         }));
+//     }
+    
+
+    
 //     return (
 //         <div className="container-produto">
 //             <div>
@@ -702,30 +719,30 @@ export default PackingListProduto;
 //                         placeholder={'ID do Produto'}
 //                         value={buscaIdProduto}
 //                         onChange={(e) => setBuscaIdProduto(e.target.value)}
-//                     /></div>
+//                     />
+//                 </div>
 //                 <div>
 //                     <Input
 //                         type={'text'}
 //                         placeholder={'Descrição do Produto'}
 //                         value={buscaDescricaoProduto}
 //                         onChange={(e) => setBuscaDescricaoProduto(e.target.value)}
-//                     /></div>
+//                     />
+//                 </div>
 //                 <div>
 //                     <Input
 //                         type={'text'}
 //                         placeholder={'Ordem de Produção'}
 //                         value={buscaOrdemDeProducao}
 //                         onChange={(e) => setBuscaOrdemDeProducao(e.target.value)}
-//                     /></div>
+//                     />
+//                 </div>
 //             </div>
-
-//             {/* INICIO DO CONTAINER DO ADICIONAR PRODUTO */}
 
 //             <div className="produto-container-prod">
 //                 <div className="lista-produto">
 //                     {botaoAdicionar.visible && (
 //                         <div className="container-button-adicionar-produto">
-
 //                             <Button
 //                                 className={'button-adicionar-produto'}
 //                                 text={'Adicionar Produto'}
@@ -733,78 +750,50 @@ export default PackingListProduto;
 //                                 fontSize={15}
 //                                 borderRadius={5}
 //                                 onClick={handleAddProduto}
-//                             /></div>
+//                             />
+//                         </div>
 //                     )}
 
-//                     <>
-//                         {contextAdicionar.visible && (
-//                             <div className="container-adicionar-produtos">
-//                                 <Title
-//                                     classname={'title-adicionar-produtos'}
-//                                     text={'Criar um novo Produto'}
-//                                 />
-//                                 <div className="container-adicionar-produtos-inputs">
-//                                     <div id="div-id-prod">
-//                                         <Text
-//                                             text={'ID do produto:'}
-//                                         />
-//                                         <Autocomplete 
-//                                         data={produtos}
-//                                         onSelect={handleAutocompleteChange('descricaoProduto')}
-//                                         />
-//                                     </div>
-
-//                                     <div id="div-desc-prod">
-//                                         <Text
-//                                             text={'Descrição do Produto:'}
-//                                         />
-//                                         <Autocomplete 
-//                                         data={produtos}
-//                                         onSelect={handleAutocompleteChange('ordemProducao')}
-//                                         />
-//                                     </div>
-
-//                                     <div id="div-os">
-//                                         <Text
-//                                             text={'Ordem de Produção:'}
-//                                         />
-//                                         <Input
-//                                             type={'text'}
-//                                             title={'Digite a ordem de produção...'}
-//                                             placeholder={'Ex: OS 515-001-01'}
-//                                             name={'ordemProducao'}
-//                                             onChange={handleChange}
-//                                         />
-//                                     </div>
-//                                 </div>
-
-//                                 <div className="buttons-adicionar-produtos">
-//                                     <Button
-//                                         className={'button-salvar-add-prod'}
-//                                         text={'SALVAR'}
-//                                         fontSize={15}
-//                                         borderRadius={5}
-//                                         padding={10}
-//                                         onClick={handleSalvarProduto}
+//                     {contextAdicionar.visible && (
+//                         <div className="container-adicionar-produtos">
+//                             <Title
+//                                 classname={'title-adicionar-produtos'}
+//                                 text={'Criar um novo Produto'}
+//                             />
+//                             <div className="container-adicionar-produtos-inputs">
+//                                 <div id="div-desc-prod">
+//                                     <Text
+//                                         text={'Pesquisa alguma informação do Produto:'}
 //                                     />
-
-//                                     <Button
-//                                         className={'button-cancelar-add-prod'}
-//                                         text={'CANCELAR'}
-//                                         fontSize={15}
-//                                         borderRadius={5}
-//                                         padding={10}
-//                                         onClick={handleCancelarAddProduto}
+//                                     <Autocomplete 
+//                                     data={produtoNomus}
+//                                     onSelect={(item) => handleAutocompleteChange(item)} 
+//                                     displayField={'itensConcatenados'}
 //                                     />
 //                                 </div>
-
 //                             </div>
-//                         )}
-//                     </>
-//                     {/* FIM DO CONTAINER DO ADICIONAR PRODUTO */}
 
+//                             <div className="buttons-adicionar-produtos">
+//                                 <Button
+//                                     className={'button-salvar-add-prod'}
+//                                     text={'SALVAR'}
+//                                     fontSize={15}
+//                                     borderRadius={5}
+//                                     padding={10}
+//                                     onClick={handleSalvarProduto}
+//                                 />
 
-
+//                                 <Button
+//                                     className={'button-cancelar-add-prod'}
+//                                     text={'CANCELAR'}
+//                                     fontSize={15}
+//                                     borderRadius={5}
+//                                     padding={10}
+//                                     onClick={handleCancelarAddProduto}
+//                                 />
+//                             </div>
+//                         </div>
+//                     )}
 
 //                     <ul>
 //                         <li id="header-lista-prod">
@@ -816,20 +805,19 @@ export default PackingListProduto;
 //                         </li>
 //                         {filteredProdutos.length > 0 ? (
 //                             filteredProdutos.map((p) => (
-//                                 <li key={p.id.idProduto} onContextMenu={(e) => handleRightClick(e, p.idProduto)}>
-//                                     <div>{packingList.idPackingList}</div>
-//                                     <div>{p.id.idProduto}</div>
-//                                     <div>{p.id.seq}</div>
-//                                     <div>{p.descricaoProduto}</div>
-//                                     <div>{p.ordemProducao}</div>
-//                                 </li>
+//                                 <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.idProduto)}>
+//                                 <div>{packingList.idPackingList}</div>
+//                                 <div>{p.id.idProduto}</div>
+//                                 <div>{p.id.seq}</div>
+//                                 <div>{p.descricaoProduto}</div>
+//                                 <div>{p.ordemProducao}</div>
+//                             </li>
 //                             ))
 //                         ) : (
 //                             <li>Nenhum produto encontrado</li>
 //                         )}
 //                     </ul>
 //                 </div>
-
 
 //                 {contextMenu.visible && (
 //                     <div className="context-menu" style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}>
@@ -854,7 +842,7 @@ export default PackingListProduto;
 //                                     className={'button-cancelar'}
 //                                     text={'CANCELAR'}
 //                                     fontSize={20}
-//                                     onClick={(e) => { setContextDelete({ visible: false }); }}
+//                                     onClick={() => { setContextDelete({ visible: false }); }}
 //                                 />
 //                                 <Button
 //                                     className={'button-excluir'}
@@ -864,14 +852,13 @@ export default PackingListProduto;
 //                                 />
 //                             </div>
 //                         </div>
-
 //                     </>
 //                 )}
-
-
 //             </div>
 //         </div>
 //     );
 // }
 
 // export default PackingListProduto;
+
+

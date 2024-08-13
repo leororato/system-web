@@ -5,22 +5,19 @@ function Autocomplete({ data, onSelect, displayField }) {
     const [inputValue, setInputValue] = useState('');
     const [showResults, setShowResults] = useState(false);
 
-    // Função para lidar com mudanças no campo de input
     const handleChange = (e) => {
         setInputValue(e.target.value);
         setShowResults(true);
     };
 
-    // Função para selecionar um item da lista
     const handleSelect = (item) => {
-        setInputValue(item.nome || ''); // Definir um valor padrão vazio se item.nome for undefined
+        setInputValue(item[displayField] || ''); // Definir o valor do input como o displayField do item
         setShowResults(false);
-        onSelect(item);
+        onSelect(item); // Passar o item completo para a função onSelect
     };
 
-    // Filtrando os dados com base no valor do input
     const filteredData = data.filter(item =>
-        (item.nome || '').toLowerCase().includes(inputValue.toLowerCase()) // Verificar se item.nome é undefined
+        (item[displayField] || '').toLowerCase().includes(inputValue.toLowerCase())
     );
 
     return (
@@ -34,9 +31,9 @@ function Autocomplete({ data, onSelect, displayField }) {
             />
             {showResults && filteredData.length > 0 && (
                 <div className="autocomplete-results">
-                    {filteredData.map(item => (
+                    {filteredData.map((item, index) => (
                         <div
-                            key={item.id}
+                            key={`${item.idProduto}-${index}`}
                             className="autocomplete-item"
                             onClick={() => handleSelect(item)}
                         >
