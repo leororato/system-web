@@ -66,9 +66,21 @@ function EditarCliente() {
         navigate(-1);
     }
 
+    const validateForm = () => {
+        for (const key in formData) {
+            if (formData[key] === "") {
+                alert(`Por favor, preencha o campo: ${key}`);
+                return false;
+            }
+        }
+        return true;
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+        if (!validateForm()) {
+            return;
+        }
         if (clienteExiste === true){
         // Se o cliente já existe no banco App é realizado um PUT
         try {

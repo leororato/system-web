@@ -69,7 +69,7 @@ function CadastroPackingList() {
         axios.post('http://localhost:8080/api/packinglist', formData)
             .then(() => {
                 alert('Packing List criado com sucesso!');
-                navigate(0);
+                navigate('/inicio');
             })
             .catch(error => {
                 console.error(error);
@@ -230,6 +230,7 @@ function CadastroPackingList() {
                             <Autocomplete
                                 data={clientesNomus}
                                 onSelect={(item) => setFormData({ ...formData, idImportador: item.id })}
+                                displayField={'nome'}
                             />
                         </div>
                         <div className="form-consignatario">
@@ -237,6 +238,7 @@ function CadastroPackingList() {
                             <Autocomplete
                                 data={clientesNomus}
                                 onSelect={(item) => setFormData({ ...formData, idConsignatario: item.id })}
+                                displayField={'nome'}
                             />
                         </div>
                         <div className="form-notificado">
@@ -244,6 +246,7 @@ function CadastroPackingList() {
                             <Autocomplete
                                 data={clientesNomus}
                                 onSelect={(item) => setFormData({ ...formData, idNotificado: item.id })}
+                                displayField={'nome'}
                             />
                         </div>
                         <div className="form-idioma">

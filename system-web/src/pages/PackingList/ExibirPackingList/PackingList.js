@@ -137,16 +137,16 @@ function Inicio() {
                         onClick={() => navigate('/clientes')}
                     />
                 </div>
-                <div className='button-container-listagem'>
+                {/* <div className='button-container-listagem'>
                     <Button
                         className={'button-item'}
-                        text={'Criar Volume'}
+                        text={'Tipo de Volume'}
                         padding={10}
                         borderRadius={5}
                         fontSize={15}
                         onClick={handleVolume}
                     />
-                </div>
+                </div> */}
             </div>
 
             <div className='container-listagem'>

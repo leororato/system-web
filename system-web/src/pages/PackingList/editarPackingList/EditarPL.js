@@ -12,11 +12,13 @@ function EditarPL() {
     const navigate = useNavigate();
     const { id } = useParams();
     const [clientesNomus, setClientesNomus] = useState([]);
-    const [idImpConsNotiAtual, setIdImpConsNotiAtual] = useState({
-        idImportadorAtual: '',
-        idConsignatarioAtual: '',
-        idNotificadoAtual: ''
+
+    const [guardarNomes, setGuardarNomes] = useState({
+        nomeImportador: '',
+        nomeConsignatario: '',
+        nomeNotificado: ''
     })
+
     const [formData, setFormData] = useState({
         paisOrigem: '',
         fronteira: '',
@@ -52,7 +54,9 @@ function EditarPL() {
         axios.get('http://localhost:8080/api/clienteNomus')
             .then(response => setClientesNomus(response.data))
             .catch(error => console.error('Erro ao buscar clientes:', error));
+                
     }, []);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -71,6 +75,9 @@ function EditarPL() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!validateForm()) {
+            return;
+        }
         try {
             await axios.put(`http://localhost:8080/api/packinglist/${id}`, formData);
             alert("Packing List Atualizado!");
@@ -84,6 +91,16 @@ function EditarPL() {
     const handleCancel = (e) => {
         e.preventDefault();
         navigate(-1);
+    };
+
+    const validateForm = () => {
+        for (const key in formData) {
+            if (formData[key] === "") {
+                alert(`Por favor, preencha o campo: ${key}`);
+                return false;
+            }
+        }
+        return true;
     };
 
     return (
@@ -184,25 +201,25 @@ function EditarPL() {
                             onChange={e => setFormData({ ...formData, idioma: e.target.value })}
                         />
 
-                        <label>Importador - Atual: ( {clientesNomus.idImportador} )</label>
+                        <label>Importador - Atual: ( { guardarNomes.nomeImportador } )</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idImportador')}
-                            displayField={'nome'}  // Alterar conforme a estrutura do item
+                            displayField={'nome'} 
                         />
                         
-                        <label>Consignatário:</label>
+                        <label>Consignatário - Atual: (  )</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idConsignatario')}
-                            displayField={'nome'}  // Alterar conforme a estrutura do item
+                            displayField={'nome'} 
                         />
                         
-                        <label>Notificado:</label>
+                        <label>Notificado - Atual: (  )</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idNotificado')}
-                            displayField={'nome'}  // Alterar conforme a estrutura do item
+                            displayField={'nome'} 
                         />
                     </div>
                     <div className="botoes-finais-edicao">

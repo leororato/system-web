@@ -94,15 +94,15 @@ function PackingListProduto() {
         };
     }, []);
 
-    const validateForm = () => {
-        for (const key in formDataProduto) {
-            if (formDataProduto[key] === "") {
-                alert(`Por favor, preencha o campo: ${key}`);
-                return false;
-            }
-        }
-        return true;
-    };
+    // const validateForm = () => {
+    //     for (const key in formDataProduto) {
+    //         if (formDataProduto[key] === "") {
+    //             alert(`Por favor, preencha o campo: ${key}`);
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // };
 
     const handleClickOutside = () => {
         setContextMenu({
@@ -167,9 +167,9 @@ function PackingListProduto() {
     const handleSalvarProduto = (e) => {
         e.preventDefault();
 
-        if (!validateForm()) {
-            return;
-        }
+        // if (!validateForm()) {
+        //     return;
+        // }
     
         const payload = {
             id: {
