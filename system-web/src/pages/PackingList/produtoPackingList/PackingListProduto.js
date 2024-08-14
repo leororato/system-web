@@ -38,31 +38,39 @@ function PackingListProduto() {
     });
 
     useEffect(() => {
+        console.log('Produtos carregados:', produtos);
+        console.log('PackingList carregada:', packingList);
+        console.log('Filtered Produtos:', filteredProdutos);
+    }, [produtos, packingList, filteredProdutos]);
+    
+
+    useEffect(() => {
         const fetchPackingList = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/packinglist/${id}`);
+                console.log('PackingList carregada:', response.data);
                 setPackingList(response.data);
             } catch (error) {
-                console.error('Erro ao renderizar a lista:', error);
+                console.error('Erro ao carregar a packing list:', error);
             }
         };
-
+    
         const fetchProdutos = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/pl-produto`);
+                const response = await axios.get(`http://localhost:8080/api/pl-produto/packinglist/${id}`);
+                console.log('Produtos carregados:', response.data);
                 setProdutos(response.data);
-                // Filtra os produtos com base no idPackingList
-                const filtered = response.data.filter(p => p.idPackingList === parseInt(id, 10));
-                setFilteredProdutos(filtered);
             } catch (error) {
-                console.error('Erro ao renderizar o produto:', error);
+                console.error('Erro ao carregar produtos:', error);
             }
-        }
-
+        };
+    
         fetchPackingList();
         fetchProdutos();
     }, [id]);
-
+    
+    
+    
     useEffect(() => {
         const filterProdutos = produtos.filter(p =>
             (p.idProduto?.toString() || '').includes(buscaIdProduto) &&
@@ -71,6 +79,8 @@ function PackingListProduto() {
         );
         setFilteredProdutos(filterProdutos);
     }, [buscaIdProduto, buscaDescricaoProduto, buscaOrdemDeProducao, produtos]);
+    
+
 
     const formatarData = (dtCriacao) => {
         if (!dtCriacao) return 'Data inválida';
@@ -163,24 +173,25 @@ function PackingListProduto() {
     
         const payload = {
             id: {
-                idPackinglist: parseInt(formDataProduto.idPackingList, 10), // Converte para número inteiro
-                idProduto: parseInt(formDataProduto.idProduto, 10) // Converte para número inteiro
+                idPackinglist: parseInt(formDataProduto.idPackingList, 10), 
+                idProduto: parseInt(formDataProduto.idProduto, 10) 
             },
-            produto: formDataProduto.codigoMaquina, // Ajuste conforme o esperado
-            descricaoProduto: formDataProduto.nomeMaquina, // Ajuste conforme o esperado
-            ordemProducao: formDataProduto.codigoOrdem // Ajuste conforme o esperado
+            produto: formDataProduto.codigoMaquina, 
+            descricaoProduto: formDataProduto.nomeMaquina, 
+            ordemProducao: formDataProduto.codigoOrdem 
         };
     
         console.log('Payload:', payload);
     
         axios.post('http://localhost:8080/api/pl-produto', payload)
             .then(response => {
-                alert('Produto criado com sucesso!');
+                alert('Produto adicionado com sucesso!');
                 setContextAdicionar({ visible: false });
+                navigate(0);
             })
             .catch(error => {
                 alert('Erro ao salvar produto!');
-                console.error('Erro ao salvar o produto:', error);
+                console.error('Erro ao adicionar o produto:', error);
             });
     };
     
@@ -304,7 +315,7 @@ function PackingListProduto() {
                             <div className="container-adicionar-produtos-inputs">
                                 <div id="div-desc-prod">
                                     <Text
-                                        text={'Pesquisa alguma informação do Produto:'}
+                                        text={'Pesquisa por alguma máquina:'}
                                     />
                                     <Autocomplete 
                                     data={produtoNomus}
@@ -335,15 +346,15 @@ function PackingListProduto() {
                             </div>
                         </div>
                     )}
-<div className="ul-lista-produtos">
+                <div className="ul-lista-produtos">
                     <ul>
-                        <li id="header-lista-prod">
-                            <div>Id PackingList</div>
-                            <div>Id do Produto</div>
-                            <div>Seq</div>
-                            <div>Descrição</div>
-                            <div>Ordem de Produção</div>
-                        </li>
+                    <li id="header-lista-prod">
+                    <div>Id PackingList</div>
+                    <div>Id do Produto</div>
+                    <div>Seq</div>
+                    <div>Descrição</div>
+                    <div>Ordem de Produção</div>
+                    </li>
                         {filteredProdutos.length > 0 ? (
                             filteredProdutos.map((p) => (
                                 <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.idProduto)}>

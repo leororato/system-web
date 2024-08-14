@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './Autocomplete.css';
 
 function Autocomplete({ data, onSelect, displayField }) {
     const [inputValue, setInputValue] = useState('');
     const [showResults, setShowResults] = useState(false);
+    const containerRef = useRef(null);
 
     const handleChange = (e) => {
         setInputValue(e.target.value);
@@ -16,12 +17,25 @@ function Autocomplete({ data, onSelect, displayField }) {
         onSelect(item); // Passar o item completo para a função onSelect
     };
 
+    const handleClickOutside = (event) => {
+        if (containerRef.current && !containerRef.current.contains(event.target)) {
+            setShowResults(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     const filteredData = data.filter(item =>
         (item[displayField] || '').toLowerCase().includes(inputValue.toLowerCase())
     );
 
     return (
-        <div className="autocomplete-container">
+        <div className="autocomplete-container" ref={containerRef}>
             <input
                 type="text"
                 className="autocomplete-input"

@@ -66,7 +66,7 @@ function Clientes() {
                 // Buscando todos os clientes do banco Nomus
                 const clientesResponse = await axios.get('http://localhost:8080/api/clienteNomus');
                 setClientes(clientesResponse.data);
-                
+
                 // Buscando todos os clientes do banco App
                 const clientesAppResponse = await axios.get('http://localhost:8080/api/clienteApp');
                 setClientesApp(clientesAppResponse.data);
