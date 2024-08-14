@@ -12,6 +12,11 @@ function EditarPL() {
     const navigate = useNavigate();
     const { id } = useParams();
     const [clientesNomus, setClientesNomus] = useState([]);
+    const [idImpConsNotiAtual, setIdImpConsNotiAtual] = useState({
+        idImportadorAtual: '',
+        idConsignatarioAtual: '',
+        idNotificadoAtual: ''
+    })
     const [formData, setFormData] = useState({
         paisOrigem: '',
         fronteira: '',
@@ -179,38 +184,36 @@ function EditarPL() {
                             onChange={e => setFormData({ ...formData, idioma: e.target.value })}
                         />
 
-                        <label>Importador</label>
+                        <label>Importador - Atual: ( {clientesNomus.idImportador} )</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idImportador')}
-                            displayField={'idImportador'}
+                            displayField={'nome'}  // Alterar conforme a estrutura do item
                         />
                         
                         <label>Consignatário:</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idConsignatario')}
-                            displayField={'idConsignatario'}
+                            displayField={'nome'}  // Alterar conforme a estrutura do item
                         />
                         
                         <label>Notificado:</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idNotificado')}
-                            displayField={'idNotificado'}
+                            displayField={'nome'}  // Alterar conforme a estrutura do item
                         />
                     </div>
-                    <div className="buttons-editar-pl">
-                        <Button
-                            className="button-save"
-                            text="Salvar"
-                            type="submit"
-                        />
-                        <Button
-                            className="button-cancel"
-                            text="Cancelar"
-                            onClick={handleCancel}
-                        />
+                    <div className="botoes-finais-edicao">
+                    <Button type="submit" className={"button-salvar-edicao"}
+                    text={"Salvar"}
+                    fontSize={20}
+                    />
+                    <Button onClick={handleCancel} className={"button-cancelar-edicao"}
+                    text={"Cancelar"}
+                    fontSize={20}
+                    />
                     </div>
                 </form>
             </div>

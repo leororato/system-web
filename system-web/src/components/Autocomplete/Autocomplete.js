@@ -47,7 +47,7 @@ function Autocomplete({ data, onSelect, displayField }) {
                 <div className="autocomplete-results">
                     {filteredData.map((item, index) => (
                         <div
-                            key={`${item.idProduto}-${index}`}
+                            key={index}
                             className="autocomplete-item"
                             onClick={() => handleSelect(item)}
                         >

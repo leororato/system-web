@@ -50,34 +50,38 @@
     margin-top: 30px;
 }
 
-.button-save,
-.button-cancel {
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 4px;
-    cursor: pointer;
+.botoes-finais-edicao {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button-salvar-edicao {
+    background-color: #1780e2;
+}
+
+.button-cancelar-edicao {
+    background-color: #fa0000;
+}
+
+.button-salvar-edicao,
+.button-cancelar-edicao {
+    width: 140px;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 25px;
     transition: background-color 0.3s;
 }
 
-.button-save {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-}
-
-.button-save:hover {
+.button-salvar-edicao:hover {
     background-color: #0056b3;
 }
 
-.button-cancel {
-    background-color: #fa0000;
-    color: #fff;
-    border: none;
+.button-cancelar-edicao:hover {
+    background-color: #b30e0e;
 }
 
-.button-cancel:hover {
-    background-color: #6b0c0c;
-}
+
+
 
 
 
