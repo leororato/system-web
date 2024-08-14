@@ -310,14 +310,15 @@ function PackingListProduto() {
                         <div className="container-adicionar-produtos">
                             <Title
                                 classname={'title-adicionar-produtos'}
-                                text={'Criar um novo Produto'}
+                                text={'Adicionar um novo produto ao PackingList:'}
                             />
-                            <div className="container-adicionar-produtos-inputs">
+                            <div className="container-autocomplete">
                                 <div id="div-desc-prod">
                                     <Text
-                                        text={'Pesquisa por alguma máquina:'}
+                                        text={'Pesquisar por Produto ou Ordem:'}
                                     />
-                                    <Autocomplete 
+                                    <Autocomplete
+                                    id="input-autocomplete-adicionar-prod" 
                                     data={produtoNomus}
                                     onSelect={(item) => handleAutocompleteChange(item)} 
                                     displayField={'itensConcatenados'}

@@ -15,6 +15,7 @@
     gap: 40px;
 }
 
+
 .container-pesquisar-produto Input,
 .container-adicionar-produtos-inputs Input {
     width: 300px;
@@ -47,6 +48,17 @@
     padding: 50px;
     border: 1px solid #ddd;
     cursor: initial;
+}
+
+.container-autocomplete {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.container-autocomplete input {
+    width: 1000px;
+    margin-top: 5px;
 }
 
 #div-id-prod,
