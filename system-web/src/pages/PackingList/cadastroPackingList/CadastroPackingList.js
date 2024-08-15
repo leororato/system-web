@@ -10,9 +10,14 @@ import './CadastroPackingList.css';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 
 function CadastroPackingList() {
+    
     const navigate = useNavigate();
+
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const [clientesNomus, setClientesNomus] = useState([]);
     const [formData, setFormData] = useState({
         idImportador: "",
@@ -51,31 +56,29 @@ function CadastroPackingList() {
         setFormData({ ...formData, idioma: e.target.value });
     };
 
-    const validateForm = () => {
-        for (const key in formData) {
-            if (formData[key] === "") {
-                alert(`Por favor, preencha o campo: ${key}`);
-                return false;
-            }
-        }
-        return true;
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!validateForm()) {
-            return;
-        }
+    
         axios.post('http://localhost:8080/api/packinglist', formData)
             .then(() => {
                 alert('Packing List criado com sucesso!');
                 navigate('/inicio');
             })
             .catch(error => {
-                console.error(error);
-                alert('Ocorreu um erro ao tentar cadastrar a Packing List!');
+                const errorMessage = error.response?.data || "Erro desconhecido ao criar PackingList";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000)
+
+                console.error("Erro ao criar PackingList", error);
             });
     };
+
+    const handleErrorClose = () => {
+        setErrorMessage(null);
+    }
 
     const handleCancel = (e) => {
         e.preventDefault();
@@ -85,6 +88,8 @@ function CadastroPackingList() {
     return (
         <div>
             <Header />
+            <ErrorNotification message={errorMessage} onClose={handleErrorClose} />
+
             <div className="title-container">
                 <Title text={"Cadastro de Packing List"} className={"title"} />
             </div>

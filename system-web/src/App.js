@@ -4,12 +4,12 @@ import QrCodeGenerator from './pages/qrCodeGenerator/QrCodeGenerator';
 import Login from './pages/Login/loginPage/Login';
 import CadastroItem from './pages/PackingList/cadastroPackingList/CadastroPackingList';
 import CadastroTipoVolume from './pages/cadastroTipoVolume/CadastroTipoVolume';
-import Inicio from './pages/PackingList/ExibirPackingList/PackingList';
 import Clientes from './pages/Clientes/clientesPage/Clientes';
 import PackingListProduto from './pages/PackingList/produtoPackingList/PackingListProduto';
 import EditarPL from './pages/PackingList/editarPackingList/EditarPL';
 import EditarCliente from './pages/Clientes/editarCliente/EditarCliente';
 import SubVolume from './pages/PackingList/subVolumePackingList/SubVolume';
+import PackingList from './pages/PackingList/ExibirPackingList/PackingList';
 
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
             <Routes>
                 <Route path='/' element={<Navigate to="/login" />} />
                 <Route path='/login' element={<Login />} />
-                <Route path='/inicio' element={<Inicio />}/>
+                <Route path='/inicio' element={<PackingList />}/>
                 <Route path='/gerar-qr-code' element={<QrCodeGenerator />} />
                 <Route path='/cadastrar-packing-list' element={<CadastroItem />} />
                 <Route path='/cadastro-tipo-volume' element={<CadastroTipoVolume />} />

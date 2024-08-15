@@ -53,9 +53,45 @@ function EditarPL() {
     useEffect(() => {
         axios.get('http://localhost:8080/api/clienteNomus')
             .then(response => setClientesNomus(response.data))
-            .catch(error => console.error('Erro ao buscar clientes:', error));
-                
+            .catch(error => console.error('Erro ao buscar clientes nomus:', error));
+
     }, []);
+
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!validateForm()) {
+            return;
+        }
+        try {
+            await axios.put(`http://localhost:8080/api/packinglist/${id}`, formData);
+            alert("Packing List Atualizado!");
+            navigate("/inicio");
+        } catch (error) {
+            console.error("Erro ao atualizar o Packing List", error);
+            alert("Erro ao atualizar o Packing List");
+        }
+    };
+
+    useEffect(() => {
+        if (formData.idImportador || formData.idConsignatario || formData.idNotificado) {
+            Promise.all([
+                formData.idImportador ? axios.get(`http://localhost:8080/api/clienteNomus/${formData.idImportador}`) : Promise.resolve({ data: { nome: '' } }),
+                formData.idConsignatario ? axios.get(`http://localhost:8080/api/clienteNomus/${formData.idConsignatario}`) : Promise.resolve({ data: { nome: '' } }),
+                formData.idNotificado ? axios.get(`http://localhost:8080/api/clienteNomus/${formData.idNotificado}`) : Promise.resolve({ data: { nome: '' } })
+            ]).then((responses) => {
+                setGuardarNomes({
+                    nomeImportador: responses[0].data.nome,
+                    nomeConsignatario: responses[1].data.nome,
+                    nomeNotificado: responses[2].data.nome
+                });
+            })
+                .catch(error => console.error('Erro ao buscar nomes dos atuais IMP, CONS e NOTIF:', error));
+        }
+    }, [formData.idImportador, formData.idConsignatario, formData.idNotificado]);
+
+
 
 
     const handleChange = (e) => {
@@ -73,20 +109,7 @@ function EditarPL() {
         }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!validateForm()) {
-            return;
-        }
-        try {
-            await axios.put(`http://localhost:8080/api/packinglist/${id}`, formData);
-            alert("Packing List Atualizado!");
-            navigate("/inicio");
-        } catch (error) {
-            console.error("Erro ao atualizar o Packing List", error);
-            alert("Erro ao atualizar o Packing List");
-        }
-    };
+
 
     const handleCancel = (e) => {
         e.preventDefault();
@@ -193,44 +216,43 @@ function EditarPL() {
                             className="form-idioma"
                             name="idioma"
                             options={[
-                                { value: 'Portugues', label: 'Português' },
+                                { value: 'Português', label: 'Português' },
                                 { value: 'Espanhol', label: 'Espanhol' },
-                                { value: 'Ingles', label: 'Inglês' }
+                                { value: 'Inglês', label: 'Inglês' }
                             ]}
                             value={formData.idioma}
                             onChange={e => setFormData({ ...formData, idioma: e.target.value })}
                         />
-
-                        <label>Importador - Atual: ( { guardarNomes.nomeImportador } )</label>
+                        <label>Importador - Atual: ( {guardarNomes.nomeImportador} )</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idImportador')}
-                            displayField={'nome'} 
+                            displayField={'nome'}
                         />
-                        
-                        <label>Consignatário - Atual: (  )</label>
+
+                        <label>Consignatário - Atual: ( {guardarNomes.nomeConsignatario} )</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idConsignatario')}
-                            displayField={'nome'} 
+                            displayField={'nome'}
                         />
-                        
-                        <label>Notificado - Atual: (  )</label>
+
+                        <label>Notificado - Atual: ( {guardarNomes.nomeNotificado} )</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idNotificado')}
-                            displayField={'nome'} 
+                            displayField={'nome'}
                         />
                     </div>
                     <div className="botoes-finais-edicao">
-                    <Button type="submit" className={"button-salvar-edicao"}
-                    text={"Salvar"}
-                    fontSize={20}
-                    />
-                    <Button onClick={handleCancel} className={"button-cancelar-edicao"}
-                    text={"Cancelar"}
-                    fontSize={20}
-                    />
+                        <Button type="submit" className={"button-salvar-edicao"}
+                            text={"Salvar"}
+                            fontSize={20}
+                        />
+                        <Button onClick={handleCancel} className={"button-cancelar-edicao"}
+                            text={"Cancelar"}
+                            fontSize={20}
+                        />
                     </div>
                 </form>
             </div>
