@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Header from "../../../components/Header/Header";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,12 +11,15 @@ import Text from "../../../components/Text";
 import Title from "../../../components/Title";
 import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
+import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 
 function PackingListProduto() {
     const { id } = useParams();
     const navigate = useNavigate();
 
     const [errorMessage, setErrorMessage] = useState(null);
+    const [sucessMessage, setSucessMessage] = useState(null);
+    const [atualizadorDeEstados, setAtualizadorDeEstados] = useState(0);
 
     const [packingList, setPackingList] = useState([]);
     const [produtos, setProdutos] = useState([]);
@@ -27,8 +31,8 @@ function PackingListProduto() {
     const [buscaDescricaoProduto, setBuscaDescricaoProduto] = useState('');
     const [buscaOrdemDeProducao, setBuscaOrdemDeProducao] = useState('');
     
-    const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedId: null });
-    const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedId: null });
+    const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null });
+    const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null });
     const [botaoAdicionar, setBotaoAdicionar] = useState({ visible: true });
     const [contextAdicionar, setContextAdicionar] = useState({ visible: false });
     
@@ -43,32 +47,32 @@ function PackingListProduto() {
 
 
     useEffect(() => {
+
         const fetchPackingList = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/packinglist/${id}`);
-                console.log('PackingList carregada:', response.data);
                 setPackingList(response.data);
             } catch (error) {
                 console.error('Erro ao carregar a packing list:', error);
             }
         };
     
-
-
-
         const fetchProdutos = async () => {
             try {
+
                 const response = await axios.get(`http://localhost:8080/api/pl-produto/packinglist/${id}`);
-                console.log('Produtos carregados:', response.data);
                 setProdutos(response.data);
+
             } catch (error) {
+
                 console.error('Erro ao carregar produtos:', error);
+
             }
         };
     
         fetchPackingList();
         fetchProdutos();
-    }, [id]);
+    }, [id, atualizadorDeEstados]);
     
     
     
@@ -118,13 +122,14 @@ function PackingListProduto() {
 
 
 
-    const handleRightClick = (e, idProduto) => {
+    const handleRightClick = (e, idProduto, seq) => {
         e.preventDefault();
         setContextMenu({
             visible: true,
             x: e.pageX,
             y: e.pageY,
-            selectedId: idProduto
+            selectedId: idProduto,
+            selectedSeq: seq
         });
     };
 
@@ -153,16 +158,18 @@ function PackingListProduto() {
             visible: true,
             x: e.pageX,
             y: e.pageY,
-            selectedId: contextMenu.selectedId
+            selectedId: contextMenu.selectedId,
+            selectedSeq: contextMenu.selectedSeq
         });
     };
 
 
 
     const handleDeleteConfirm = () => {
-        axios.delete(`http://localhost:8080/api/sub-volume/${contextDelete.selectedId}`)
+
+        axios.delete(`http://localhost:8080/api/pl-produto/${packingList.idPackingList}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`)
             .then(() => {
-                navigate(`/packing-list-produto/${id}`);
+                setAtualizadorDeEstados(atualizadorDeEstados + 1);
                 setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
             })
             .catch((error) => {
@@ -191,17 +198,25 @@ function PackingListProduto() {
             descricaoProduto: formDataProduto.nomeMaquina, 
             ordemProducao: formDataProduto.codigoOrdem 
         };
-    
-        console.log('Payload:', payload);
-    
+        
         axios.post('http://localhost:8080/api/pl-produto', payload)
             .then(response => {
-                alert('Produto adicionado com sucesso!');
+                
+                if (response.status == 201) {
 
 
+                setSucessMessage('Produto adicionado com sucesso!');
 
+                setTimeout(() => {
+                    setSucessMessage(null);
+                }, 5000);
+
+                setAtualizadorDeEstados(atualizadorDeEstados + 1);
                 setContextAdicionar({ visible: false });
-                navigate(0);
+
+                setBotaoAdicionar({ visible: true });
+            }
+
             })
             .catch(error => {
                 const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Produto";
@@ -214,6 +229,11 @@ function PackingListProduto() {
                 console.error('Erro ao adicionar o produto: ', error);
             });
     };
+    
+
+    const handleSucessClose = () => {
+        setSucessMessage(null);
+    }
     
     const handleErrorClose = () => {
         setErrorMessage(null);
@@ -245,6 +265,7 @@ function PackingListProduto() {
             <div>
                 <Header />
                 <ErrorNotification message={errorMessage} onClose={handleErrorClose}/>
+                <SucessNotification message={sucessMessage} onClose={handleSucessClose}/>
             </div>
 
             <div style={{ width: '100%' }}>
@@ -383,7 +404,7 @@ function PackingListProduto() {
                     </li>
                         {filteredProdutos.length > 0 ? (
                             filteredProdutos.map((p) => (
-                                <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.idProduto)}>
+                                <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.id.idProduto, p.id.seq)}>
                                     <div>{packingList.idPackingList}</div>
                                     <div>{p.id.idProduto}</div>
                                     <div>{p.id.seq}</div>
@@ -400,7 +421,7 @@ function PackingListProduto() {
 
                 {contextMenu.visible && (
                     <div className="context-menu" style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}>
-                        <button onClick={handleEdit}>Editar</button>
+                        <button onClick={handleEdit}>Listar Sub-Volumes</button>
                         <button onClick={handleDelete}>Excluir</button>
                     </div>
                 )}

@@ -10,6 +10,7 @@ body {
     overflow-x: auto; /* Adiciona a rolagem horizontal */
     padding: 20px;
     max-width: 100%;
+    margin-bottom: 120px;
 }
 
 /* Estilo do cabeçalho */
