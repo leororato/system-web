@@ -177,15 +177,12 @@
 }
 
 .ul-lista-produtos {
+    cursor: pointer;
     margin-bottom: 200px;
 }
 
 .produto-container-prod li div:last-child {
     border-right: none; /* Remova a borda da última coluna */
-}
-
-.lista-produto {
-    cursor: pointer;
 }
 
 .overlay {

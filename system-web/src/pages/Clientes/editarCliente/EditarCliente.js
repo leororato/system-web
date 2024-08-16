@@ -23,30 +23,30 @@ function EditarCliente() {
         const fetchContainers = async () => {
             // Buscando o cliente no banco Nomus e salvando todas as informações dele no ContainerNomus
             axios.get(`http://localhost:8080/api/clienteNomus/${id}`)
-            .then(response => {
-                setContainerNomus(response.data);
-            })
-            .catch(error => {
-                console.error('Erro ao buscar os containers Nomus(requisição nomus por id)', error);
-            });
+                .then(response => {
+                    setContainerNomus(response.data);
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar os containers Nomus(requisição nomus por id)', error);
+                });
 
             // Buscando o cliente no banco App e salvando todas as informações dele no ContainerApp
             axios.get(`http://localhost:8080/api/clienteApp/${id}`)
-            .then(response => {
-                // Verifica que o cliente já existe no banco App e vai para o PUT
-                setClienteExiste(true);
+                .then(response => {
+                    // Verifica que o cliente já existe no banco App e vai para o PUT
+                    setClienteExiste(true);
 
-                setFormData({
-                    id: id,
-                    sigla_codigo_identificacao: response.data.sigla_codigo_identificacao || '',
-                    codigo_identificacao: response.data.codigo_identificacao || ''
+                    setFormData({
+                        id: id,
+                        sigla_codigo_identificacao: response.data.sigla_codigo_identificacao || '',
+                        codigo_identificacao: response.data.codigo_identificacao || ''
+                    })
                 })
-            })
-            .catch(error => {
-                console.error('Erro ao buscar os containers App(requisição app por id)', error);
-                // Verifica que o cliente não existe no banco App e vai para o POST
-                setClienteExiste(false);
-            });
+                .catch(error => {
+                    console.error('Erro ao buscar os containers App(requisição app por id)', error);
+                    // Verifica que o cliente não existe no banco App e vai para o POST
+                    setClienteExiste(false);
+                });
         }
         fetchContainers();
     }, [id]); // Fim do useEffect
@@ -81,17 +81,17 @@ function EditarCliente() {
         if (!validateForm()) {
             return;
         }
-        if (clienteExiste === true){
-        // Se o cliente já existe no banco App é realizado um PUT
-        try {
-            await axios.put(`http://localhost:8080/api/clienteApp/${id}`, formData);
-            alert('Cliente Atualizado!');
-            navigate(0);
-        } catch ( error ) {
-            console.error('Erro ao atualizar o Cliente', error);
-            alert('Erro ao atualizar cliente!');
-        }
-        
+        if (clienteExiste === true) {
+            // Se o cliente já existe no banco App é realizado um PUT
+            try {
+                await axios.put(`http://localhost:8080/api/clienteApp/${id}`, formData);
+                alert('Cliente Atualizado!');
+                navigate(0);
+            } catch (error) {
+                console.error('Erro ao atualizar o Cliente', error);
+                alert('Erro ao atualizar cliente!');
+            }
+
         } // Fim do IF
         else {
             // Se o cliente não existe no banco App é realizado um POST
@@ -99,7 +99,7 @@ function EditarCliente() {
                 await axios.post(`http://localhost:8080/api/clienteApp`, formData);
                 alert('Cliente Criado com Sucesso!');
                 navigate(0);
-            } catch ( error ) {
+            } catch (error) {
                 console.error('Erro ao Criar o Cliente!', error);
                 alert('Erro ao Criar o Cliente!');
             }
@@ -180,7 +180,7 @@ function EditarCliente() {
                                     backgroundColor={'#ccc'}
                                     name="telefoneFax"
                                     padding={7}
-                                    readOnly= 'readOnly'
+                                    readOnly='readOnly'
                                     value={containerNomus.telefoneFax}
                                 />
                             </div>
@@ -213,30 +213,30 @@ function EditarCliente() {
                         </div>
                         <div className="button-save-edit-cliente">
                             <div>
-                            <Button
-                                className={"button-save"}
-                                text={"Salvar"}
-                                title={"Botão Salvar"}
-                                type={"submit"}
-                                padding={8}
-                                width={150}
-                                color="white"
-                                fontSize={20}
-                                borderRadius={5}
-                            /></div>
+                                <Button
+                                    className={"button-save"}
+                                    text={"Salvar"}
+                                    title={"Botão Salvar"}
+                                    type={"submit"}
+                                    padding={8}
+                                    width={150}
+                                    color="white"
+                                    fontSize={20}
+                                    borderRadius={5}
+                                /></div>
 
                             <div>
-                            <Button 
-                            className={"button-cancel"}
-                            text={"Cancelar"}
-                            type={'button'}
-                            padding={8}
-                            width={150}
-                            color="white"
-                            fontSize={20}
-                            borderRadius={5}
-                            onClick={handleCancel}
-                            /></div>
+                                <Button
+                                    className={"button-cancel"}
+                                    text={"Cancelar"}
+                                    type={'button'}
+                                    padding={8}
+                                    width={150}
+                                    color="white"
+                                    fontSize={20}
+                                    borderRadius={5}
+                                    onClick={handleCancel}
+                                /></div>
                         </div>
                     </form>
                 </div>

@@ -7,17 +7,23 @@ import Button from "../../../components/Button";
 import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 import Select from "../../../components/Select";
 import Input from "../../../components/Input";
+import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 
 function EditarPL() {
+
     const navigate = useNavigate();
+    
     const { id } = useParams();
+    
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const [clientesNomus, setClientesNomus] = useState([]);
 
     const [guardarNomes, setGuardarNomes] = useState({
         nomeImportador: '',
         nomeConsignatario: '',
         nomeNotificado: ''
-    })
+    });
 
     const [formData, setFormData] = useState({
         paisOrigem: '',
@@ -61,18 +67,24 @@ function EditarPL() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!validateForm()) {
-            return;
-        }
+        
         try {
             await axios.put(`http://localhost:8080/api/packinglist/${id}`, formData);
             alert("Packing List Atualizado!");
             navigate("/inicio");
         } catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar a PackingList!";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+
             console.error("Erro ao atualizar o Packing List", error);
-            alert("Erro ao atualizar o Packing List");
         }
     };
+
+
 
     useEffect(() => {
         if (formData.idImportador || formData.idConsignatario || formData.idNotificado) {
@@ -91,6 +103,11 @@ function EditarPL() {
         }
     }, [formData.idImportador, formData.idConsignatario, formData.idNotificado]);
 
+
+
+    const handleErrorClose = () => {
+        setErrorMessage(null);
+    }
 
 
 
@@ -116,19 +133,13 @@ function EditarPL() {
         navigate(-1);
     };
 
-    const validateForm = () => {
-        for (const key in formData) {
-            if (formData[key] === "") {
-                alert(`Por favor, preencha o campo: ${key}`);
-                return false;
-            }
-        }
-        return true;
-    };
+
+
 
     return (
         <div>
             <Header />
+            <ErrorNotification message={errorMessage} onClose={handleErrorClose} />
             <div className="body-editar">
                 <form onSubmit={handleSubmit} className="form-editar-pl">
                     <div className="input-group">
@@ -145,6 +156,7 @@ function EditarPL() {
                         <Input
                             type="text"
                             name="fronteira"
+                            placeholder={'Digite a fronteira...'}
                             value={formData.fronteira}
                             onChange={handleChange}
                         />
@@ -152,6 +164,7 @@ function EditarPL() {
                         <Input
                             type="text"
                             name="localEmbarque"
+                            placeholder={'Digite o local de embarque...'}
                             value={formData.localEmbarque}
                             onChange={handleChange}
                         />
@@ -159,6 +172,7 @@ function EditarPL() {
                         <Input
                             type="text"
                             name="localDestino"
+                            placeholder={'Digite o local de destino...'}
                             value={formData.localDestino}
                             onChange={handleChange}
                         />
@@ -166,6 +180,7 @@ function EditarPL() {
                         <Input
                             type="text"
                             name="termosPagamento"
+                            placeholder={'Digite os termos de pagamento...'}
                             value={formData.termosPagamento}
                             onChange={handleChange}
                         />
@@ -173,6 +188,7 @@ function EditarPL() {
                         <Input
                             type="text"
                             name="dadosBancarios"
+                            placeholder={'Digite os dados bancários...'}
                             value={formData.dadosBancarios}
                             onChange={handleChange}
                         />
@@ -180,6 +196,7 @@ function EditarPL() {
                         <Input
                             type="text"
                             name="incoterm"
+                            placeholder={'Digite o INCOTERM...'}
                             value={formData.incoterm}
                             onChange={handleChange}
                         />
@@ -187,6 +204,7 @@ function EditarPL() {
                         <Input
                             type="text"
                             name="invoice"
+                            placeholder={'Digite o INVOICE...'}
                             value={formData.invoice}
                             onChange={handleChange}
                         />
@@ -194,6 +212,7 @@ function EditarPL() {
                         <Input
                             type="text"
                             name="tipoTransporte"
+                            placeholder={'Digite o tipo de transporte...'}
                             value={formData.tipoTransporte}
                             onChange={handleChange}
                         />
@@ -201,6 +220,7 @@ function EditarPL() {
                         <Input
                             type="text"
                             name="pesoLiquidoTotal"
+                            placeholder={'Digite o peso LÍQUIDO total...'}
                             value={formData.pesoLiquidoTotal}
                             onChange={handleChange}
                         />
@@ -208,6 +228,7 @@ function EditarPL() {
                         <Input
                             type="text"
                             name="pesoBrutoTotal"
+                            placeholder={'Digite o preso BRUTO total...'}
                             value={formData.pesoBrutoTotal}
                             onChange={handleChange}
                         />
