@@ -3,50 +3,49 @@ import Header from "../../../components/Header/Header";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
-
 function SubVolume() {
-    const { id } = useParams();
-    const navigate = useNavigate();
+    const { id, idProduto, seq } = useParams(); // Recebe os parâmetros da URL
+    const [subVolume, setSubVolume] = useState(null);
 
-    const [subVolumes, setSubVolumes] = useState({});
-    const [produtoSelecionado, setProdutoSelecionado] = useState([]);
-
-    // buscar o produto selecionado
     useEffect(() => {
-        const fetchProdutos = () => {
+        const fetchSubVolume = async () => {
             try {
-                const response = axios.get(`http://localhost:8080/api/pl-produto/${id}`)
-                setProdutoSelecionado(response.data);
-            } catch ( error ) {
-                console.error("Erro ao carregar o produto selecionado: ", error);
+                const response = await axios.get(`http://localhost:8080/api/pl-produto/${id}/${idProduto}/${seq}`);
+                setSubVolume(response.data);
+            } catch (error) {
+                console.error("Erro ao carregar o sub-volume: ", error);
             }
-        }
+        };
 
-        fetchProdutos();
-    }, [id])
-
+        fetchSubVolume();
+    }, [id, idProduto, seq]);
 
     return (
         <div>
             <Header />
-
-            <div>
-
-                <div>
-                    <ul>
-                        <li className="header">
-                            <div>ID Volume</div>
-                            <div>ID Sub Volume</div>
-                            <div>Quantidade</div>
-                            <div>Descrição</div>
-
+            <div className="ul-lista-produtos">
+                <ul>
+                    <li id="header-lista-prod">
+                        <div>Id PackingList</div>
+                        <div>Id do Produto</div>
+                        <div>Seq</div>
+                        <div>Descrição</div>
+                        <div>Ordem de Produção</div>
+                    </li>
+                    
+                    {subVolume && (
+                        <li>
+                            <div>{subVolume.idPackingList}</div>
+                            <div>{subVolume.id.idProduto}</div>
+                            <div>{subVolume.id.seq}</div>
+                            <div>{subVolume.descricaoProduto}</div>
+                            <div>{subVolume.ordemProducao}</div>
                         </li>
-                    </ul>
-                </div>
+                    )}
+                </ul>
             </div>
-
         </div>
-    )
+    );
 }
 
 export default SubVolume;

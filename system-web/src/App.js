@@ -27,7 +27,7 @@ function App() {
                 <Route path='/editar-packing-list/:id' element={<EditarPL />} />
                 <Route path='/packing-list-produto/:id' element={<PackingListProduto />} />
                 <Route path='/editar-cliente/:id' element={<EditarCliente />} />
-                <Route path='/editar-sub-volume/:id' element={<SubVolume />} />
+                <Route path='/sub-volume/:id/:idProduto/:seq' element={<SubVolume />} />
             </Routes>
         </Router>
     );

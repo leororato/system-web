@@ -142,8 +142,9 @@ function PackingListProduto() {
             y: 0,
             selectedId: null
         });
-        navigate(`/editar-sub-volume/${contextMenu.selectedId}`);
+        navigate(`/sub-volume/${packingList.idPackingList}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
     };
+    
 
 
 
