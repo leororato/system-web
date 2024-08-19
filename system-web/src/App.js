@@ -8,8 +8,8 @@ import Clientes from './pages/Clientes/clientesPage/Clientes';
 import PackingListProduto from './pages/PackingList/produtoPackingList/PackingListProduto';
 import EditarPL from './pages/PackingList/editarPackingList/EditarPL';
 import EditarCliente from './pages/Clientes/editarCliente/EditarCliente';
-import SubVolume from './pages/PackingList/subVolumePackingList/SubVolume';
 import PackingList from './pages/PackingList/ExibirPackingList/PackingList';
+import Volume from './pages/PackingList/volumePackingList/Volume';
 
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
                 <Route path='/editar-packing-list/:id' element={<EditarPL />} />
                 <Route path='/packing-list-produto/:id' element={<PackingListProduto />} />
                 <Route path='/editar-cliente/:id' element={<EditarCliente />} />
-                <Route path='/sub-volume/:id/:idProduto/:seq' element={<SubVolume />} />
+                <Route path='/sub-volume/:id/:idProduto/:seq' element={<Volume />} />
             </Routes>
         </Router>
     );

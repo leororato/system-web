@@ -1,0 +1,111 @@
+.container-listagem-produto-volume {
+    overflow-x: auto; /* Adiciona a rolagem horizontal */
+    padding: 20px;
+    max-width: 100%;
+    margin-bottom: 120px;
+}
+
+.container-listagem-produto-volume li {
+    display: grid;
+    border-left: 1px solid #ddd;
+    border-top: none;
+}
+
+.container-listagem-produto-volume li {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.header-produto-volume {
+    font-weight: bold;
+    background-color: #1780e2;
+    color: white;
+    display: table-row;
+}
+
+.header-produto-volume div {
+    width: 100%;
+}
+
+.container-listagem-produto-volume li div {
+    display: table-cell;
+    padding: 5px; /* Aumenta o padding para mais espaço vertical */
+    text-align: left;
+    border-right: 1px solid #ddd;
+    overflow: hidden; /* Oculta o conteúdo que excede a largura */
+    text-overflow: ellipsis; /* Adiciona '...' no final do texto longo */
+    word-wrap: break-word; /* Quebra o texto longo para evitar quebra do layout */    
+}
+
+.li-listagem-produto-volume {
+    cursor: pointer;
+    display: table-row;
+    border-bottom: 1px solid #ddd; /* Linha de separação entre os itens */
+}
+
+/*  -------------------------------- separação produto e volume ----------------------------------  */
+
+.volume-container-volume {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 100px;
+}
+
+.container-listagem-volume,
+.volume-container-volume {
+    text-align: center;
+}
+
+.container-listagem-volume,
+.volume-container-volume ul {
+    list-style-type: none; 
+    padding: 0; 
+    margin: 0;
+}
+
+.container-listagem-volume li,
+.volume-container-volume li {
+    display: grid;
+    border-top: none;
+}
+
+.volume-container-volume li {
+    grid-template-columns: repeat(10, 1fr);
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.container-listagem-volume .header-volume,
+.volume-container-volume #header-lista-volume {
+    background-color: #1780e2;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+.container-listagem-volume .header-volume div,
+.volume-container-volume #header-lista-volume div {
+    padding: 10px;
+    border-right: 1px solid #ddd; /* Adicione uma borda direita para separar as colunas */
+}
+
+.container-listagem-volume .header-volume div:last-child,
+.volume-container-volume #header-lista-volume div:last-child {
+    border-right: none; /* Remova a borda da última coluna */
+}
+
+.volume-container-volume li div {
+    padding: 10px;
+    border-right: 1px solid #ddd; /* Adicione uma borda direita para separar as colunas */
+}
+
+.volume-container-volume li div:last-child {
+    border-right: none; /* Remova a borda da última coluna */
+}
+
+.lista-volume {
+    width: 80%;
+}
+

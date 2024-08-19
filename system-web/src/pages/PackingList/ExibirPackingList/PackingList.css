@@ -57,7 +57,7 @@ body {
 }
 
 /* Estilo das células da tabela */
-li div {
+.container-listagem-inicio li div {
     display: table-cell;
     padding: 5px; /* Aumenta o padding para mais espaço vertical */
     text-align: left;

@@ -33,7 +33,7 @@ function PackingListProduto() {
     
     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null });
     const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null });
-    const [botaoAdicionar, setBotaoAdicionar] = useState({ visible: true });
+    const [ botaoAdicionar, setBotaoAdicionar] = useState({ visible: true });
     const [contextAdicionar, setContextAdicionar] = useState({ visible: false });
     
     const [formDataProduto, setFormDataProduto] = useState({
@@ -269,8 +269,8 @@ function PackingListProduto() {
                 <SucessNotification message={sucessMessage} onClose={handleSucessClose}/>
             </div>
 
-            <div style={{ width: '100%' }}>
-                <div className='container-listagem-prod'>
+            <div className='container-listagem-prod'>
+                <div className="sub-container-listagem-prod">
                     <ul>
                         <li className="header">
                             <div>ID</div>
@@ -290,7 +290,7 @@ function PackingListProduto() {
                         </li>
 
                         {packingList && (
-                            <li key={packingList.idPackingList} className='li-listagem'>
+                            <li key={packingList.idPackingList} className='li-listagem-produto'>
                                 <div>{packingList.idPackingList}</div>
                                 <div>{formatarData(packingList.dtCriacao)}</div>
                                 <div>{packingList.paisOrigem}</div>
@@ -422,7 +422,7 @@ function PackingListProduto() {
 
                 {contextMenu.visible && (
                     <div className="context-menu" style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}>
-                        <button onClick={handleEdit}>Listar Sub-Volumes</button>
+                        <button onClick={handleEdit}>Listar Volumes</button>
                         <button onClick={handleDelete}>Excluir</button>
                     </div>
                 )}
