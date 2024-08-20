@@ -22,7 +22,7 @@ function Volume() {
     const [sucessMessage, setSucessMessage] = useState(null);
 
     const [contextMenu, setContextMenu] = useState({ visible: false, selectedIdVolume: '' });
-    const [salvarIdVolume, setSalvarIdVolume] = useState({ idVolume: '' })
+    const [salvarIdVolume, setSalvarIdVolume] = useState('');
     const [salvarTipoDeVolumeAtual, setSalvarTipoDeVolumeAtual] = useState('');
 
     const [contextEditar, setContextEditar] = useState({ visible: false });
@@ -32,6 +32,7 @@ function Volume() {
     const overlayRef = useRef(null);
 
     const [atualizarEstado, setAtualizarEstado] = useState(0);
+    const [atualizarEstadoEdicao, setAtualizarEstadoEdicao] = useState(0);
 
     const [volumes, setVolumes] = useState([]);
     const [volumeEdicao, setVolumeEdicao] = useState([]);
@@ -89,7 +90,7 @@ function Volume() {
     useEffect(() => {
         const fetchProdutoEdicao = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/volume/${salvarIdVolume.idVolume}`);
+                const response = await axios.get(`http://localhost:8080/api/volume/${salvarIdVolume})}`);
                 setVolumeEdicao(response.data);
                 console.log(volumeEdicao);
             } catch (error) {
@@ -109,7 +110,7 @@ function Volume() {
         fetchProdutoEdicao();
         fetchTipoDeVolume();
 
-    }, [])
+    }, [atualizarEstadoEdicao])
 
     const handleSalvarVolume = (e) => {
         e.preventDefault();
@@ -232,8 +233,14 @@ function Volume() {
             selectedIdVolume: idVolume
         });
 
-        setSalvarIdVolume({ idVolume: idVolume })
+        setSalvarIdVolume(`${idVolume}`);
     }
+
+    useEffect(() => {
+        console.log('ID do volume salvo:', salvarIdVolume);
+        console.log('volume edicao:', volumeEdicao);
+    }, [salvarIdVolume, volumeEdicao]);
+    
 
     const handleEdit = () => {
         setContextMenu({
@@ -243,6 +250,7 @@ function Volume() {
             selectedIdVolume: null
         });
         setContextEditar({ visible: true })
+        setAtualizarEstadoEdicao(atualizarEstadoEdicao + 1);
     }
 
     const handleDelete = () => {
@@ -483,12 +491,12 @@ function Volume() {
                                         <form>
                                             <div className="input-group-volume">
                                                 <div id="div-tipo-de-volume">
-                                                    <label>Tipo de volume:</label>
+                                                    <label>Tipo de volume: Atual: {salvarTipoDeVolumeAtual}</label>
                                                     <Autocomplete
                                                         data={tiposDeVolume}
                                                         onSelect={handleAutocompleteChangeTipoVolume}
                                                         displayField={'descricao'}
-                                                        value={salvarTipoDeVolumeAtual}
+                                                        
                                                     />
                                                 </div>
                                                 <div id="div-quantidade-itens">
