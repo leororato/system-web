@@ -96,6 +96,32 @@ function CadastroPackingList() {
             <div className="form-container">
                 <form onSubmit={handleSubmit} className="form-cadastro-pl">
                     <div className="input-group">
+
+                    <div className="form-importador">
+                            <label htmlFor="idImportador">Importador:</label>
+                            <Autocomplete
+                                data={clientesNomus}
+                                onSelect={(item) => setFormData({ ...formData, idImportador: item.id })}
+                                displayField={'nome'}
+                            />
+                        </div>
+                        <div className="form-consignatario">
+                            <label htmlFor="idConsignatario">Consignatário:</label>
+                            <Autocomplete
+                                data={clientesNomus}
+                                onSelect={(item) => setFormData({ ...formData, idConsignatario: item.id })}
+                                displayField={'nome'}
+                            />
+                        </div>
+                        <div className="form-notificado">
+                            <label htmlFor="idNotificado">Notificado:</label>
+                            <Autocomplete
+                                data={clientesNomus}
+                                onSelect={(item) => setFormData({ ...formData, idNotificado: item.id })}
+                                displayField={'nome'}
+                            />
+                        </div>
+
                         <div id="select-container">
                         <Select
                             className={"form-pais-origem"}
@@ -208,7 +234,7 @@ function CadastroPackingList() {
                         <div>
                         <label>Peso Líquido Total</label>
                         <Input
-                            type={"text"}
+                            type={"number"}
                             id="input-peso-liquido"
                             title={"Digite o peso LÍQUIDO total"}
                             placeholder={"Digite o peso LÍQUIDO total..."}
@@ -220,7 +246,7 @@ function CadastroPackingList() {
                         <div>
                         <label>Peso Bruto Total</label>
                         <Input
-                            type={"text"}
+                            type={"number"}
                             id="input-peso-bruto"
                             title={"Digite o peso BRUTO total"}
                             placeholder={"Digite o peso BRUTO total..."}
@@ -229,31 +255,7 @@ function CadastroPackingList() {
                             required
                             onChange={handleChange}
                         /></div>
-
-                        <div className="form-importador">
-                            <label htmlFor="idImportador">Importador:</label>
-                            <Autocomplete
-                                data={clientesNomus}
-                                onSelect={(item) => setFormData({ ...formData, idImportador: item.id })}
-                                displayField={'nome'}
-                            />
-                        </div>
-                        <div className="form-consignatario">
-                            <label htmlFor="idConsignatario">Consignatário:</label>
-                            <Autocomplete
-                                data={clientesNomus}
-                                onSelect={(item) => setFormData({ ...formData, idConsignatario: item.id })}
-                                displayField={'nome'}
-                            />
-                        </div>
-                        <div className="form-notificado">
-                            <label htmlFor="idNotificado">Notificado:</label>
-                            <Autocomplete
-                                data={clientesNomus}
-                                onSelect={(item) => setFormData({ ...formData, idNotificado: item.id })}
-                                displayField={'nome'}
-                            />
-                        </div>
+                        
                         <div className="form-idioma">
                             <Select
                                 className={"form-idioma"}

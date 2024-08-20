@@ -12,9 +12,9 @@ import ErrorNotification from "../../../components/ErrorNotification/ErrorNotifi
 function EditarPL() {
 
     const navigate = useNavigate();
-    
+
     const { id } = useParams();
-    
+
     const [errorMessage, setErrorMessage] = useState(null);
 
     const [clientesNomus, setClientesNomus] = useState([]);
@@ -67,7 +67,7 @@ function EditarPL() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         try {
             await axios.put(`http://localhost:8080/api/packinglist/${id}`, formData);
             alert("Packing List Atualizado!");
@@ -143,6 +143,34 @@ function EditarPL() {
             <div className="body-editar">
                 <form onSubmit={handleSubmit} className="form-editar-pl">
                     <div className="input-group">
+                        <div>
+                            <label>Importador - Atual: ( {guardarNomes.nomeImportador} )</label>
+                            <Autocomplete
+                                data={clientesNomus}
+                                onSelect={handleAutocompleteChange('idImportador')}
+                                displayField={'nome'}
+                            />
+                        </div>
+
+                        <div>
+                        <label>Consignatário - Atual: ( {guardarNomes.nomeConsignatario} )</label>
+                        <Autocomplete
+                            data={clientesNomus}
+                            onSelect={handleAutocompleteChange('idConsignatario')}
+                            displayField={'nome'}
+                        />
+                        </div>
+
+                        <div>
+                        <label>Notificado - Atual: ( {guardarNomes.nomeNotificado} )</label>
+                        <Autocomplete
+                            data={clientesNomus}
+                            onSelect={handleAutocompleteChange('idNotificado')}
+                            displayField={'nome'}
+                        />
+                        </div>
+
+                        <div id="select-div">
                         <label>País de Origem:</label>
                         <Select
                             className="form-pais-origem"
@@ -151,7 +179,9 @@ function EditarPL() {
                             value={formData.paisOrigem}
                             onChange={e => setFormData({ ...formData, paisOrigem: e.target.value })}
                         />
+                        </div>
 
+                        <div>
                         <label>Fronteira:</label>
                         <Input
                             type="text"
@@ -160,6 +190,9 @@ function EditarPL() {
                             value={formData.fronteira}
                             onChange={handleChange}
                         />
+                        </div>
+
+                        <div>
                         <label>Local de Embarque:</label>
                         <Input
                             type="text"
@@ -168,6 +201,9 @@ function EditarPL() {
                             value={formData.localEmbarque}
                             onChange={handleChange}
                         />
+                        </div>
+
+                        <div>
                         <label>Local de Destino:</label>
                         <Input
                             type="text"
@@ -176,6 +212,9 @@ function EditarPL() {
                             value={formData.localDestino}
                             onChange={handleChange}
                         />
+                        </div>
+
+                        <div>
                         <label>Termos de Pagamento:</label>
                         <Input
                             type="text"
@@ -184,6 +223,9 @@ function EditarPL() {
                             value={formData.termosPagamento}
                             onChange={handleChange}
                         />
+                        </div>
+
+                        <div>
                         <label>Dados Bancários:</label>
                         <Input
                             type="text"
@@ -192,6 +234,9 @@ function EditarPL() {
                             value={formData.dadosBancarios}
                             onChange={handleChange}
                         />
+                        </div>
+
+                        <div>
                         <label>Incoterm:</label>
                         <Input
                             type="text"
@@ -200,6 +245,9 @@ function EditarPL() {
                             value={formData.incoterm}
                             onChange={handleChange}
                         />
+                        </div>
+
+                        <div>
                         <label>Invoice:</label>
                         <Input
                             type="text"
@@ -208,6 +256,9 @@ function EditarPL() {
                             value={formData.invoice}
                             onChange={handleChange}
                         />
+                        </div>
+
+                        <div>
                         <label>Tipo de Transporte:</label>
                         <Input
                             type="text"
@@ -216,6 +267,9 @@ function EditarPL() {
                             value={formData.tipoTransporte}
                             onChange={handleChange}
                         />
+                        </div>
+
+                        <div>
                         <label>Peso Líquido Total:</label>
                         <Input
                             type="text"
@@ -224,6 +278,9 @@ function EditarPL() {
                             value={formData.pesoLiquidoTotal}
                             onChange={handleChange}
                         />
+                        </div>
+
+                        <div>
                         <label>Peso Bruto Total:</label>
                         <Input
                             type="text"
@@ -232,6 +289,9 @@ function EditarPL() {
                             value={formData.pesoBrutoTotal}
                             onChange={handleChange}
                         />
+                        </div>
+
+                        <div id="select-div">
                         <label>Idioma:</label>
                         <Select
                             className="form-idioma"
@@ -244,26 +304,8 @@ function EditarPL() {
                             value={formData.idioma}
                             onChange={e => setFormData({ ...formData, idioma: e.target.value })}
                         />
-                        <label>Importador - Atual: ( {guardarNomes.nomeImportador} )</label>
-                        <Autocomplete
-                            data={clientesNomus}
-                            onSelect={handleAutocompleteChange('idImportador')}
-                            displayField={'nome'}
-                        />
+                        </div>
 
-                        <label>Consignatário - Atual: ( {guardarNomes.nomeConsignatario} )</label>
-                        <Autocomplete
-                            data={clientesNomus}
-                            onSelect={handleAutocompleteChange('idConsignatario')}
-                            displayField={'nome'}
-                        />
-
-                        <label>Notificado - Atual: ( {guardarNomes.nomeNotificado} )</label>
-                        <Autocomplete
-                            data={clientesNomus}
-                            onSelect={handleAutocompleteChange('idNotificado')}
-                            displayField={'nome'}
-                        />
                     </div>
                     <div className="botoes-finais-edicao">
                         <Button type="submit" className={"button-salvar-edicao"}
