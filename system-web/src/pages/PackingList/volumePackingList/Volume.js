@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Header from "../../../components/Header/Header";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import './Volume.css';
 import axios from "axios";
 import Button from "../../../components/Button";
@@ -11,33 +11,69 @@ import SucessNotification from "../../../components/SucessNotification/SucessNot
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 
 function Volume() {
-
+    // CHAVES COMPOSTAS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const { id, idProduto, seq } = useParams();
-
+    // CARREGA OS DADOS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const [produtoSelecionado, setProdutoSelecionado] = useState(null);
 
-    const contextMenuRef = useRef(null);
+    const [autorizacaoVolumeProduto, setAutorizacaoVolumeProduto] = useState(false);
+    const [formDataVolumeProduto, setFormDataVolumeProduto] = useState(
+    {   
+        id: {
+            idPackinglist: id,
+            idProduto: idProduto,
+            seq: seq,
+            idVolume: '',
+        },
+        qrCodeVolumeProduto: 'teste',
+        dtCriacao: 'teste'
+    })
 
+    // PARTE DA FUNÇÃO PARA FECHAR OS CONTEXTOS AO CLICAR FORA DELES 
+    const [overlayVisible, setOverlayVisible] = useState(false);
+    const [contextEditar, setContextEditar] = useState(false);
+    const [contextMenu, setContextMenu] = useState({ visible: false, selectedIdVolume: '' });
+
+    // PARTES DA FUNÇAO PARA 
+    const overlayRef = useRef(null);
+    const contextMenuRef = useRef(null);
+    const contextEditarRef = useRef(null);
+
+    // MENSAGENS DE SUCESSO E ERRO
     const [errorMessage, setErrorMessage] = useState(null);
     const [sucessMessage, setSucessMessage] = useState(null);
 
-    const [contextMenu, setContextMenu] = useState({ visible: false, selectedIdVolume: '' });
+    // CARREGA O VALOR O IDVOLUME QUANDO CLICA EM CIMA DE ALGUM ITEM
     const [salvarIdVolume, setSalvarIdVolume] = useState('');
-    const [salvarTipoDeVolumeAtual, setSalvarTipoDeVolumeAtual] = useState('');
+    // CARREGA A DESCRICAO DO TIPO DE VOLUME DO ITEM QUANDO CLICA EM CIMA
+    const [salvarTipoDeVolumeAtual, setSalvarTipoDeVolumeAtual] = useState({ descricao: '' });
 
-    const [contextEditar, setContextEditar] = useState({ visible: false });
-    const contextEditarRef = useRef(null);
 
-    const [overlayVisible, setOverlayVisible] = useState(false);
-    const overlayRef = useRef(null);
+    // ATUALIZADOR DO ESTADO DA LISTA DE APRESENTAÇAO DE TODOS OS VOLUMES
+    const [atualizarEstadoLista, setAtualizarEstadoLista] = useState(0);
 
-    const [atualizarEstado, setAtualizarEstado] = useState(0);
-    const [atualizarEstadoEdicao, setAtualizarEstadoEdicao] = useState(0);
 
+    // CONTAINER QUE POSSUI TODOS OS VOLUMES
     const [volumes, setVolumes] = useState([]);
-    const [volumeEdicao, setVolumeEdicao] = useState([]);
+    // CONTAINER QUE POSSUI TODOS OS TIPOS DE VOLUMES
     const [tiposDeVolume, setTiposDeVolume] = useState([]);
+    // CONTAINER QUE POSSUI TODOS OS TIPOS DE VOLUMES EM ARRAY PARA USAR NO AUTOCOMPLETE
+    const [tiposDeVolumeArray, setTiposDeVolumeArray] = useState([]);
 
+    // FORM DATA DO PUT
+    const [volumeEdicao, setVolumeEdicao] = useState({
+        idTipoVolumeId: '',
+        quantidadeItens: '',
+        descricao: '',
+        altura: '',
+        largura: '',
+        comprimento: '',
+        pesoLiquido: '',
+        pesoBruto: '',
+        observacao: '',
+    });
+
+    // FORM DATA DO POST
     const [formDataVolume, setFormDataVolume] = useState({
         idTipoVolumeId: '',
         quantidadeItens: '',
@@ -50,8 +86,8 @@ function Volume() {
         observacao: ''
     });
 
-    
 
+    // BUSCAR O PRODUTO QUE FOI SELECIONADO E OS SEUS VOLUMES
     useEffect(() => {
         const fetchProdutoSelecionado = async () => {
             try {
@@ -73,13 +109,21 @@ function Volume() {
 
         fetchProdutoSelecionado();
         fetchVolumes();
-    }, [id, idProduto, seq, atualizarEstado]);
 
+    }, [id, idProduto, seq, atualizarEstadoLista]);
+
+
+    // BUSCANDO TODOS OS TIPOS DE VOLUME E ARMAZENANDO CADA UM EM UM OBJETO E SALVANDO UMA VARIAVEL OBJETO COMUM
     useEffect(() => {
         const fetchTipoDeVolume = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/tipo-de-volume`);
-                setTiposDeVolume(response.data);
+                const tipoVolumeMap = response.data.reduce((acc, tipo) => {
+                    acc[tipo.idTipoVolume] = tipo.descricao;
+                    return acc;
+                }, {});
+                setTiposDeVolume(tipoVolumeMap);
+                setTiposDeVolumeArray(response.data); // Armazena o array original
             } catch (error) {
                 console.error("Erro ao buscar tipo de volume: ", error);
             }
@@ -87,35 +131,46 @@ function Volume() {
         fetchTipoDeVolume();
     }, []);
 
+
+
+    // PARTE DA FUNÇAO PARA SALVAR OS ITENS EDITADOS PUT
     useEffect(() => {
         const fetchProdutoEdicao = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/volume/${salvarIdVolume})}`);
+                const response = await axios.get(`http://localhost:8080/api/volume/${salvarIdVolume}`);
                 setVolumeEdicao(response.data);
-                console.log(volumeEdicao);
             } catch (error) {
                 console.error('Erro: ', error);
             }
-        }
+        };
 
+        fetchProdutoEdicao();
+    }, [salvarIdVolume]);
+
+
+    // BUSCANDO O TIPO DE VOLUME DO PRODUTO SELECIONADO
+    useEffect(() => {
         const fetchTipoDeVolume = async () => {
+            if (!volumeEdicao.idTipoVolumeId) return;
             try {
-                const response = await axios.get(`http://localhost:8080/api/tipo-de-volume/${volumeEdicao.idTipoVolumeId}`)
-                setSalvarTipoDeVolumeAtual(response.data.descricao);
+                const response = await axios.get(`http://localhost:8080/api/tipo-de-volume/${volumeEdicao.idTipoVolumeId}`);
+                setSalvarTipoDeVolumeAtual({ descricao: response.data.descricao });
             } catch (error) {
                 console.error("Erro ao buscar tipo de volume: ", error);
             }
-        }
+        };
 
-        fetchProdutoEdicao();
         fetchTipoDeVolume();
+    }, [volumeEdicao.idTipoVolumeId]);
 
-    }, [atualizarEstadoEdicao])
 
+    // SALVANDO O VOLUME 
     const handleSalvarVolume = (e) => {
         e.preventDefault();
         axios.post(`http://localhost:8080/api/volume`, formDataVolume)
             .then(response => {
+
+                const idVolume = response.data.idVolume;
 
                 setFormDataVolume({
                     idTipoVolumeId: '',
@@ -132,19 +187,59 @@ function Volume() {
                 setOverlayVisible(false);
                 setSucessMessage('Volume adicionado com sucesso!');
                 setTimeout(() => setSucessMessage(null), 5000);
-                setAtualizarEstado(atualizarEstado + 1);
+                setAtualizarEstadoLista(atualizarEstadoLista + 1);
+
+                setFormDataVolumeProduto({   
+                    id: {
+                        idPackinglist: id,
+                        idProduto: idProduto,
+                        seq: seq,
+                        idVolume: idVolume,
+                    },
+                    qrCodeVolumeProduto: 'teste',
+                    dtCriacao: 'teste'
+                });
+                setAutorizacaoVolumeProduto(true);
+                console.log('FORM DATAAA: ', response.data)
             })
             .catch(error => {
                 const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume";
                 setErrorMessage(errorMessage);
                 setTimeout(() => setErrorMessage(null), 5000);
                 console.error('Erro ao adicionar o volume: ', error);
+                console.log('formdata: ', formDataVolume)
             });
     }
 
+    // SALVANDO ITEM VOLUME CRIADO NO VOLUME PRODUTO
+    useEffect(() => {
+        const salvarVolumeProduto = () => {
+            if (autorizacaoVolumeProduto == true){
+                axios.post(`http://localhost:8080/api/volume-produto`, formDataVolumeProduto)
+            .then(response => {
+                setSucessMessage('Volume adicionado com sucesso!');
+                setTimeout(() => setSucessMessage(null), 5000);
+                setAutorizacaoVolumeProduto(false);
+                console.log('formdata: ', formDataVolumeProduto)
+
+            })
+            .catch(error => {
+                const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume";
+                setErrorMessage(errorMessage);
+                setTimeout(() => setErrorMessage(null), 5000);
+                console.error('Erro ao adicionar o volume: ', error);
+                console.log('formdata: ', formDataVolumeProduto)
+            })
+        }
+        salvarVolumeProduto();
+    }
+    }, [autorizacaoVolumeProduto])
+
+
+    //ATUALIZANDO O VOLUME
     const handleAtualizarVolume = (e) => {
         e.preventDefault();
-        axios.put(`http://localhost:8080/api/volume`, formDataVolume)
+        axios.put(`http://localhost:8080/api/volume/${salvarIdVolume}`, volumeEdicao)
             .then(response => {
 
                 setFormDataVolume({
@@ -159,10 +254,10 @@ function Volume() {
                     observacao: ''
                 })
 
-                setContextEditar({ visible: false });
+                setContextEditar(false);
                 setSucessMessage('Volume atualizado com sucesso!');
                 setTimeout(() => setSucessMessage(null), 5000);
-                setAtualizarEstado(atualizarEstado + 1);
+                setAtualizarEstadoLista(atualizarEstadoLista + 1);
             })
             .catch(error => {
                 const errorMessage = error.response?.data || "Erro desconhecido ao atualizar Volume";
@@ -172,8 +267,10 @@ function Volume() {
             });
     }
 
+
+    // PARTE DA FUNÇÃO PARA FECHAR OS CONTEXTOS AO CLICAR FORA DELES 
     useEffect(() => {
-        if (overlayVisible || contextMenu.visible) {
+        if (overlayVisible || contextMenu.visible || contextEditar) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -181,23 +278,49 @@ function Volume() {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         }
-    }, [overlayVisible, contextMenu.visible]);
+    }, [overlayVisible, contextMenu, contextEditar]);
 
 
+    // FUNÇAO PARA CONVERTER O MAPEAMENTO DOS IDS EM UM ARRAY PARA O AUTOCOMPLETE
+    const getTipoDeVolumeArray = () => {
+        return tiposDeVolumeArray;
+    }
+
+    useEffect(() => {
+        console.log('JJJJJJJJJ', formDataVolumeProduto)
+    })
+
+
+    // FECHAR MENSAGEM DE ERRO OU SUCESSO
     const closeMessages = () => {
         setErrorMessage(null);
         setSucessMessage(null);
     }
 
+    // ENTRAR NO BOTAO ADICIONAR VOLUME
     const handleAddVolume = () => {
         setOverlayVisible(true);
     }
 
+    // CANCELANDO A ADIÇAO DE VOLUME
     const handleCancelAddVolume = () => {
         setOverlayVisible(false);
-        setContextEditar({ visible: false })
+        setContextEditar(false);
+
+        setFormDataVolume({
+            idTipoVolumeId: '',
+            quantidadeItens: '',
+            descricao: '',
+            altura: '',
+            largura: '',
+            comprimento: '',
+            pesoLiquido: '',
+            pesoBruto: '',
+            observacao: ''
+        })
     }
 
+    // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NOS INPUTS DO POST
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormDataVolume(prevData => ({
@@ -206,6 +329,16 @@ function Volume() {
         }));
     }
 
+    // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NOS INPUTS DO PUT
+    const handleChangeEdicao = (e) => {
+        const { name, value } = e.target;
+        setVolumeEdicao(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NO INPUT DO AUTOCOMPLETE DO POST
     const handleAutocompleteChangeTipoVolume = (item) => {
         setFormDataVolume(prevData => ({
             ...prevData,
@@ -213,6 +346,15 @@ function Volume() {
         }));
     };
 
+    // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NO INPUT DO AUTOCOMPLETE DO PUT
+    const handleAutocompleteChangeTipoVolumeEdicao = (selectedOption) => {
+        setVolumeEdicao(prevState => ({
+            ...prevState,
+            idTipoVolumeId: selectedOption.idTipoVolume,
+        }));
+    };
+
+    // PARTE DA FUNÇÃO PARA FECHAR OS CONTEXTOS AO CLICAR FORA DELES 
     const handleClickOutside = (event) => {
         if (overlayRef.current && !overlayRef.current.contains(event.target)) {
             setOverlayVisible(false);
@@ -221,9 +363,13 @@ function Volume() {
         if (contextMenuRef.current && !contextMenuRef.current.contains(event.target)) {
             setContextMenu({ visible: false, selectedIdVolume: '' });
         }
+
+        if (contextEditarRef.current && !contextEditarRef.current.contains(event.target)) {
+            setContextEditar(false);
+        }
     }
 
-
+    // AÇAO PARA QUANDO CLICAR COM O BOTAO DIREITO EM CIMA DE ALGUM ITEM
     const handleRightClick = (e, idVolume) => {
         e.preventDefault();
         setContextMenu({
@@ -234,14 +380,9 @@ function Volume() {
         });
 
         setSalvarIdVolume(`${idVolume}`);
-    }
+    };
 
-    useEffect(() => {
-        console.log('ID do volume salvo:', salvarIdVolume);
-        console.log('volume edicao:', volumeEdicao);
-    }, [salvarIdVolume, volumeEdicao]);
-    
-
+    // AÇAO PARA QUANDO CLICAR NO BOTAO EDITAR
     const handleEdit = () => {
         setContextMenu({
             visible: false,
@@ -249,10 +390,10 @@ function Volume() {
             y: 0,
             selectedIdVolume: null
         });
-        setContextEditar({ visible: true })
-        setAtualizarEstadoEdicao(atualizarEstadoEdicao + 1);
+        setContextEditar(true);
     }
 
+    // AÇAO PARA QUANDO CLICAR NO BOTAO EXCLUIR
     const handleDelete = () => {
         setContextMenu({
             visible: false,
@@ -261,6 +402,9 @@ function Volume() {
             selectedIdVolume: null
         })
     }
+
+
+
 
     return (
         <div className="volume-container">
@@ -318,7 +462,7 @@ function Volume() {
                                                 <div id="div-tipo-de-volume">
                                                     <label>Tipo de volume:</label>
                                                     <Autocomplete
-                                                        data={tiposDeVolume}
+                                                        data={getTipoDeVolumeArray()}
                                                         onSelect={handleAutocompleteChangeTipoVolume}
                                                         displayField={'descricao'}
                                                     />
@@ -452,7 +596,7 @@ function Volume() {
                                 volumes.map((v) => (
                                     <li key={v.idVolume} onContextMenu={(e) => handleRightClick(e, v.idVolume)} className="li-listagem-volume">
                                         <div>{v.idVolume}</div>
-                                        <div>{v.idTipoVolumeId}</div>
+                                        <div>{tiposDeVolume[v.idTipoVolumeId]}</div>
                                         <div>{v.quantidadeItens}</div>
                                         <div>{v.descricao}</div>
                                         <div>{v.altura}</div>
@@ -472,144 +616,145 @@ function Volume() {
                             <div
                                 className="context-menu"
                                 style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
+                                ref={contextMenuRef}
                             >
                                 <button onClick={handleEdit}>Editar</button>
                                 <button onClick={handleDelete}>Excluir</button>
                             </div>
                         )}
 
-                        {contextEditar.visible && (
-                        <div className="overlay">
-                            <div className="overlay-content" ref={overlayRef}>
-                                <Title
-                                    classname={'title-adicionar-volume'}
-                                    text={'Editar o volume:'}
-                                    color={'#1780e2'}
-                                />
-                                <div className="subcontainer-volume">
-                                    <div className="container-input-adicionar-volume">
-                                        <form>
-                                            <div className="input-group-volume">
-                                                <div id="div-tipo-de-volume">
-                                                    <label>Tipo de volume: Atual: {salvarTipoDeVolumeAtual}</label>
-                                                    <Autocomplete
-                                                        data={tiposDeVolume}
-                                                        onSelect={handleAutocompleteChangeTipoVolume}
-                                                        displayField={'descricao'}
-                                                        
-                                                    />
+                        {contextEditar && (
+                            <div className="overlay">
+                                <div className="overlay-content" ref={contextEditarRef}>
+                                    <Title
+                                        classname={'title-adicionar-volume'}
+                                        text={'Editar o volume:'}
+                                        color={'#1780e2'}
+                                    />
+                                    <div className="subcontainer-volume">
+                                        <div className="container-input-adicionar-volume">
+                                            <form>
+                                                <div className="input-group-volume">
+                                                    <div id="div-tipo-de-volume">
+                                                        <label>Tipo de volume:</label>
+                                                        <Autocomplete
+                                                            data={getTipoDeVolumeArray()}
+                                                            onSelect={handleAutocompleteChangeTipoVolumeEdicao}
+                                                            displayField={'descricao'}
+                                                            value={salvarTipoDeVolumeAtual.descricao}
+                                                        />
+                                                    </div>
+                                                    <div id="div-quantidade-itens">
+                                                        <label>Quantidade de itens:</label>
+                                                        <Input
+                                                            type={'number'}
+                                                            name={'quantidadeItens'}
+                                                            min={'0'}
+                                                            placeholder={'Quantidade de itens...'}
+                                                            value={volumeEdicao.quantidadeItens}
+                                                            onChange={handleChangeEdicao}
+                                                        />
+                                                    </div>
+                                                    <div id="div-descricao">
+                                                        <label>Descrição:</label>
+                                                        <Input
+                                                            type={'text'}
+                                                            name={'descricao'}
+                                                            placeholder={'Descrição...'}
+                                                            value={volumeEdicao.descricao}
+                                                            onChange={handleChangeEdicao}
+                                                        />
+                                                    </div>
+                                                    <div id="div-altura">
+                                                        <label>Altura:</label>
+                                                        <Input
+                                                            type={'number'}
+                                                            name={'altura'}
+                                                            min={'0'}
+                                                            placeholder={'Altura...'}
+                                                            value={volumeEdicao.altura}
+                                                            onChange={handleChangeEdicao}
+                                                        />
+                                                    </div>
+                                                    <div id="div-largura">
+                                                        <label>Largura:</label>
+                                                        <Input
+                                                            type={'number'}
+                                                            name={'largura'}
+                                                            min={'0'}
+                                                            placeholder={'Largura...'}
+                                                            value={volumeEdicao.largura}
+                                                            onChange={handleChangeEdicao}
+                                                        />
+                                                    </div>
+                                                    <div id="div-comprimento">
+                                                        <label>Comprimento:</label>
+                                                        <Input
+                                                            type={'number'}
+                                                            name={'comprimento'}
+                                                            min={'0'}
+                                                            placeholder={'Comprimento...'}
+                                                            value={volumeEdicao.comprimento || ''}
+                                                            onChange={handleChangeEdicao}
+                                                        />
+                                                    </div>
+                                                    <div id="div-peso-liquido">
+                                                        <label>Peso Líquido:</label>
+                                                        <Input
+                                                            type={'number'}
+                                                            name={'pesoLiquido'}
+                                                            min={'0'}
+                                                            placeholder={'Peso líquido...'}
+                                                            value={volumeEdicao.pesoLiquido}
+                                                            onChange={handleChangeEdicao}
+                                                        />
+                                                    </div>
+                                                    <div id="div-peso-bruto">
+                                                        <label>Peso Bruto:</label>
+                                                        <Input
+                                                            type={'number'}
+                                                            name={'pesoBruto'}
+                                                            min={'0'}
+                                                            placeholder={'Peso bruto...'}
+                                                            value={volumeEdicao.pesoBruto}
+                                                            onChange={handleChangeEdicao}
+                                                        />
+                                                    </div>
+                                                    <div id="div-observacao">
+                                                        <label>Observação:</label>
+                                                        <Input
+                                                            type={'text'}
+                                                            name={'observacao'}
+                                                            placeholder={'Observação...'}
+                                                            value={volumeEdicao.observacao || ''}
+                                                            onChange={handleChangeEdicao}
+                                                        />
+                                                    </div>
                                                 </div>
-                                                <div id="div-quantidade-itens">
-                                                    <label>Quantidade de itens:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'quantidadeItens'}
-                                                        min={'0'}
-                                                        placeholder={'Quantidade de itens...'}
-                                                        value={volumeEdicao.quantidadeItens}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-descricao">
-                                                    <label>Descrição:</label>
-                                                    <Input
-                                                        type={'text'}
-                                                        name={'descricao'}
-                                                        placeholder={'Descrição...'}
-                                                        value={volumeEdicao.descricao}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-altura">
-                                                    <label>Altura:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'altura'}
-                                                        min={'0'}
-                                                        placeholder={'Altura...'}
-                                                        value={volumeEdicao.altura}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-largura">
-                                                    <label>Largura:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'largura'}
-                                                        min={'0'}
-                                                        placeholder={'Largura...'}
-                                                        value={volumeEdicao.largura}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-comprimento">
-                                                    <label>Comprimento:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'comprimento'}
-                                                        min={'0'}
-                                                        placeholder={'Comprimento...'}
-                                                        value={volumeEdicao.comprimento || ''}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-peso-liquido">
-                                                    <label>Peso Líquido:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'pesoLiquido'}
-                                                        min={'0'}
-                                                        placeholder={'Peso líquido...'}
-                                                        value={volumeEdicao.pesoLiquido}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-peso-bruto">
-                                                    <label>Peso Bruto:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'pesoBruto'}
-                                                        min={'0'}
-                                                        placeholder={'Peso bruto...'}
-                                                        value={volumeEdicao.pesoBruto}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-observacao">
-                                                    <label>Observação:</label>
-                                                    <Input
-                                                        type={'text'}
-                                                        name={'observacao'}
-                                                        placeholder={'Observação...'}
-                                                        value={volumeEdicao.observacao || ''}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </form>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div className="buttons-adicionar-volume">
+                                        <Button
+                                            className={'button-salvar-add-volume'}
+                                            text={'SALVAR'}
+                                            fontSize={15}
+                                            padding={10}
+                                            borderRadius={5}
+                                            onClick={handleAtualizarVolume}
+                                        />
+                                        <Button
+                                            className={'button-cancelar-add-volume'}
+                                            text={'CANCELAR'}
+                                            fontSize={15}
+                                            padding={10}
+                                            borderRadius={5}
+                                            onClick={handleCancelAddVolume}
+                                        />
                                     </div>
                                 </div>
-                                <div className="buttons-adicionar-volume">
-                                    <Button
-                                        className={'button-salvar-add-volume'}
-                                        text={'SALVAR'}
-                                        fontSize={15}
-                                        padding={10}
-                                        borderRadius={5}
-                                        onClick={handleAtualizarVolume}
-                                    />
-                                    <Button
-                                        className={'button-cancelar-add-volume'}
-                                        text={'CANCELAR'}
-                                        fontSize={15}
-                                        padding={10}
-                                        borderRadius={5}
-                                        onClick={handleCancelAddVolume}
-                                    />
-                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
 
 

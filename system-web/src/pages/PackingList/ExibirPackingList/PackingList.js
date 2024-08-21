@@ -60,7 +60,7 @@ function PackingList() {
                     acc[cliente.id] = cliente.nome;
                     return acc;
                 }, {});
-                setClientes(clientesData);
+                 setClientes(clientesData);
             } catch (error) {
                 console.error('Erro ao buscar os clientes', error);
             }
