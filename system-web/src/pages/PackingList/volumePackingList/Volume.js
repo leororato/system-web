@@ -9,30 +9,38 @@ import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 import Input from "../../../components/Input";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
+import Text from "../../../components/Text";
 
 function Volume() {
+
     // CHAVES COMPOSTAS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const { id, idProduto, seq } = useParams();
+    const [idVolumeSave, setIdVolumeSave] = useState();
+
     // CARREGA OS DADOS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const [produtoSelecionado, setProdutoSelecionado] = useState(null);
 
-    const [autorizacaoVolumeProduto, setAutorizacaoVolumeProduto] = useState(false);
+    // FAZ A VALIDAÇAO DE QUANDO UM VOLUME É CRIADO PARA ENVIAR O VOLUME PRODUTO
+    const [volumeCriado, setVolumeCriado] = useState(false);
+    // CARREGA OS DADOS QUE VAO SER ENVIADOS PARA O VOLUME PRODUTO
     const [formDataVolumeProduto, setFormDataVolumeProduto] = useState(
-    {   
-        id: {
-            idPackinglist: id,
-            idProduto: idProduto,
-            seq: seq,
-            idVolume: '',
-        },
-        qrCodeVolumeProduto: 'teste',
-        dtCriacao: 'teste'
-    })
+        {
+            "id": {
+                "idPackinglist": id,
+                "idProduto": idProduto,
+                "seq": seq,
+                "idVolume": idVolumeSave
+            },
+            "qrCodeVolumeProduto": "",
+            "dtCriacao": ""
+        })
 
     // PARTE DA FUNÇÃO PARA FECHAR OS CONTEXTOS AO CLICAR FORA DELES 
     const [overlayVisible, setOverlayVisible] = useState(false);
     const [contextEditar, setContextEditar] = useState(false);
     const [contextMenu, setContextMenu] = useState({ visible: false, selectedIdVolume: '' });
+
+    const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedIdVolume: '' });
 
     // PARTES DA FUNÇAO PARA 
     const overlayRef = useRef(null);
@@ -100,7 +108,7 @@ function Volume() {
 
         const fetchVolumes = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/volume`);
+                const response = await axios.get(`http://localhost:8080/api/volume/produto/${idProduto}/${seq}`);
                 setVolumes(response.data);
             } catch (error) {
                 console.error("Erro ao carregar os volumes: ", error);
@@ -135,16 +143,18 @@ function Volume() {
 
     // PARTE DA FUNÇAO PARA SALVAR OS ITENS EDITADOS PUT
     useEffect(() => {
-        const fetchProdutoEdicao = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/volume/${salvarIdVolume}`);
-                setVolumeEdicao(response.data);
-            } catch (error) {
-                console.error('Erro: ', error);
-            }
-        };
+        if (salvarIdVolume.length > 0) {
+            const fetchProdutoEdicao = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:8080/api/volume/${salvarIdVolume}`);
+                    setVolumeEdicao(response.data);
+                } catch (error) {
+                    console.error('Erro: ', error);
+                }
+            };
 
-        fetchProdutoEdicao();
+            fetchProdutoEdicao();
+        }
     }, [salvarIdVolume]);
 
 
@@ -165,75 +175,67 @@ function Volume() {
 
 
     // SALVANDO O VOLUME 
-    const handleSalvarVolume = (e) => {
+    const handleSalvarVolume = async (e) => {
         e.preventDefault();
-        axios.post(`http://localhost:8080/api/volume`, formDataVolume)
-            .then(response => {
+        try {
+            const response = await axios.post(`http://localhost:8080/api/volume`, formDataVolume);
+            setIdVolumeSave(response.data.idVolume);
 
-                const idVolume = response.data.idVolume;
-
-                setFormDataVolume({
-                    idTipoVolumeId: '',
-                    quantidadeItens: '',
-                    descricao: '',
-                    altura: '',
-                    largura: '',
-                    comprimento: '',
-                    pesoLiquido: '',
-                    pesoBruto: '',
-                    observacao: ''
-                })
-
-                setOverlayVisible(false);
-                setSucessMessage('Volume adicionado com sucesso!');
-                setTimeout(() => setSucessMessage(null), 5000);
-                setAtualizarEstadoLista(atualizarEstadoLista + 1);
-
-                setFormDataVolumeProduto({   
-                    id: {
-                        idPackinglist: id,
-                        idProduto: idProduto,
-                        seq: seq,
-                        idVolume: idVolume,
-                    },
-                    qrCodeVolumeProduto: 'teste',
-                    dtCriacao: 'teste'
-                });
-                setAutorizacaoVolumeProduto(true);
-                console.log('FORM DATAAA: ', response.data)
-            })
-            .catch(error => {
-                const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume";
-                setErrorMessage(errorMessage);
-                setTimeout(() => setErrorMessage(null), 5000);
-                console.error('Erro ao adicionar o volume: ', error);
-                console.log('formdata: ', formDataVolume)
+            setFormDataVolume({
+                idTipoVolumeId: '',
+                quantidadeItens: '',
+                descricao: '',
+                altura: '',
+                largura: '',
+                comprimento: '',
+                pesoLiquido: '',
+                pesoBruto: '',
+                observacao: ''
             });
-    }
+
+            setOverlayVisible(false);
+            setSucessMessage('Volume adicionado com sucesso!');
+            setTimeout(() => setSucessMessage(null), 5000);
+            setAtualizarEstadoLista(atualizarEstadoLista + 1);
+            setVolumeCriado(true); // Define que o volume foi criado
+
+        } catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume";
+            setErrorMessage(errorMessage);
+            setTimeout(() => setErrorMessage(null), 5000);
+            console.error('Erro ao adicionar o volume: ', error);
+        }
+    };
 
     // SALVANDO ITEM VOLUME CRIADO NO VOLUME PRODUTO
     useEffect(() => {
-        const salvarVolumeProduto = () => {
-            if (autorizacaoVolumeProduto == true){
-                axios.post(`http://localhost:8080/api/volume-produto`, formDataVolumeProduto)
-            .then(response => {
-                setSucessMessage('Volume adicionado com sucesso!');
-                setTimeout(() => setSucessMessage(null), 5000);
-                setAutorizacaoVolumeProduto(false);
-                console.log('formdata: ', formDataVolumeProduto)
+        if (volumeCriado && idVolumeSave) {
+            const salvarVolumeProduto = async () => {
+                try {
+                    await axios.post(`http://localhost:8080/api/volume-produto`, {
+                        id: {
+                            idPackinglist: id,
+                            idProduto: idProduto,
+                            seq: seq,
+                            idVolume: idVolumeSave
+                        },
+                        qrCodeVolumeProduto: "teste",
+                        dtCriacao: "2024-08-21T12:34:56"
+                    });
 
-            })
-            .catch(error => {
-                const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume";
-                setErrorMessage(errorMessage);
-                setTimeout(() => setErrorMessage(null), 5000);
-                console.error('Erro ao adicionar o volume: ', error);
-                console.log('formdata: ', formDataVolumeProduto)
-            })
+                    setVolumeCriado(false); // Reseta o estado após sucesso
+
+                } catch (error) {
+                    const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume Produto";
+                    setErrorMessage(errorMessage);
+                    setTimeout(() => setErrorMessage(null), 5000);
+                    console.error('Erro ao adicionar o VolumeProduto: ', error);
+                }
+            };
+
+            salvarVolumeProduto();
         }
-        salvarVolumeProduto();
-    }
-    }, [autorizacaoVolumeProduto])
+    }, [volumeCriado, idVolumeSave, id, idProduto, seq]);
 
 
     //ATUALIZANDO O VOLUME
@@ -286,10 +288,6 @@ function Volume() {
         return tiposDeVolumeArray;
     }
 
-    useEffect(() => {
-        console.log('JJJJJJJJJ', formDataVolumeProduto)
-    })
-
 
     // FECHAR MENSAGEM DE ERRO OU SUCESSO
     const closeMessages = () => {
@@ -317,6 +315,17 @@ function Volume() {
             pesoLiquido: '',
             pesoBruto: '',
             observacao: ''
+        })
+
+        setFormDataVolumeProduto({
+            id: {
+                idPackinglist: id,
+                idProduto: idProduto,
+                seq: seq,
+                idVolume: '',
+            },
+            qrCodeVolumeProduto: 'teste',
+            dtCriacao: '2024-08-21T12:34:56'
         })
     }
 
@@ -394,13 +403,68 @@ function Volume() {
     }
 
     // AÇAO PARA QUANDO CLICAR NO BOTAO EXCLUIR
-    const handleDelete = () => {
+    const handleDelete = (e) => {
         setContextMenu({
             visible: false,
             x: 0,
             y: 0,
             selectedIdVolume: null
+        });
+        setContextDelete({
+            visible: true,
+            x: e.pageX,
+            y: e.pageY,
+            selectedIdVolume: contextMenu.selectedIdVolume
         })
+    }
+
+    // AÇAO PARA CONFIRMAR A EXCLUSAO DO ITEM
+    const handleDeleteConfirm = () => {
+        const idVolumeSelecionado = contextDelete.selectedIdVolume;
+        axios.delete(`http://localhost:8080/api/volume/${idVolumeSelecionado}`)
+            .then(() => {
+
+                setAtualizarEstadoLista(atualizarEstadoLista + 1);
+                setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
+                
+                setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
+ 
+                setTimeout(() => {
+                    setSucessMessage(null)
+                }, 5000);
+
+            })
+            .catch((error) => {
+
+                const errorMessage = error.response?.data || "Erro desconhecido ao deletar Volume...";
+                setErrorMessage(errorMessage);
+                
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+
+            });
+
+        axios.delete(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`)
+        .then(() => {
+
+            setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
+            
+            setTimeout(() => {
+                setSucessMessage(null)
+            }, 5000);
+
+        })
+        .catch((error) => {
+
+            setErrorMessage('Erro ao deletar Volume Produto ( VOLUME PRODUTO NÃO FOI SALVO! )');
+            
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+
+        });
+            
     }
 
 
@@ -622,6 +686,37 @@ function Volume() {
                                 <button onClick={handleDelete}>Excluir</button>
                             </div>
                         )}
+
+
+                        {contextDelete.visible && (
+                            <>
+                                <div className="overlay"></div>
+                                <div className="context-delete">
+                                    <div>
+                                        <Text
+                                            text={'Tem certeza que deseja excluir o Produto?'}
+                                            fontSize={20}
+                                        />
+                                    </div>
+
+                                    <div className="buttons-delete">
+                                        <Button
+                                            className={'button-cancelar'}
+                                            text={'CANCELAR'}
+                                            fontSize={20}
+                                            onClick={() => { setContextDelete({ visible: false }); }}
+                                        />
+                                        <Button
+                                            className={'button-excluir'}
+                                            text={'EXCLUIR'}
+                                            fontSize={20}
+                                            onClick={handleDeleteConfirm}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
 
                         {contextEditar && (
                             <div className="overlay">

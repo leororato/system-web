@@ -203,7 +203,7 @@ function PackingListProduto() {
         axios.post('http://localhost:8080/api/pl-produto', payload)
             .then(response => {
                 
-                if (response.status == 201) {
+                if (response.status === 201) {
 
 
                 setSucessMessage('Produto adicionado com sucesso!');
@@ -227,7 +227,6 @@ function PackingListProduto() {
                     setErrorMessage(null);
                 }, 5000);
 
-                console.error('Erro ao adicionar o produto: ', error);
             });
     };
     
@@ -433,7 +432,7 @@ function PackingListProduto() {
                         <div className="context-delete">
                             <div>
                                 <Text
-                                    text={'Tem certeza que deseja excluir o Produto?'}
+                                    text={'Tem certeza que deseja excluir o Volume?'}
                                     fontSize={20}
                                 />
                             </div>
