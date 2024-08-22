@@ -6,18 +6,22 @@ import './PackingList.css';
 import Title from '../../../components/Title';
 import Text from '../../../components/Text';
 import Button from '../../../components/Button';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import Input from '../../../components/Input';
 import ErrorNotification from '../../../components/ErrorNotification/ErrorNotification';
+import SucessNotification from '../../../components/SucessNotification/SucessNotification';
 
 function PackingList() {
 
     const navigate = useNavigate();
 
+    const location = useLocation();
+    const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
     const [errorMessage, setErrorMessage] = useState(null);
 
     const [packingLists, setPackingLists] = useState([]);
+    const [atualizarEstadoLista, setAtualizarEstadoLista] = useState(0);
 
     const [clientes, setClientes] = useState({});
 
@@ -68,7 +72,7 @@ function PackingList() {
 
         fetchPackingLists();
         fetchClientes();
-    }, []);
+    }, [atualizarEstadoLista]);
 
 
 
@@ -80,7 +84,18 @@ function PackingList() {
     }, []);
 
 
+    useEffect(() => {
+        if (sucessMessage) {
+            const timer = setTimeout(() => {
+                setSucessMessage(null);
+                // Limpa o estado de navegação para evitar que a mensagem apareça ao recarregar a página
+                navigate('/inicio', { replace: true, state: {} });
+            }, 5000);
 
+            // Limpar o timeout caso o componente seja desmontado antes dos 5 segundos
+            return () => clearTimeout(timer);
+        }
+    }, [sucessMessage, navigate]);
 
 
 
@@ -133,16 +148,19 @@ function PackingList() {
 
 
     const handleDeleteConfirm = () => {
-        axios.delete(`http://localhost:8080/api/packinglist/${contextDelete.selectedId}`)
+        const itemDeletado = contextDelete.selectedId;
+        axios.delete(`http://localhost:8080/api/packinglist/${itemDeletado}`)
             .then(() => {
                 setPackingLists(packingLists.filter(packingList => 
                     packingList.id !== contextDelete.selectedId));
                 setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
-                alert('Packing List Excluido!');
-                navigate(0);
+                setSucessMessage(`PackingList ${itemDeletado} deletado com sucesso`);
+
+                setAtualizarEstadoLista(atualizarEstadoLista + 1);
             })
             .catch(error => {
                 console.error('Erro ao excluir o Packing List', error);
+                setErrorMessage('Erro ao excluir PackingList')
             });
     };
 
@@ -159,9 +177,14 @@ function PackingList() {
         e.preventDefault();
 
         axios.post(`http://localhost:8080/api/tipo-de-volume`, tipoDeVolume)
-        .then(() => {
-             alert('Tipo de Volume criado com sucesso!');
-             navigate(0);
+        .then((response) => {
+
+            setSucessMessage(`Tipo de Volume '${response.data.descricao}' criado com sucesso`);
+            
+            setTimeout(() => {
+                navigate(0);
+            }, 2000);
+
          })
          .catch (error => {
             const errorMessage = error.response?.data || "Erro desconhecido ao criar o Tipo de Volume";
@@ -184,7 +207,7 @@ function PackingList() {
         <div>
             <Header />
             <ErrorNotification message={errorMessage} onClose={handleErrorClose} />
-
+            {sucessMessage && <SucessNotification message={sucessMessage} onClose={() =>  setSucessMessage(null) }/>}
             <div className='title-container'>
                 <Title
                     classname={'title'}

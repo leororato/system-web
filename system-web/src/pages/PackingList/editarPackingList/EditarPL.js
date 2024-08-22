@@ -1,13 +1,15 @@
 import Header from "../../../components/Header/Header";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import './EditarPL.css';
 import Button from "../../../components/Button";
 import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 import Select from "../../../components/Select";
 import Input from "../../../components/Input";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
+import Title from "../../../components/Title";
+import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 
 function EditarPL() {
 
@@ -15,6 +17,8 @@ function EditarPL() {
 
     const { id } = useParams();
 
+    const location = useLocation();
+    const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
     const [errorMessage, setErrorMessage] = useState(null);
 
     const [clientesNomus, setClientesNomus] = useState([]);
@@ -70,8 +74,9 @@ function EditarPL() {
 
         try {
             await axios.put(`http://localhost:8080/api/packinglist/${id}`, formData);
-            alert("Packing List Atualizado!");
-            navigate("/inicio");
+
+            navigate('/inicio', { state: { sucessMessage: `PackingList ${id} atualizado com sucesso!` } });
+
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar a PackingList!";
             setErrorMessage(errorMessage);
@@ -110,6 +115,19 @@ function EditarPL() {
     }
 
 
+    useEffect(() => {
+        if (sucessMessage) {
+            const timer = setTimeout(() => {
+                setSucessMessage(null);
+                // Limpa o estado de navegação para evitar que a mensagem apareça ao recarregar a página
+                navigate('/inicio', { replace: true, state: {} });
+            }, 5000);
+
+            // Limpar o timeout caso o componente seja desmontado antes dos 5 segundos
+            return () => clearTimeout(timer);
+        }
+    }, [sucessMessage, navigate]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -140,33 +158,45 @@ function EditarPL() {
         <div>
             <Header />
             <ErrorNotification message={errorMessage} onClose={handleErrorClose} />
+           <SucessNotification message={sucessMessage} onClose={() =>  setSucessMessage(null) }/>
             <div className="body-editar">
                 <form onSubmit={handleSubmit} className="form-editar-pl">
                     <div className="input-group">
+
                         <div>
-                            <label>Importador - Atual: ( {guardarNomes.nomeImportador} )</label>
-                            <Autocomplete
-                                data={clientesNomus}
-                                onSelect={handleAutocompleteChange('idImportador')}
-                                displayField={'nome'}
+                            <Title
+                                text={`Editar PackingList ${id}`}
+                                color={'#1780e2'}
                             />
                         </div>
 
                         <div>
-                        <label>Consignatário - Atual: ( {guardarNomes.nomeConsignatario} )</label>
+                            <label>Importador:</label>
+                            <Autocomplete
+                                data={clientesNomus}
+                                onSelect={handleAutocompleteChange('idImportador')}
+                                displayField={'nome'}
+                                value={guardarNomes.nomeImportador}
+                            />
+                        </div>
+
+                        <div>
+                        <label>Consignatário:</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idConsignatario')}
                             displayField={'nome'}
+                            value={guardarNomes.nomeConsignatario}
                         />
                         </div>
 
                         <div>
-                        <label>Notificado - Atual: ( {guardarNomes.nomeNotificado} )</label>
+                        <label>Notificado:</label>
                         <Autocomplete
                             data={clientesNomus}
                             onSelect={handleAutocompleteChange('idNotificado')}
                             displayField={'nome'}
+                            value={guardarNomes.nomeNotificado}
                         />
                         </div>
 

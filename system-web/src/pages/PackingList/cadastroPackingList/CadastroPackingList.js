@@ -11,11 +11,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
+import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 
 function CadastroPackingList() {
     
     const navigate = useNavigate();
 
+    const [sucessMessage, setSucessMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
 
     const [clientesNomus, setClientesNomus] = useState([]);
@@ -61,8 +63,8 @@ function CadastroPackingList() {
     
         axios.post('http://localhost:8080/api/packinglist', formData)
             .then(() => {
-                alert('Packing List criado com sucesso!');
-                navigate('/inicio');
+                setSucessMessage('PackingList criado com sucesso!');
+                navigate('/inicio', { state: { sucessMessage: 'PackingList criado com sucesso!' } });
             })
             .catch(error => {
                 const errorMessage = error.response?.data || "Erro desconhecido ao criar PackingList";
@@ -78,6 +80,7 @@ function CadastroPackingList() {
 
     const handleErrorClose = () => {
         setErrorMessage(null);
+        setSucessMessage(null);
     }
 
     const handleCancel = (e) => {
@@ -89,6 +92,7 @@ function CadastroPackingList() {
         <div>
             <Header />
             <ErrorNotification message={errorMessage} onClose={handleErrorClose} />
+            <SucessNotification message={sucessMessage} onClose={() => { setSucessMessage(null) }}/>
 
             <div className="title-container">
                 <Title text={"Cadastro de Packing List"} className={"title"} />

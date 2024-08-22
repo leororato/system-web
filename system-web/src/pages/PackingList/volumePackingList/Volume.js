@@ -10,6 +10,7 @@ import Input from "../../../components/Input";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import Text from "../../../components/Text";
+import { format } from "date-fns";
 
 function Volume() {
 
@@ -22,23 +23,14 @@ function Volume() {
 
     // FAZ A VALIDAÇAO DE QUANDO UM VOLUME É CRIADO PARA ENVIAR O VOLUME PRODUTO
     const [volumeCriado, setVolumeCriado] = useState(false);
-    // CARREGA OS DADOS QUE VAO SER ENVIADOS PARA O VOLUME PRODUTO
-    const [formDataVolumeProduto, setFormDataVolumeProduto] = useState(
-        {
-            "id": {
-                "idPackinglist": id,
-                "idProduto": idProduto,
-                "seq": seq,
-                "idVolume": idVolumeSave
-            },
-            "qrCodeVolumeProduto": "",
-            "dtCriacao": ""
-        })
+
 
     // PARTE DA FUNÇÃO PARA FECHAR OS CONTEXTOS AO CLICAR FORA DELES 
     const [overlayVisible, setOverlayVisible] = useState(false);
-    const [contextEditar, setContextEditar] = useState(false);
+    const [contextEditar, setContextEditar] = useState({ visible: false, selectedIdVolume: ''});
     const [contextMenu, setContextMenu] = useState({ visible: false, selectedIdVolume: '' });
+
+    const [contextSubVolumes, setContextSubVolumes] = useState({ visible: false, selectedIdVolume: '' })
 
     const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedIdVolume: '' });
 
@@ -46,6 +38,7 @@ function Volume() {
     const overlayRef = useRef(null);
     const contextMenuRef = useRef(null);
     const contextEditarRef = useRef(null);
+    const contextSubVolumesRef = useRef(null);
 
     // MENSAGENS DE SUCESSO E ERRO
     const [errorMessage, setErrorMessage] = useState(null);
@@ -67,6 +60,19 @@ function Volume() {
     const [tiposDeVolume, setTiposDeVolume] = useState([]);
     // CONTAINER QUE POSSUI TODOS OS TIPOS DE VOLUMES EM ARRAY PARA USAR NO AUTOCOMPLETE
     const [tiposDeVolumeArray, setTiposDeVolumeArray] = useState([]);
+
+
+    // FORM DATA SUBVOLUME
+    const [formDataSubVolume, setFormDataSubVolume] = useState(
+        {
+            "id": {
+              "idVolume": '',
+            },
+            "descricao": "",
+            "quantidade": ""
+          }
+          
+    )
 
     // FORM DATA DO PUT
     const [volumeEdicao, setVolumeEdicao] = useState({
@@ -98,17 +104,21 @@ function Volume() {
     // BUSCAR O PRODUTO QUE FOI SELECIONADO E OS SEUS VOLUMES
     useEffect(() => {
         const fetchProdutoSelecionado = async () => {
+
             try {
                 const response = await axios.get(`http://localhost:8080/api/pl-produto/${id}/${idProduto}/${seq}`);
                 setProdutoSelecionado(response.data);
             } catch (error) {
                 console.error("Erro ao carregar o produto selecionado: ", error);
             }
+
         };
 
+
         const fetchVolumes = async () => {
+
             try {
-                const response = await axios.get(`http://localhost:8080/api/volume/produto/${idProduto}/${seq}`);
+                const response = await axios.get(`http://localhost:8080/api/volume/produto/${id}/${idProduto}/${seq}`);
                 setVolumes(response.data);
             } catch (error) {
                 console.error("Erro ao carregar os volumes: ", error);
@@ -119,6 +129,7 @@ function Volume() {
         fetchVolumes();
 
     }, [id, idProduto, seq, atualizarEstadoLista]);
+
 
 
     // BUSCANDO TODOS OS TIPOS DE VOLUME E ARMAZENANDO CADA UM EM UM OBJETO E SALVANDO UMA VARIAVEL OBJETO COMUM
@@ -180,6 +191,7 @@ function Volume() {
         try {
             const response = await axios.post(`http://localhost:8080/api/volume`, formDataVolume);
             setIdVolumeSave(response.data.idVolume);
+            setAtualizarEstadoLista(atualizarEstadoLista + 1);
 
             setFormDataVolume({
                 idTipoVolumeId: '',
@@ -196,7 +208,6 @@ function Volume() {
             setOverlayVisible(false);
             setSucessMessage('Volume adicionado com sucesso!');
             setTimeout(() => setSucessMessage(null), 5000);
-            setAtualizarEstadoLista(atualizarEstadoLista + 1);
             setVolumeCriado(true); // Define que o volume foi criado
 
         } catch (error) {
@@ -219,10 +230,10 @@ function Volume() {
                             seq: seq,
                             idVolume: idVolumeSave
                         },
-                        qrCodeVolumeProduto: "teste",
-                        dtCriacao: "2024-08-21T12:34:56"
+                        qrCodeVolumeProduto: "teste"
                     });
 
+                    setAtualizarEstadoLista(atualizarEstadoLista + 1);
                     setVolumeCriado(false); // Reseta o estado após sucesso
 
                 } catch (error) {
@@ -237,6 +248,27 @@ function Volume() {
         }
     }, [volumeCriado, idVolumeSave, id, idProduto, seq]);
 
+
+    
+        const handleSalvarSubProduto = async (e) => {
+            e.preventDefault();
+            const idVolumeSave = contextSubVolumes.selectedIdVolume
+            setFormDataSubVolume(
+                {
+                    "id": {
+                      "idVolume": idVolumeSave,
+                    },
+                    "descricao": "",
+                    "quantidade": ""
+                  }
+            )
+            try {
+                const response = await axios.post(`http://localhost:8080/api/sub-volume`, formDataSubVolume);
+            } catch (error) {
+
+            }
+        }
+   
 
     //ATUALIZANDO O VOLUME
     const handleAtualizarVolume = (e) => {
@@ -256,7 +288,7 @@ function Volume() {
                     observacao: ''
                 })
 
-                setContextEditar(false);
+                setContextEditar({ visible: false, selectedIdVolume: ''});
                 setSucessMessage('Volume atualizado com sucesso!');
                 setTimeout(() => setSucessMessage(null), 5000);
                 setAtualizarEstadoLista(atualizarEstadoLista + 1);
@@ -272,7 +304,7 @@ function Volume() {
 
     // PARTE DA FUNÇÃO PARA FECHAR OS CONTEXTOS AO CLICAR FORA DELES 
     useEffect(() => {
-        if (overlayVisible || contextMenu.visible || contextEditar) {
+        if (overlayVisible || contextMenu.visible || contextEditar.visible || contextSubVolumes.visible) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -280,13 +312,18 @@ function Volume() {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         }
-    }, [overlayVisible, contextMenu, contextEditar]);
+    }, [overlayVisible, contextMenu, contextEditar, contextSubVolumes]);
 
 
     // FUNÇAO PARA CONVERTER O MAPEAMENTO DOS IDS EM UM ARRAY PARA O AUTOCOMPLETE
     const getTipoDeVolumeArray = () => {
         return tiposDeVolumeArray;
     }
+
+    // relacionado a inserir a hora da criaçao
+    const formatarData = (dtCriacao) => {
+        return format(new Date(dtCriacao), 'dd/MM/yyyy - HH:mm');
+    };
 
 
     // FECHAR MENSAGEM DE ERRO OU SUCESSO
@@ -303,7 +340,7 @@ function Volume() {
     // CANCELANDO A ADIÇAO DE VOLUME
     const handleCancelAddVolume = () => {
         setOverlayVisible(false);
-        setContextEditar(false);
+        setContextEditar({ visible: false, selectedIdVolume: '' });
 
         setFormDataVolume({
             idTipoVolumeId: '',
@@ -317,16 +354,11 @@ function Volume() {
             observacao: ''
         })
 
-        setFormDataVolumeProduto({
-            id: {
-                idPackinglist: id,
-                idProduto: idProduto,
-                seq: seq,
-                idVolume: '',
-            },
-            qrCodeVolumeProduto: 'teste',
-            dtCriacao: '2024-08-21T12:34:56'
-        })
+    }
+
+    // CANCELANDO A ADIÇAO DE SUBVOLUME
+    const handleCancelAddSubvolume = () => { 
+        setContextSubVolumes({ visible: false });
     }
 
     // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NOS INPUTS DO POST
@@ -346,6 +378,14 @@ function Volume() {
             [name]: value
         }));
     };
+
+    const handleChangeSubVolume = (e) => {
+        const { name, value } = e.target;
+        setFormDataSubVolume(prevData => ({
+            ...prevData,
+            [name]: value
+        }));
+    }
 
     // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NO INPUT DO AUTOCOMPLETE DO POST
     const handleAutocompleteChangeTipoVolume = (item) => {
@@ -367,6 +407,18 @@ function Volume() {
     const handleClickOutside = (event) => {
         if (overlayRef.current && !overlayRef.current.contains(event.target)) {
             setOverlayVisible(false);
+
+            setFormDataVolume({
+                idTipoVolumeId: '',
+                quantidadeItens: '',
+                descricao: '',
+                altura: '',
+                largura: '',
+                comprimento: '',
+                pesoLiquido: '',
+                pesoBruto: '',
+                observacao: ''
+            });
         }
 
         if (contextMenuRef.current && !contextMenuRef.current.contains(event.target)) {
@@ -374,8 +426,14 @@ function Volume() {
         }
 
         if (contextEditarRef.current && !contextEditarRef.current.contains(event.target)) {
-            setContextEditar(false);
+            setContextEditar({ visible: false, selectedIdVolume: ''});
         }
+
+        if (contextSubVolumesRef.current && !contextSubVolumesRef.current.contains(event.target)) {
+            setContextSubVolumes({ visible: false, selectedIdVolume: '' });
+        }
+
+
     }
 
     // AÇAO PARA QUANDO CLICAR COM O BOTAO DIREITO EM CIMA DE ALGUM ITEM
@@ -391,6 +449,7 @@ function Volume() {
         setSalvarIdVolume(`${idVolume}`);
     };
 
+
     // AÇAO PARA QUANDO CLICAR NO BOTAO EDITAR
     const handleEdit = () => {
         setContextMenu({
@@ -399,8 +458,26 @@ function Volume() {
             y: 0,
             selectedIdVolume: null
         });
-        setContextEditar(true);
+        setContextEditar({ visible: true, selectedIdVolume: contextMenu.selectedIdVolume });
     }
+
+
+    // AÇAO PARA IR AOS SUB VOLUMES
+    const handleSubVolumes = () => {
+        setContextMenu({
+            visible: false,
+            x: 0,
+            y: 0,
+            selectedIdVolume: null
+        });
+        setContextSubVolumes({
+            visible: true,
+            x: 0,
+            y: 0,
+            selectedIdVolume: contextMenu.selectedIdVolume
+        });
+    }
+
 
     // AÇAO PARA QUANDO CLICAR NO BOTAO EXCLUIR
     const handleDelete = (e) => {
@@ -426,45 +503,53 @@ function Volume() {
 
                 setAtualizarEstadoLista(atualizarEstadoLista + 1);
                 setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
-                
+
                 setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
- 
+
                 setTimeout(() => {
                     setSucessMessage(null)
                 }, 5000);
+
+
+
+
+                axios.delete(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`)
+                    .then(() => {
+
+                        setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
+                        setAtualizarEstadoLista(atualizarEstadoLista + 1);
+                        setTimeout(() => {
+                            setSucessMessage(null)
+                        }, 5000);
+
+                    })
+                    .catch((error) => {
+
+                        setErrorMessage('Erro ao deletar Volume Produto ( VOLUME PRODUTO NÃO FOI SALVO! )');
+
+                        setTimeout(() => {
+                            setErrorMessage(null);
+                        }, 5000);
+
+                    });
+
+
+
 
             })
             .catch((error) => {
 
                 const errorMessage = error.response?.data || "Erro desconhecido ao deletar Volume...";
-                setErrorMessage(errorMessage);
-                
+                setErrorMessage('ERRO AO DELETAR O VOLUME');
+
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000);
 
             });
 
-        axios.delete(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`)
-        .then(() => {
 
-            setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
-            
-            setTimeout(() => {
-                setSucessMessage(null)
-            }, 5000);
 
-        })
-        .catch((error) => {
-
-            setErrorMessage('Erro ao deletar Volume Produto ( VOLUME PRODUTO NÃO FOI SALVO! )');
-            
-            setTimeout(() => {
-                setErrorMessage(null);
-            }, 5000);
-
-        });
-            
     }
 
 
@@ -683,42 +768,17 @@ function Volume() {
                                 ref={contextMenuRef}
                             >
                                 <button onClick={handleEdit}>Editar</button>
+                                <button onClick={handleSubVolumes}>Listar Sub-Volumes</button>
                                 <button onClick={handleDelete}>Excluir</button>
                             </div>
                         )}
 
 
-                        {contextDelete.visible && (
-                            <>
-                                <div className="overlay"></div>
-                                <div className="context-delete">
-                                    <div>
-                                        <Text
-                                            text={'Tem certeza que deseja excluir o Produto?'}
-                                            fontSize={20}
-                                        />
-                                    </div>
-
-                                    <div className="buttons-delete">
-                                        <Button
-                                            className={'button-cancelar'}
-                                            text={'CANCELAR'}
-                                            fontSize={20}
-                                            onClick={() => { setContextDelete({ visible: false }); }}
-                                        />
-                                        <Button
-                                            className={'button-excluir'}
-                                            text={'EXCLUIR'}
-                                            fontSize={20}
-                                            onClick={handleDeleteConfirm}
-                                        />
-                                    </div>
-                                </div>
-                            </>
-                        )}
 
 
-                        {contextEditar && (
+
+                        {contextEditar.visible && (
+
                             <div className="overlay">
                                 <div className="overlay-content" ref={contextEditarRef}>
                                     <Title
@@ -852,6 +912,99 @@ function Volume() {
                         )}
 
 
+                        {contextSubVolumes.visible && (
+                            <div className="overlay">
+                                <div className="overlay-content" ref={contextSubVolumesRef}>
+                                    <Title
+                                        text={'Adicionar Sub-Volumes'}
+                                        color={'#1780e2'}
+                                    />
+
+                                    <div className="subcontainer-subvolume">
+                                        <div className="container-input-adicionar-subvolume">
+                                            <form>
+                                                <div className="input-group-subvolume">
+                                                    <div className="container-input-subvolume">
+
+                                                        <div>
+                                                            <label>Descrição:</label>
+                                                            <Input
+                                                                type={'text'}
+                                                                placeholder={'Digite a descrição...'}
+                                                                name={'descricao'}
+                                                                onChange={handleChangeSubVolume}
+                                                            />
+                                                        </div>
+
+                                                        <div id="div-quantidade-subvolume">
+                                                            <label>Quantidade:</label>
+                                                            <Input
+                                                                placeholder={'Digite a quantidade...'}
+                                                                name={'quantidade'}
+                                                                type={'number'}
+                                                                min={'1'}
+                                                                onChange={handleChangeSubVolume}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div className="buttons-adicionar-subvolume">
+                                        <Button
+                                            className={'button-salvar-add-subvolume'}
+                                            text={'SALVAR'}
+                                            fontSize={15}
+                                            padding={10}
+                                            borderRadius={5}
+                                            onClick={handleAtualizarVolume}
+                                        />
+                                        <Button
+                                            className={'button-cancelar-add-subvolume'}
+                                            text={'CANCELAR'}
+                                            fontSize={15}
+                                            padding={10}
+                                            borderRadius={5}
+                                            onClick={handleCancelAddSubvolume}
+                                        />
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+                        )}
+
+
+                        {contextDelete.visible && (
+                            <>
+                                <div className="overlay"></div>
+                                <div className="context-delete">
+                                    <div>
+                                        <Text
+                                            text={'Tem certeza que deseja excluir o Produto?'}
+                                            fontSize={20}
+                                        />
+                                    </div>
+
+                                    <div className="buttons-delete">
+                                        <Button
+                                            className={'button-cancelar'}
+                                            text={'CANCELAR'}
+                                            fontSize={20}
+                                            onClick={() => { setContextDelete({ visible: false }); }}
+                                        />
+                                        <Button
+                                            className={'button-excluir'}
+                                            text={'EXCLUIR'}
+                                            fontSize={20}
+                                            onClick={handleDeleteConfirm}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
 
                     </div>
 

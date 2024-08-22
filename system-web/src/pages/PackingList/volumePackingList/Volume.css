@@ -240,10 +240,6 @@
     position: relative;
 }
 
-.buttons-adicionar-volume {
-    margin-top: 20px;
-}
-
 .container-button-adicionar-volume {
     margin-bottom: 20px;
 }
@@ -251,4 +247,72 @@
 #message {
     z-index: 1000;
     
+}
+
+.subcontainer-subvolume {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-input-adicionar-subvolume input {
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.input-group-subvolume {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.input-group-subvolume input[type="text"],
+.input-group-subvolume input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.input-group-subvolume label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.container-input-subvolume {
+    display: flex;
+    justify-content: space-around;
+}
+
+.buttons-adicionar-subvolume {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.button-salvar-add-subvolume,
+.button-cancelar-add-subvolume {
+    width: 140px;
+    transition: background-color 0.3s;
+}
+
+.button-salvar-add-subvolume {
+    background-color: #1780e2;
+}
+
+
+.button-salvar-add-subvolume:hover {
+    background-color: #0056b3;
+}
+
+.button-cancelar-add-subvolume {
+    background-color: #fa0000;
+}
+
+.button-cancelar-add-subvolume:hover {
+    background-color: #5c1313;
 }

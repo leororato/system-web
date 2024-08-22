@@ -24,18 +24,18 @@ function PackingListProduto() {
     const [packingList, setPackingList] = useState([]);
     const [produtos, setProdutos] = useState([]);
     const [filteredProdutos, setFilteredProdutos] = useState([]);
-    
+
     const [produtoNomus, setProdutoNomus] = useState([]);
 
     const [buscaIdProduto, setBuscaIdProduto] = useState('');
     const [buscaDescricaoProduto, setBuscaDescricaoProduto] = useState('');
     const [buscaOrdemDeProducao, setBuscaOrdemDeProducao] = useState('');
-    
+
     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null });
     const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null });
-    const [ botaoAdicionar, setBotaoAdicionar] = useState({ visible: true });
+    const [botaoAdicionar, setBotaoAdicionar] = useState({ visible: true });
     const [contextAdicionar, setContextAdicionar] = useState({ visible: false });
-    
+
     const [formDataProduto, setFormDataProduto] = useState({
         idPackingList: id,
         idProduto: '',
@@ -43,7 +43,7 @@ function PackingListProduto() {
         nomeMaquina: '',
         codigoOrdem: ''
     });
-    
+
 
 
     useEffect(() => {
@@ -56,7 +56,7 @@ function PackingListProduto() {
                 console.error('Erro ao carregar a packing list:', error);
             }
         };
-    
+
         const fetchProdutos = async () => {
             try {
 
@@ -69,13 +69,13 @@ function PackingListProduto() {
 
             }
         };
-    
+
         fetchPackingList();
         fetchProdutos();
     }, [id, atualizadorDeEstados]);
-    
-    
-    
+
+
+
     useEffect(() => {
         const filterProdutos = produtos.filter(p =>
             (p.idProduto?.toString() || '').includes(buscaIdProduto) &&
@@ -84,7 +84,7 @@ function PackingListProduto() {
         );
         setFilteredProdutos(filterProdutos);
     }, [buscaIdProduto, buscaDescricaoProduto, buscaOrdemDeProducao, produtos]);
-    
+
 
 
     const formatarData = (dtCriacao) => {
@@ -144,7 +144,7 @@ function PackingListProduto() {
         });
         navigate(`/sub-volume/${packingList.idPackingList}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
     };
-    
+
 
 
 
@@ -168,13 +168,37 @@ function PackingListProduto() {
 
     const handleDeleteConfirm = () => {
 
-        axios.delete(`http://localhost:8080/api/pl-produto/${packingList.idPackingList}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`)
+        axios.delete(`http://localhost:8080/api/volume-produto/${packingList.idPackingList}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`)
             .then(() => {
-                setAtualizadorDeEstados(atualizadorDeEstados + 1);
-                setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
+
+
+
+                axios.delete(`http://localhost:8080/api/pl-produto/${packingList.idPackingList}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`)
+                    .then(() => {
+
+                        setAtualizadorDeEstados(atualizadorDeEstados + 1);
+
+                        setSucessMessage(`Produto ${contextDelete.selectedId} excluído com sucesso!`);
+                        setTimeout(() => {
+                            setSucessMessage(null)
+                        }, 5000);
+
+                        setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
+
+                    })
+                    .catch((error) => {
+
+                        setErrorMessage('Erro ao excluir o produto...');
+                        setTimeout(() => {
+                            setErrorMessage(null)
+                        }, 5000);
+                    })
+
             })
             .catch((error) => {
-                console.error('Erro ao excluir:', error);
+
+                setErrorMessage('Erro ao excluir o Produto (ERRO NA EXCLUSÃO DO VOLUME PRODUTO)')
+
             });
     };
 
@@ -192,55 +216,55 @@ function PackingListProduto() {
 
         const payload = {
             id: {
-                idPackinglist: parseInt(formDataProduto.idPackingList, 10), 
-                idProduto: parseInt(formDataProduto.idProduto, 10) 
+                idPackinglist: parseInt(formDataProduto.idPackingList, 10),
+                idProduto: parseInt(formDataProduto.idProduto, 10)
             },
-            produto: formDataProduto.codigoMaquina, 
-            descricaoProduto: formDataProduto.nomeMaquina, 
-            ordemProducao: formDataProduto.codigoOrdem 
+            produto: formDataProduto.codigoMaquina,
+            descricaoProduto: formDataProduto.nomeMaquina,
+            ordemProducao: formDataProduto.codigoOrdem
         };
-        
+
         axios.post('http://localhost:8080/api/pl-produto', payload)
             .then(response => {
-                
+
                 if (response.status === 201) {
 
 
-                setSucessMessage('Produto adicionado com sucesso!');
+                    setSucessMessage('Produto adicionado com sucesso!');
 
-                setTimeout(() => {
-                    setSucessMessage(null);
-                }, 5000);
+                    setTimeout(() => {
+                        setSucessMessage(null);
+                    }, 5000);
 
-                setAtualizadorDeEstados(atualizadorDeEstados + 1);
-                setContextAdicionar({ visible: false });
+                    setAtualizadorDeEstados(atualizadorDeEstados + 1);
+                    setContextAdicionar({ visible: false });
 
-                setBotaoAdicionar({ visible: true });
-            }
+                    setBotaoAdicionar({ visible: true });
+                }
 
             })
             .catch(error => {
                 const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Produto";
                 setErrorMessage(errorMessage);
-                
+
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000);
 
             });
     };
-    
+
 
     const handleSucessClose = () => {
         setSucessMessage(null);
     }
-    
+
     const handleErrorClose = () => {
         setErrorMessage(null);
     }
 
 
-    
+
     const handleCancelarAddProduto = () => {
         setContextAdicionar({ visible: false });
         setBotaoAdicionar({ visible: true });
@@ -264,8 +288,8 @@ function PackingListProduto() {
         <div className="container-produto">
             <div>
                 <Header />
-                <ErrorNotification message={errorMessage} onClose={handleErrorClose}/>
-                <SucessNotification message={sucessMessage} onClose={handleSucessClose}/>
+                <ErrorNotification message={errorMessage} onClose={handleErrorClose} />
+                <SucessNotification message={sucessMessage} onClose={handleSucessClose} />
             </div>
 
             <div className='container-listagem-prod'>
@@ -364,10 +388,10 @@ function PackingListProduto() {
                                         text={'Pesquisar por Produto ou Ordem:'}
                                     />
                                     <Autocomplete
-                                    id="input-autocomplete-adicionar-prod" 
-                                    data={produtoNomus}
-                                    onSelect={(item) => handleAutocompleteChange(item)} 
-                                    displayField={'itensConcatenados'}
+                                        id="input-autocomplete-adicionar-prod"
+                                        data={produtoNomus}
+                                        onSelect={(item) => handleAutocompleteChange(item)}
+                                        displayField={'itensConcatenados'}
                                     />
                                 </div>
                             </div>
@@ -393,29 +417,29 @@ function PackingListProduto() {
                             </div>
                         </div>
                     )}
-                <div className="ul-lista-produtos">
-                    <ul>
-                    <li id="header-lista-prod">
-                    <div>Id PackingList</div>
-                    <div>Id do Produto</div>
-                    <div>Seq</div>
-                    <div>Descrição</div>
-                    <div>Ordem de Produção</div>
-                    </li>
-                        {filteredProdutos.length > 0 ? (
-                            filteredProdutos.map((p) => (
-                                <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.id.idProduto, p.id.seq)}>
-                                    <div>{packingList.idPackingList}</div>
-                                    <div>{p.id.idProduto}</div>
-                                    <div>{p.id.seq}</div>
-                                    <div>{p.descricaoProduto}</div>
-                                    <div>{p.ordemProducao}</div>
-                                </li>
-                            ))
-                        ) : (
-                            <li>Nenhum produto encontrado</li>
-                        )}
-                    </ul>
+                    <div className="ul-lista-produtos">
+                        <ul>
+                            <li id="header-lista-prod">
+                                <div>Id PackingList</div>
+                                <div>Id do Produto</div>
+                                <div>Seq</div>
+                                <div>Descrição</div>
+                                <div>Ordem de Produção</div>
+                            </li>
+                            {filteredProdutos.length > 0 ? (
+                                filteredProdutos.map((p) => (
+                                    <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.id.idProduto, p.id.seq)}>
+                                        <div>{packingList.idPackingList}</div>
+                                        <div>{p.id.idProduto}</div>
+                                        <div>{p.id.seq}</div>
+                                        <div>{p.descricaoProduto}</div>
+                                        <div>{p.ordemProducao}</div>
+                                    </li>
+                                ))
+                            ) : (
+                                <li>Nenhum produto encontrado</li>
+                            )}
+                        </ul>
                     </div>
                 </div>
 
