@@ -11,6 +11,7 @@ import SucessNotification from "../../../components/SucessNotification/SucessNot
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import Text from "../../../components/Text";
 import { format } from "date-fns";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 function Volume() {
 
@@ -27,7 +28,7 @@ function Volume() {
 
     // PARTE DA FUNÇÃO PARA FECHAR OS CONTEXTOS AO CLICAR FORA DELES 
     const [overlayVisible, setOverlayVisible] = useState(false);
-    const [contextEditar, setContextEditar] = useState({ visible: false, selectedIdVolume: ''});
+    const [contextEditar, setContextEditar] = useState({ visible: false, selectedIdVolume: '' });
     const [contextMenu, setContextMenu] = useState({ visible: false, selectedIdVolume: '' });
 
     const [contextSubVolumes, setContextSubVolumes] = useState({ visible: false, selectedIdVolume: '' })
@@ -52,6 +53,7 @@ function Volume() {
 
     // ATUALIZADOR DO ESTADO DA LISTA DE APRESENTAÇAO DE TODOS OS VOLUMES
     const [atualizarEstadoLista, setAtualizarEstadoLista] = useState(0);
+    const [atualizarEstadoListaSubVolumes, setAtualizarEstadoListaSubVolumes] = useState(0);
 
 
     // CONTAINER QUE POSSUI TODOS OS VOLUMES
@@ -60,19 +62,13 @@ function Volume() {
     const [tiposDeVolume, setTiposDeVolume] = useState([]);
     // CONTAINER QUE POSSUI TODOS OS TIPOS DE VOLUMES EM ARRAY PARA USAR NO AUTOCOMPLETE
     const [tiposDeVolumeArray, setTiposDeVolumeArray] = useState([]);
+    // CONTAINER QUE POSSUI TODOS OS SUBVOLUMES
+    const [subvolumes, setSubVolumes] = useState([]);
+    const [subVolumeSelecionado, setSubVolumeSelecionado] = useState([]);
 
 
     // FORM DATA SUBVOLUME
-    const [formDataSubVolume, setFormDataSubVolume] = useState(
-        {
-            "id": {
-              "idVolume": '',
-            },
-            "descricao": "",
-            "quantidade": ""
-          }
-          
-    )
+    const [formDataSubVolume, setFormDataSubVolume] = useState({})
 
     // FORM DATA DO PUT
     const [volumeEdicao, setVolumeEdicao] = useState({
@@ -234,6 +230,7 @@ function Volume() {
                     });
 
                     setAtualizarEstadoLista(atualizarEstadoLista + 1);
+
                     setVolumeCriado(false); // Reseta o estado após sucesso
 
                 } catch (error) {
@@ -249,26 +246,41 @@ function Volume() {
     }, [volumeCriado, idVolumeSave, id, idProduto, seq]);
 
 
-    
-        const handleSalvarSubProduto = async (e) => {
-            e.preventDefault();
-            const idVolumeSave = contextSubVolumes.selectedIdVolume
-            setFormDataSubVolume(
-                {
-                    "id": {
-                      "idVolume": idVolumeSave,
-                    },
-                    "descricao": "",
-                    "quantidade": ""
-                  }
-            )
-            try {
-                const response = await axios.post(`http://localhost:8080/api/sub-volume`, formDataSubVolume);
-            } catch (error) {
 
+    const handleSalvarSubVolume = async (e) => {
+        e.preventDefault();
+
+        await axios.post(`http://localhost:8080/api/subvolume`, formDataSubVolume)
+            .then(() => {
+
+                setSucessMessage('Sub Volume adicionado com sucesso');
+
+                setTimeout(() => setSucessMessage(null), 5000);
+                setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
+
+                setFormDataSubVolume({})
+            })
+            .catch(error => {
+                const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Sub Volume";
+                setErrorMessage(errorMessage);
+                setTimeout(() => setErrorMessage(null), 5000);
+            })
+    }
+
+
+    // BUSCANDO OS SUBVOLUMES EXISTENTES PELO IDVOLUME
+    useEffect(() => {
+        const fetchSubVolumes = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${salvarIdVolume}`);
+                setSubVolumeSelecionado(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar sub volumes: ", error);
             }
         }
-   
+
+        fetchSubVolumes();
+    }, [salvarIdVolume, atualizarEstadoListaSubVolumes]);
 
     //ATUALIZANDO O VOLUME
     const handleAtualizarVolume = (e) => {
@@ -288,7 +300,7 @@ function Volume() {
                     observacao: ''
                 })
 
-                setContextEditar({ visible: false, selectedIdVolume: ''});
+                setContextEditar({ visible: false, selectedIdVolume: '' });
                 setSucessMessage('Volume atualizado com sucesso!');
                 setTimeout(() => setSucessMessage(null), 5000);
                 setAtualizarEstadoLista(atualizarEstadoLista + 1);
@@ -357,8 +369,9 @@ function Volume() {
     }
 
     // CANCELANDO A ADIÇAO DE SUBVOLUME
-    const handleCancelAddSubvolume = () => { 
+    const handleCancelAddSubvolume = () => {
         setContextSubVolumes({ visible: false });
+        setFormDataSubVolume({});
     }
 
     // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NOS INPUTS DO POST
@@ -426,11 +439,13 @@ function Volume() {
         }
 
         if (contextEditarRef.current && !contextEditarRef.current.contains(event.target)) {
-            setContextEditar({ visible: false, selectedIdVolume: ''});
+            setContextEditar({ visible: false, selectedIdVolume: '' });
         }
 
         if (contextSubVolumesRef.current && !contextSubVolumesRef.current.contains(event.target)) {
             setContextSubVolumes({ visible: false, selectedIdVolume: '' });
+
+            setFormDataSubVolume({});
         }
 
 
@@ -476,6 +491,18 @@ function Volume() {
             y: 0,
             selectedIdVolume: contextMenu.selectedIdVolume
         });
+
+        setFormDataSubVolume(
+            {
+                id: {
+                    idVolume: contextMenu.selectedIdVolume,
+                },
+                descricao: "",
+                quantidade: ""
+            }
+        );
+
+        setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
     }
 
 
@@ -532,15 +559,11 @@ function Volume() {
                         }, 5000);
 
                     });
-
-
-
-
             })
             .catch((error) => {
 
                 const errorMessage = error.response?.data || "Erro desconhecido ao deletar Volume...";
-                setErrorMessage('ERRO AO DELETAR O VOLUME');
+                setErrorMessage('ERRO AO DELETAR O VOLUME: ', errorMessage);
 
                 setTimeout(() => {
                     setErrorMessage(null);
@@ -562,24 +585,26 @@ function Volume() {
             <ErrorNotification message={errorMessage} onClose={closeMessages} id="message" />
             <div>
                 <div className='container-listagem-produto-volume'>
-                    <ul>
-                        <li className="header-produto-volume">
-                            <div>Id PackingList</div>
-                            <div>Id do Produto</div>
-                            <div>Seq</div>
-                            <div>Descrição</div>
-                            <div>Ordem de Produção</div>
-                        </li>
-                        {produtoSelecionado && (
-                            <li key={id} className='li-listagem-produto-volume'>
-                                <div>{id}</div>
-                                <div>{produtoSelecionado.id.idProduto}</div>
-                                <div>{produtoSelecionado.id.seq}</div>
-                                <div>{produtoSelecionado.descricaoProduto}</div>
-                                <div>{produtoSelecionado.ordemProducao}</div>
+                    <div className="subcontainer-listagem-produto-volume">
+                        <ul>
+                            <li className="header-produto-volume">
+                                <div>Id PackingList</div>
+                                <div>Id do Produto</div>
+                                <div>Seq</div>
+                                <div>Descrição</div>
+                                <div>Ordem de Produção</div>
                             </li>
-                        )}
-                    </ul>
+                            {produtoSelecionado && (
+                                <li key={id} className='li-listagem-produto-volume'>
+                                    <div>{id}</div>
+                                    <div>{produtoSelecionado.id.idProduto}</div>
+                                    <div>{produtoSelecionado.id.seq}</div>
+                                    <div>{produtoSelecionado.descricaoProduto}</div>
+                                    <div>{produtoSelecionado.ordemProducao}</div>
+                                </li>
+                            )}
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -596,139 +621,9 @@ function Volume() {
                             onClick={handleAddVolume}
                         />
                     </div>
-                    {overlayVisible && (
-                        <div className="overlay">
-                            <div className="overlay-content" ref={overlayRef}>
-                                <Title
-                                    classname={'title-adicionar-volume'}
-                                    text={'Adicionar um volume:'}
-                                    color={'#1780e2'}
-                                />
-                                <div className="subcontainer-volume">
-                                    <div className="container-input-adicionar-volume">
-                                        <form>
-                                            <div className="input-group-volume">
-                                                <div id="div-tipo-de-volume">
-                                                    <label>Tipo de volume:</label>
-                                                    <Autocomplete
-                                                        data={getTipoDeVolumeArray()}
-                                                        onSelect={handleAutocompleteChangeTipoVolume}
-                                                        displayField={'descricao'}
-                                                    />
-                                                </div>
-                                                <div id="div-quantidade-itens">
-                                                    <label>Quantidade de itens:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'quantidadeItens'}
-                                                        min={'0'}
-                                                        placeholder={'Quantidade de itens...'}
-                                                        value={formDataVolume.quantidadeItens}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-descricao">
-                                                    <label>Descrição:</label>
-                                                    <Input
-                                                        type={'text'}
-                                                        name={'descricao'}
-                                                        placeholder={'Descrição...'}
-                                                        value={formDataVolume.descricao}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-altura">
-                                                    <label>Altura:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'altura'}
-                                                        min={'0'}
-                                                        placeholder={'Altura...'}
-                                                        value={formDataVolume.altura}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-largura">
-                                                    <label>Largura:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'largura'}
-                                                        min={'0'}
-                                                        placeholder={'Largura...'}
-                                                        value={formDataVolume.largura}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-comprimento">
-                                                    <label>Comprimento:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'comprimento'}
-                                                        min={'0'}
-                                                        placeholder={'Comprimento...'}
-                                                        value={formDataVolume.comprimento}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-peso-liquido">
-                                                    <label>Peso Líquido:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'pesoLiquido'}
-                                                        min={'0'}
-                                                        placeholder={'Peso líquido...'}
-                                                        value={formDataVolume.pesoLiquido}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-peso-bruto">
-                                                    <label>Peso Bruto:</label>
-                                                    <Input
-                                                        type={'number'}
-                                                        name={'pesoBruto'}
-                                                        min={'0'}
-                                                        placeholder={'Peso bruto...'}
-                                                        value={formDataVolume.pesoBruto}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                                <div id="div-observacao">
-                                                    <label>Observação:</label>
-                                                    <Input
-                                                        type={'text'}
-                                                        name={'observacao'}
-                                                        placeholder={'Observação...'}
-                                                        value={formDataVolume.observacao}
-                                                        onChange={handleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div className="buttons-adicionar-volume">
-                                    <Button
-                                        className={'button-salvar-add-volume'}
-                                        text={'SALVAR'}
-                                        fontSize={15}
-                                        padding={10}
-                                        borderRadius={5}
-                                        onClick={handleSalvarVolume}
-                                    />
-                                    <Button
-                                        className={'button-cancelar-add-volume'}
-                                        text={'CANCELAR'}
-                                        fontSize={15}
-                                        padding={10}
-                                        borderRadius={5}
-                                        onClick={handleCancelAddVolume}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
+
                     <div className="ul-lista-volume">
-                        <ul>
+                        <ul id="lista-volume-ul">
                             <li id="header-lista-volume">
                                 <div>ID Volume</div>
                                 <div>Tipo do Volume</div>
@@ -743,275 +638,461 @@ function Volume() {
                             </li>
                             {volumes.length > 0 ? (
                                 volumes.map((v) => (
-                                    <li key={v.idVolume} onContextMenu={(e) => handleRightClick(e, v.idVolume)} className="li-listagem-volume">
-                                        <div>{v.idVolume}</div>
-                                        <div>{tiposDeVolume[v.idTipoVolumeId]}</div>
-                                        <div>{v.quantidadeItens}</div>
-                                        <div>{v.descricao}</div>
-                                        <div>{v.altura}</div>
-                                        <div>{v.largura}</div>
-                                        <div>{v.comprimento}</div>
-                                        <div>{v.pesoLiquido}</div>
-                                        <div>{v.pesoBruto}</div>
-                                        <div>{v.observacao}</div>
-                                    </li>
+                                    <div id="container-lista-botao-exibir-subvolume" key={v.idVolume}>
+                                        <div id="div-lista-subvolume">
+                                            <li onContextMenu={(e) => handleRightClick(e, v.idVolume)} className="li-listagem-volume">
+                                                <div>{v.idVolume}</div>
+                                                <div>{tiposDeVolume[v.idTipoVolumeId]}</div>
+                                                <div>{v.quantidadeItens}</div>
+                                                <div>{v.descricao}</div>
+                                                <div>{v.altura}</div>
+                                                <div>{v.largura}</div>
+                                                <div>{v.comprimento}</div>
+                                                <div>{v.pesoLiquido}</div>
+                                                <div>{v.pesoBruto}</div>
+                                                <div>{v.observacao}</div>
+                                            </li>
+                                        </div>
+                                        <Icon icon="ic:outline-plus" className="ic-outline-plus" />
+                                    </div>
                                 ))
                             ) : (
-                                <li>Nenhum volume encontrado...</li>
+                                <div id="nao-existe-volume">
+                                    <li>Não há nada para exibir, adicione um novo volume...</li>
+                                </div>
                             )}
                         </ul>
-
-                        {contextMenu.visible && (
-                            <div
-                                className="context-menu"
-                                style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
-                                ref={contextMenuRef}
-                            >
-                                <button onClick={handleEdit}>Editar</button>
-                                <button onClick={handleSubVolumes}>Listar Sub-Volumes</button>
-                                <button onClick={handleDelete}>Excluir</button>
-                            </div>
-                        )}
-
-
-
-
-
-                        {contextEditar.visible && (
-
-                            <div className="overlay">
-                                <div className="overlay-content" ref={contextEditarRef}>
-                                    <Title
-                                        classname={'title-adicionar-volume'}
-                                        text={'Editar o volume:'}
-                                        color={'#1780e2'}
-                                    />
-                                    <div className="subcontainer-volume">
-                                        <div className="container-input-adicionar-volume">
-                                            <form>
-                                                <div className="input-group-volume">
-                                                    <div id="div-tipo-de-volume">
-                                                        <label>Tipo de volume:</label>
-                                                        <Autocomplete
-                                                            data={getTipoDeVolumeArray()}
-                                                            onSelect={handleAutocompleteChangeTipoVolumeEdicao}
-                                                            displayField={'descricao'}
-                                                            value={salvarTipoDeVolumeAtual.descricao}
-                                                        />
-                                                    </div>
-                                                    <div id="div-quantidade-itens">
-                                                        <label>Quantidade de itens:</label>
-                                                        <Input
-                                                            type={'number'}
-                                                            name={'quantidadeItens'}
-                                                            min={'0'}
-                                                            placeholder={'Quantidade de itens...'}
-                                                            value={volumeEdicao.quantidadeItens}
-                                                            onChange={handleChangeEdicao}
-                                                        />
-                                                    </div>
-                                                    <div id="div-descricao">
-                                                        <label>Descrição:</label>
-                                                        <Input
-                                                            type={'text'}
-                                                            name={'descricao'}
-                                                            placeholder={'Descrição...'}
-                                                            value={volumeEdicao.descricao}
-                                                            onChange={handleChangeEdicao}
-                                                        />
-                                                    </div>
-                                                    <div id="div-altura">
-                                                        <label>Altura:</label>
-                                                        <Input
-                                                            type={'number'}
-                                                            name={'altura'}
-                                                            min={'0'}
-                                                            placeholder={'Altura...'}
-                                                            value={volumeEdicao.altura}
-                                                            onChange={handleChangeEdicao}
-                                                        />
-                                                    </div>
-                                                    <div id="div-largura">
-                                                        <label>Largura:</label>
-                                                        <Input
-                                                            type={'number'}
-                                                            name={'largura'}
-                                                            min={'0'}
-                                                            placeholder={'Largura...'}
-                                                            value={volumeEdicao.largura}
-                                                            onChange={handleChangeEdicao}
-                                                        />
-                                                    </div>
-                                                    <div id="div-comprimento">
-                                                        <label>Comprimento:</label>
-                                                        <Input
-                                                            type={'number'}
-                                                            name={'comprimento'}
-                                                            min={'0'}
-                                                            placeholder={'Comprimento...'}
-                                                            value={volumeEdicao.comprimento || ''}
-                                                            onChange={handleChangeEdicao}
-                                                        />
-                                                    </div>
-                                                    <div id="div-peso-liquido">
-                                                        <label>Peso Líquido:</label>
-                                                        <Input
-                                                            type={'number'}
-                                                            name={'pesoLiquido'}
-                                                            min={'0'}
-                                                            placeholder={'Peso líquido...'}
-                                                            value={volumeEdicao.pesoLiquido}
-                                                            onChange={handleChangeEdicao}
-                                                        />
-                                                    </div>
-                                                    <div id="div-peso-bruto">
-                                                        <label>Peso Bruto:</label>
-                                                        <Input
-                                                            type={'number'}
-                                                            name={'pesoBruto'}
-                                                            min={'0'}
-                                                            placeholder={'Peso bruto...'}
-                                                            value={volumeEdicao.pesoBruto}
-                                                            onChange={handleChangeEdicao}
-                                                        />
-                                                    </div>
-                                                    <div id="div-observacao">
-                                                        <label>Observação:</label>
-                                                        <Input
-                                                            type={'text'}
-                                                            name={'observacao'}
-                                                            placeholder={'Observação...'}
-                                                            value={volumeEdicao.observacao || ''}
-                                                            onChange={handleChangeEdicao}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div className="buttons-adicionar-volume">
-                                        <Button
-                                            className={'button-salvar-add-volume'}
-                                            text={'SALVAR'}
-                                            fontSize={15}
-                                            padding={10}
-                                            borderRadius={5}
-                                            onClick={handleAtualizarVolume}
-                                        />
-                                        <Button
-                                            className={'button-cancelar-add-volume'}
-                                            text={'CANCELAR'}
-                                            fontSize={15}
-                                            padding={10}
-                                            borderRadius={5}
-                                            onClick={handleCancelAddVolume}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-
-                        {contextSubVolumes.visible && (
-                            <div className="overlay">
-                                <div className="overlay-content" ref={contextSubVolumesRef}>
-                                    <Title
-                                        text={'Adicionar Sub-Volumes'}
-                                        color={'#1780e2'}
-                                    />
-
-                                    <div className="subcontainer-subvolume">
-                                        <div className="container-input-adicionar-subvolume">
-                                            <form>
-                                                <div className="input-group-subvolume">
-                                                    <div className="container-input-subvolume">
-
-                                                        <div>
-                                                            <label>Descrição:</label>
-                                                            <Input
-                                                                type={'text'}
-                                                                placeholder={'Digite a descrição...'}
-                                                                name={'descricao'}
-                                                                onChange={handleChangeSubVolume}
-                                                            />
-                                                        </div>
-
-                                                        <div id="div-quantidade-subvolume">
-                                                            <label>Quantidade:</label>
-                                                            <Input
-                                                                placeholder={'Digite a quantidade...'}
-                                                                name={'quantidade'}
-                                                                type={'number'}
-                                                                min={'1'}
-                                                                onChange={handleChangeSubVolume}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div className="buttons-adicionar-subvolume">
-                                        <Button
-                                            className={'button-salvar-add-subvolume'}
-                                            text={'SALVAR'}
-                                            fontSize={15}
-                                            padding={10}
-                                            borderRadius={5}
-                                            onClick={handleAtualizarVolume}
-                                        />
-                                        <Button
-                                            className={'button-cancelar-add-subvolume'}
-                                            text={'CANCELAR'}
-                                            fontSize={15}
-                                            padding={10}
-                                            borderRadius={5}
-                                            onClick={handleCancelAddSubvolume}
-                                        />
-                                    </div>
-
-
-                                </div>
-
-                            </div>
-                        )}
-
-
-                        {contextDelete.visible && (
-                            <>
-                                <div className="overlay"></div>
-                                <div className="context-delete">
-                                    <div>
-                                        <Text
-                                            text={'Tem certeza que deseja excluir o Produto?'}
-                                            fontSize={20}
-                                        />
-                                    </div>
-
-                                    <div className="buttons-delete">
-                                        <Button
-                                            className={'button-cancelar'}
-                                            text={'CANCELAR'}
-                                            fontSize={20}
-                                            onClick={() => { setContextDelete({ visible: false }); }}
-                                        />
-                                        <Button
-                                            className={'button-excluir'}
-                                            text={'EXCLUIR'}
-                                            fontSize={20}
-                                            onClick={handleDeleteConfirm}
-                                        />
-                                    </div>
-                                </div>
-                            </>
-                        )}
-
                     </div>
-
-
                 </div>
             </div>
-        </div>
+
+            {
+                contextMenu.visible && (
+                    <div
+                        className="context-menu"
+                        style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
+                        ref={contextMenuRef}
+                    >
+                        <button onClick={handleEdit}>Editar</button>
+                        <button onClick={handleSubVolumes}>Listar Sub-Volumes</button>
+                        <button onClick={handleDelete}>Excluir</button>
+                    </div>
+                )
+            }
+
+
+            {
+                overlayVisible && (
+                    <div className="overlay">
+                        <div className="overlay-content" ref={overlayRef}>
+                            <Title
+                                classname={'title-adicionar-volume'}
+                                text={'Adicionar um volume:'}
+                                color={'#1780e2'}
+                            />
+                            <div className="subcontainer-volume">
+                                <div className="container-input-adicionar-volume">
+                                    <form>
+                                        <div className="input-group-volume">
+                                            <div id="div-tipo-de-volume">
+                                                <label>Tipo de volume:</label>
+                                                <Autocomplete
+                                                    data={getTipoDeVolumeArray()}
+                                                    onSelect={handleAutocompleteChangeTipoVolume}
+                                                    displayField={'descricao'}
+                                                />
+                                            </div>
+                                            <div id="div-quantidade-itens">
+                                                <label>Quantidade de itens:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'quantidadeItens'}
+                                                    min={'0'}
+                                                    placeholder={'Quantidade de itens...'}
+                                                    value={formDataVolume.quantidadeItens}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                            <div id="div-descricao">
+                                                <label>Descrição:</label>
+                                                <Input
+                                                    type={'text'}
+                                                    name={'descricao'}
+                                                    placeholder={'Descrição...'}
+                                                    value={formDataVolume.descricao}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                            <div id="div-altura">
+                                                <label>Altura:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'altura'}
+                                                    min={'0'}
+                                                    placeholder={'Altura...'}
+                                                    value={formDataVolume.altura}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                            <div id="div-largura">
+                                                <label>Largura:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'largura'}
+                                                    min={'0'}
+                                                    placeholder={'Largura...'}
+                                                    value={formDataVolume.largura}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                            <div id="div-comprimento">
+                                                <label>Comprimento:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'comprimento'}
+                                                    min={'0'}
+                                                    placeholder={'Comprimento...'}
+                                                    value={formDataVolume.comprimento}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                            <div id="div-peso-liquido">
+                                                <label>Peso Líquido:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'pesoLiquido'}
+                                                    min={'0'}
+                                                    placeholder={'Peso líquido...'}
+                                                    value={formDataVolume.pesoLiquido}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                            <div id="div-peso-bruto">
+                                                <label>Peso Bruto:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'pesoBruto'}
+                                                    min={'0'}
+                                                    placeholder={'Peso bruto...'}
+                                                    value={formDataVolume.pesoBruto}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                            <div id="div-observacao">
+                                                <label>Observação:</label>
+                                                <Input
+                                                    type={'text'}
+                                                    name={'observacao'}
+                                                    placeholder={'Observação...'}
+                                                    value={formDataVolume.observacao}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div className="buttons-adicionar-volume">
+                                <Button
+                                    className={'button-salvar-add-volume'}
+                                    text={'SALVAR'}
+                                    fontSize={15}
+                                    padding={10}
+                                    borderRadius={5}
+                                    onClick={handleSalvarVolume}
+                                />
+                                <Button
+                                    className={'button-cancelar-add-volume'}
+                                    text={'CANCELAR'}
+                                    fontSize={15}
+                                    padding={10}
+                                    borderRadius={5}
+                                    onClick={handleCancelAddVolume}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+
+            {
+                contextEditar.visible && (
+
+                    <div className="overlay">
+                        <div className="overlay-content" ref={contextEditarRef}>
+                            <Title
+                                classname={'title-adicionar-volume'}
+                                text={'Editar o volume:'}
+                                color={'#1780e2'}
+                            />
+                            <div className="subcontainer-volume">
+                                <div className="container-input-adicionar-volume">
+                                    <form>
+                                        <div className="input-group-volume">
+                                            <div id="div-tipo-de-volume">
+                                                <label>Tipo de volume:</label>
+                                                <Autocomplete
+                                                    data={getTipoDeVolumeArray()}
+                                                    onSelect={handleAutocompleteChangeTipoVolumeEdicao}
+                                                    displayField={'descricao'}
+                                                    value={salvarTipoDeVolumeAtual.descricao}
+                                                />
+                                            </div>
+                                            <div id="div-quantidade-itens">
+                                                <label>Quantidade de itens:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'quantidadeItens'}
+                                                    min={'0'}
+                                                    placeholder={'Quantidade de itens...'}
+                                                    value={volumeEdicao.quantidadeItens}
+                                                    onChange={handleChangeEdicao}
+                                                />
+                                            </div>
+                                            <div id="div-descricao">
+                                                <label>Descrição:</label>
+                                                <Input
+                                                    type={'text'}
+                                                    name={'descricao'}
+                                                    placeholder={'Descrição...'}
+                                                    value={volumeEdicao.descricao}
+                                                    onChange={handleChangeEdicao}
+                                                />
+                                            </div>
+                                            <div id="div-altura">
+                                                <label>Altura:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'altura'}
+                                                    min={'0'}
+                                                    placeholder={'Altura...'}
+                                                    value={volumeEdicao.altura}
+                                                    onChange={handleChangeEdicao}
+                                                />
+                                            </div>
+                                            <div id="div-largura">
+                                                <label>Largura:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'largura'}
+                                                    min={'0'}
+                                                    placeholder={'Largura...'}
+                                                    value={volumeEdicao.largura}
+                                                    onChange={handleChangeEdicao}
+                                                />
+                                            </div>
+                                            <div id="div-comprimento">
+                                                <label>Comprimento:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'comprimento'}
+                                                    min={'0'}
+                                                    placeholder={'Comprimento...'}
+                                                    value={volumeEdicao.comprimento || ''}
+                                                    onChange={handleChangeEdicao}
+                                                />
+                                            </div>
+                                            <div id="div-peso-liquido">
+                                                <label>Peso Líquido:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'pesoLiquido'}
+                                                    min={'0'}
+                                                    placeholder={'Peso líquido...'}
+                                                    value={volumeEdicao.pesoLiquido}
+                                                    onChange={handleChangeEdicao}
+                                                />
+                                            </div>
+                                            <div id="div-peso-bruto">
+                                                <label>Peso Bruto:</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'pesoBruto'}
+                                                    min={'0'}
+                                                    placeholder={'Peso bruto...'}
+                                                    value={volumeEdicao.pesoBruto}
+                                                    onChange={handleChangeEdicao}
+                                                />
+                                            </div>
+                                            <div id="div-observacao">
+                                                <label>Observação:</label>
+                                                <Input
+                                                    type={'text'}
+                                                    name={'observacao'}
+                                                    placeholder={'Observação...'}
+                                                    value={volumeEdicao.observacao || ''}
+                                                    onChange={handleChangeEdicao}
+                                                />
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div className="buttons-adicionar-volume">
+                                <Button
+                                    className={'button-salvar-add-volume'}
+                                    text={'SALVAR'}
+                                    fontSize={15}
+                                    padding={10}
+                                    borderRadius={5}
+                                    onClick={handleAtualizarVolume}
+                                />
+                                <Button
+                                    className={'button-cancelar-add-volume'}
+                                    text={'CANCELAR'}
+                                    fontSize={15}
+                                    padding={10}
+                                    borderRadius={5}
+                                    onClick={handleCancelAddVolume}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+
+            {
+                contextSubVolumes.visible && (
+                    <div className="overlay">
+                        <div className="overlay-content" ref={contextSubVolumesRef}>
+                            <div className="title-subvolume-lista">
+                                <Title
+                                    text={'Adicionar Sub-Volumes'}
+                                    color={'#1780e2'}
+                                />
+                            </div>
+
+                            <div className="subcontainer-subvolume">
+                                <div className="container-input-adicionar-subvolume">
+                                    <form>
+                                        <div className="input-group-subvolume">
+                                            <div className="container-input-subvolume">
+
+                                                <div>
+                                                    <label>Descrição:</label>
+                                                    <Input
+                                                        type={'text'}
+                                                        placeholder={'Digite a descrição...'}
+                                                        name={'descricao'}
+                                                        onChange={handleChangeSubVolume}
+                                                        value={formDataSubVolume.descricao}
+                                                    />
+                                                </div>
+
+                                                <div id="div-quantidade-subvolume">
+                                                    <label>Quantidade:</label>
+                                                    <Input
+                                                        placeholder={'Digite a quantidade...'}
+                                                        name={'quantidade'}
+                                                        type={'number'}
+                                                        min={'1'}
+                                                        onChange={handleChangeSubVolume}
+                                                        value={formDataSubVolume.quantidade}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                            <div className="buttons-adicionar-subvolume">
+                                <Button
+                                    className={'button-salvar-add-subvolume'}
+                                    text={'SALVAR'}
+                                    fontSize={15}
+                                    padding={10}
+                                    borderRadius={5}
+                                    onClick={handleSalvarSubVolume}
+                                />
+                                <Button
+                                    className={'button-cancelar-add-subvolume'}
+                                    text={'CANCELAR'}
+                                    fontSize={15}
+                                    padding={10}
+                                    borderRadius={5}
+                                    onClick={handleCancelAddSubvolume}
+                                />
+                            </div>
+
+                            <div className="lista-subvolume-overlay">
+
+                                <div id="title-lista-subvolume">
+                                    <Text
+                                        text={'| Lista de Sub Volumes |'}
+                                        color={'#1780e2'}
+                                        fontSize={17}
+                                    />
+                                </div>
+
+                                <ul id="ul-lista-subvolume">
+                                    <li className="header-produto-subvolume">
+                                        <div>Id Volume</div>
+                                        <div>Id SubVolume</div>
+                                        <div>Descrição</div>
+                                        <div>Quantidade</div>
+                                    </li>
+                                    {subVolumeSelecionado.length > 0 ? (
+                                        subVolumeSelecionado && subVolumeSelecionado.map((subVolume, idVolume) => (
+                                            <li key={idVolume} className='li-listagem-produto-subvolume'>
+                                                <div>{subVolume.id?.idVolume}</div>
+                                                <div>{subVolume.id?.idSubVolume}</div>
+                                                <div>{subVolume.descricao}</div>
+                                                <div>{subVolume.quantidade}</div>
+                                            </li>
+                                        ))) : (
+                                        <div id="nao-existe-subvolume">
+                                            <li>
+                                                Não há nada para exibir, adicione um sub-volume...
+                                            </li>
+                                        </div>
+
+                                    )}
+                                </ul>
+                            </div>
+
+                        </div>
+
+                    </div>
+                )
+            }
+
+
+            {
+                contextDelete.visible && (
+                    <>
+                        <div className="overlay"></div>
+                        <div className="context-delete">
+                            <div>
+                                <Text
+                                    text={'Tem certeza que deseja excluir o Produto?'}
+                                    fontSize={20}
+                                />
+                            </div>
+
+                            <div className="buttons-delete">
+                                <Button
+                                    className={'button-cancelar'}
+                                    text={'CANCELAR'}
+                                    fontSize={20}
+                                    onClick={() => { setContextDelete({ visible: false }); }}
+                                />
+                                <Button
+                                    className={'button-excluir'}
+                                    text={'EXCLUIR'}
+                                    fontSize={20}
+                                    onClick={handleDeleteConfirm}
+                                />
+                            </div>
+                        </div>
+                    </>
+                )
+            }
+
+
+        </div >
     );
 }
 

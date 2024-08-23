@@ -1,8 +1,11 @@
 .container-listagem-produto-volume {
+    display: flex;
+    justify-content: center;
     overflow-x: auto;
     padding: 20px;
-    max-width: 100%;
+    width: 100%;
     margin-bottom: 120px;
+    border-collapse: collapse;
 }
 
 .container-listagem-produto-volume li {
@@ -13,6 +16,10 @@
 
 .container-listagem-produto-volume li {
     grid-template-columns: repeat(5, 1fr);
+}
+
+.subcontainer-listagem-produto-volume {
+    width: 100%;
 }
 
 .header-produto-volume {
@@ -30,6 +37,7 @@
     display: table-cell;
     padding: 5px;
     text-align: left;
+    min-height: 40px;
     border-right: 1px solid #ddd;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -43,6 +51,8 @@
 
 /*  -------------------------------- separação produto e volume ----------------------------------  */
 
+/* parte de exibir os volumes */
+
 .volume-container-volume {
     display: flex;
     flex-direction: column;
@@ -51,68 +61,91 @@
     margin-top: 100px;
 }
 
-.container-listagem-volume {
-    text-align: center;
+.lista-volume {
+    width: 80%;
 }
 
-.container-listagem-volume,
-.volume-container-volume ul {
-    list-style-type: none; 
-    padding: 0; 
+#lista-volume-ul {
+    list-style-type: none;
+    padding: 0;
     margin: 0;
 }
 
-.container-listagem-volume li,
-.volume-container-volume li {
+#header-lista-volume {
     display: grid;
-    border-top: none;
-}
-
-.volume-container-volume li {
     grid-template-columns: repeat(10, 1fr);
-    border-bottom: 1px solid #ddd;
-    border-left: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-}
-
-.container-listagem-volume,
-.volume-container-volume #header-lista-volume {
     background-color: #1780e2;
     color: white;
     font-weight: bold;
     text-align: center;
+    border: 1px solid #ddd;
 }
 
-.container-listagem-volume,
-.volume-container-volume #header-lista-volume div {
-    padding: 10px;
+.li-listagem-volume {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    align-items: center;
+    width: 100%;
+}
+
+.li-listagem-volume div{
+    width: 85.02;
+}
+
+#container-lista-botao-exibir-subvolume {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+#div-lista-subvolume {
+    flex: 1;
+}
+
+#div-lista-subvolume div {
     border-right: 1px solid #ddd;
 }
 
-.container-listagem-volume,
-.volume-container-volume #header-lista-volume div:last-child {
-    border-right: none;
+.ic-outline-plus {
+    font-size: 24px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: color 0.3s;
 }
+
+.ic-outline-plus:hover {
+    color: #0056b3;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*  ----------------------------------------------------------------------------------------------------*/
+.botao-mostrar-subvolume {
+   padding: 10px;    
+}
+
+.container-lista-botao-apresentar-subvolume {
+    display: inline-block;
+    width: 100%;
+}
+
 
 .li-listagem-volume { 
     cursor: pointer;
 }
-
-.volume-container-volume li div {
-    padding: 10px;
-    border-right: 1px solid #ddd; 
-}
-
-.volume-container-volume li div:last-child {
-    border-right: none; 
-}
-
-.lista-volume {
-    width: 80%;
-    margin-bottom: 100px;
-}
-
-
 
 
 .input-group-volume {
@@ -135,14 +168,6 @@
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-}
-
-
-
-.container-button-adicionar-volume {
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: 10px;
 }
 
 .button-adicionar-volume {
@@ -240,10 +265,6 @@
     position: relative;
 }
 
-.container-button-adicionar-volume {
-    margin-bottom: 20px;
-}
-
 #message {
     z-index: 1000;
     
@@ -315,4 +336,64 @@
 
 .button-cancelar-add-subvolume:hover {
     background-color: #5c1313;
+}
+
+.header-produto-subvolume {
+    font-weight: bold;
+    background-color: #1780e2;
+    color: white;
+    display: table-row;
+}
+
+.header-produto-subvolume div {
+    width: 100%;
+}
+
+.title-subvolume-lista {
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+#title-lista-subvolume {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 5px;
+    font-weight: 550;
+}
+
+.li-listagem-produto-subvolume {
+    display: table-row;
+    border-bottom: 1px solid #ddd; 
+}
+
+#ul-lista-subvolume li {
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.lista-subvolume-overlay {
+    margin-top: 40px;
+}
+
+#nao-existe-volume {
+    text-align: center;
+}
+
+#nao-existe-volume li{
+    grid-template-columns: repeat(1, 1fr);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#nao-existe-subvolume {
+    text-align: center;
+}
+
+#nao-existe-subvolume li{
+    grid-template-columns: repeat(1, 1fr);
+    padding-top: 10px;
+    padding-bottom: 10px;
 }

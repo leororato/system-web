@@ -129,6 +129,18 @@
 .sub-container-listagem-prod {
     width: 90%;
     margin-top: 50px;
+    border-collapse: collapse;
+}
+
+.sub-container-listagem-prod li div {
+    display: table-cell;
+    unicode-bidi: isolate;
+    padding: 5px;
+    max-width: 200px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
 }
 
 .container-listagem-prod,
