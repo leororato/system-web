@@ -35,6 +35,8 @@ function Volume() {
 
     const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedIdVolume: '' });
 
+    const [contextSubVolumeLista, setContextSubVolumeLista] = useState({ visible: false, selectedIdVolume: '' });
+
     // PARTES DA FUNÇAO PARA 
     const overlayRef = useRef(null);
     const contextMenuRef = useRef(null);
@@ -63,7 +65,7 @@ function Volume() {
     // CONTAINER QUE POSSUI TODOS OS TIPOS DE VOLUMES EM ARRAY PARA USAR NO AUTOCOMPLETE
     const [tiposDeVolumeArray, setTiposDeVolumeArray] = useState([]);
     // CONTAINER QUE POSSUI TODOS OS SUBVOLUMES
-    const [subvolumes, setSubVolumes] = useState([]);
+    const [subVolumesLista, setSubVolumesLista] = useState([]);
     const [subVolumeSelecionado, setSubVolumeSelecionado] = useState([]);
 
 
@@ -327,6 +329,22 @@ function Volume() {
     }, [overlayVisible, contextMenu, contextEditar, contextSubVolumes]);
 
 
+    // BUSCAR OS SUBVOLUMES DO ITEM SELECIONADO
+    useEffect(() => {
+        const savingIdVolume = contextSubVolumeLista.selectedIdVolume;
+        const fetchSubVolumes = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${savingIdVolume}`);
+                setSubVolumesLista(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar sub volumes: ", error);
+            }
+        }
+
+        fetchSubVolumes();
+    }, [contextSubVolumeLista]);
+
+
     // FUNÇAO PARA CONVERTER O MAPEAMENTO DOS IDS EM UM ARRAY PARA O AUTOCOMPLETE
     const getTipoDeVolumeArray = () => {
         return tiposDeVolumeArray;
@@ -460,9 +478,17 @@ function Volume() {
             y: e.pageY,
             selectedIdVolume: idVolume
         });
-
         setSalvarIdVolume(`${idVolume}`);
     };
+
+    // ABRIR LISTA DE SUBVOLUMES AO CLICAR NO MAIS +
+    const handleSubVolumeList = (e, idVolume) => {
+        e.preventDefault();
+        setContextSubVolumeLista({
+            visible: true,
+            selectedIdVolume: idVolume
+        })
+    }
 
 
     // AÇAO PARA QUANDO CLICAR NO BOTAO EDITAR
@@ -570,9 +596,6 @@ function Volume() {
                 }, 5000);
 
             });
-
-
-
     }
 
 
@@ -583,6 +606,7 @@ function Volume() {
             <Header />
             <SucessNotification message={sucessMessage} onClose={closeMessages} id="message" />
             <ErrorNotification message={errorMessage} onClose={closeMessages} id="message" />
+
             <div>
                 <div className='container-listagem-produto-volume'>
                     <div className="subcontainer-listagem-produto-volume">
@@ -609,9 +633,11 @@ function Volume() {
             </div>
 
 
-            <div className="volume-container-volume">
-                <div className="lista-volume">
-                    <div className="container-button-adicionar-volume">
+
+            <div className="org-lista-1">
+                <div className="org-lista-2">
+
+                    <div id="container-botao-add-volume">
                         <Button
                             className={'button-adicionar-volume'}
                             text={'Adicionar Volume'}
@@ -622,39 +648,77 @@ function Volume() {
                         />
                     </div>
 
-                    <div className="ul-lista-volume">
-                        <ul id="lista-volume-ul">
-                            <li id="header-lista-volume">
-                                <div>ID Volume</div>
-                                <div>Tipo do Volume</div>
-                                <div>Quantidade de Itens</div>
-                                <div>Descrição</div>
-                                <div>Altura</div>
-                                <div>Largura</div>
-                                <div>Comprimento</div>
-                                <div>Peso Líquido</div>
-                                <div>Peso Bruto</div>
-                                <div>Observação</div>
+                    <div className='container-listagem-volume'>
+                        <ul>
+                            <li className="header-volume">
+                                <div id="list-vol">ID Volume</div>
+                                <div id="list-vol">Tipo do Volume</div>
+                                <div id="list-vol">Quantidade de Itens</div>
+                                <div id="list-vol">Descrição</div>
+                                <div id="list-vol">Altura</div>
+                                <div id="list-vol">Largura</div>
+                                <div id="list-vol">Comprimento</div>
+                                <div id="list-vol">Peso Líquido</div>
+                                <div id="list-vol">Peso Bruto</div>
+                                <div id="list-vol">Observação</div>
                             </li>
+
                             {volumes.length > 0 ? (
                                 volumes.map((v) => (
-                                    <div id="container-lista-botao-exibir-subvolume" key={v.idVolume}>
-                                        <div id="div-lista-subvolume">
-                                            <li onContextMenu={(e) => handleRightClick(e, v.idVolume)} className="li-listagem-volume">
-                                                <div>{v.idVolume}</div>
-                                                <div>{tiposDeVolume[v.idTipoVolumeId]}</div>
-                                                <div>{v.quantidadeItens}</div>
-                                                <div>{v.descricao}</div>
-                                                <div>{v.altura}</div>
-                                                <div>{v.largura}</div>
-                                                <div>{v.comprimento}</div>
-                                                <div>{v.pesoLiquido}</div>
-                                                <div>{v.pesoBruto}</div>
-                                                <div>{v.observacao}</div>
-                                            </li>
+                                    <li key={v.idVolume} onContextMenu={(e) => handleRightClick(e, v.idVolume)} className='li-listagem-volume'>
+                                        <div id="container-list-vol">
+                                            <div id="list-vol-divs">
+                                                <div id="list-vol">{v.idVolume}</div>
+                                                <div id="list-vol">{tiposDeVolume[v.idTipoVolumeId]}</div>
+                                                <div id="list-vol">{v.quantidadeItens}</div>
+                                                <div id="list-vol">{v.descricao}</div>
+                                                <div id="list-vol">{v.altura}</div>
+                                                <div id="list-vol">{v.largura}</div>
+                                                <div id="list-vol">{v.comprimento}</div>
+                                                <div id="list-vol">{v.pesoLiquido}</div>
+                                                <div id="list-vol">{v.pesoBruto}</div>
+                                                <div id="list-vol">{v.observacao}</div>
+                                            </div>
+                                            <div id="container-icon-plus">
+                                                <Icon icon="ic:outline-plus" id="ic-outline-plus" onClick={(e) => handleSubVolumeList(e, v.idVolume)} />
+                                            </div>
                                         </div>
-                                        <Icon icon="ic:outline-plus" className="ic-outline-plus" />
-                                    </div>
+                                        
+                                        {contextSubVolumeLista.visible && (
+                                            <div id="listagem-subvolume">
+                                                <div className="lista-subvolume-overlay">
+                                                    <div className="ul-lista-subvolume">
+                                                        <ul>
+                                                            <li className="header-produto-subvolume">
+                                                                <div>Id Volume</div>
+                                                                <div>Id SubVolume</div>
+                                                                <div>Descrição</div>
+                                                                <div>Quantidade</div>
+                                                            </li>
+                                                            {subVolumeSelecionado.length > 0 ? (
+                                                                subVolumeSelecionado && subVolumeSelecionado.map((subVolume, idVolume) => (
+                                                                    <li key={idVolume} className='li-listagem-produto-subvolume'>
+                                                                        <div>{subVolume.id?.idVolume}</div>
+                                                                        <div>{subVolume.id?.idSubVolume}</div>
+                                                                        <div>{subVolume.descricao}</div>
+                                                                        <div>{subVolume.quantidade}</div>
+                                                                    </li>
+                                                                ))) : (
+                                                                <div id="nao-existe-subvolume">
+                                                                    <li>
+                                                                        Não há nada para exibir, adicione um sub-volume...
+                                                                    </li>
+                                                                </div>
+
+                                                            )}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                    </li>
+
                                 ))
                             ) : (
                                 <div id="nao-existe-volume">
@@ -665,20 +729,6 @@ function Volume() {
                     </div>
                 </div>
             </div>
-
-            {
-                contextMenu.visible && (
-                    <div
-                        className="context-menu"
-                        style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
-                        ref={contextMenuRef}
-                    >
-                        <button onClick={handleEdit}>Editar</button>
-                        <button onClick={handleSubVolumes}>Listar Sub-Volumes</button>
-                        <button onClick={handleDelete}>Excluir</button>
-                    </div>
-                )
-            }
 
 
             {
@@ -1017,47 +1067,59 @@ function Volume() {
                                 />
                             </div>
 
-                            <div className="lista-subvolume-overlay">
 
-                                <div id="title-lista-subvolume">
-                                    <Text
-                                        text={'| Lista de Sub Volumes |'}
-                                        color={'#1780e2'}
-                                        fontSize={17}
-                                    />
-                                </div>
 
-                                <ul id="ul-lista-subvolume">
-                                    <li className="header-produto-subvolume">
-                                        <div>Id Volume</div>
-                                        <div>Id SubVolume</div>
-                                        <div>Descrição</div>
-                                        <div>Quantidade</div>
-                                    </li>
-                                    {subVolumeSelecionado.length > 0 ? (
-                                        subVolumeSelecionado && subVolumeSelecionado.map((subVolume, idVolume) => (
-                                            <li key={idVolume} className='li-listagem-produto-subvolume'>
-                                                <div>{subVolume.id?.idVolume}</div>
-                                                <div>{subVolume.id?.idSubVolume}</div>
-                                                <div>{subVolume.descricao}</div>
-                                                <div>{subVolume.quantidade}</div>
-                                            </li>
-                                        ))) : (
-                                        <div id="nao-existe-subvolume">
-                                            <li>
-                                                Não há nada para exibir, adicione um sub-volume...
-                                            </li>
-                                        </div>
-
-                                    )}
-                                </ul>
+                            <div id="title-lista-subvolume">
+                                <Text
+                                    text={'| Lista de Sub Volumes |'}
+                                    color={'#1780e2'}
+                                    fontSize={17}
+                                />
                             </div>
 
-                        </div>
+                            <div className="lista-subvolume-overlay">
+                                <div className="ul-lista-subvolume">
+                                    <ul>
+                                        <li className="header-produto-subvolume">
+                                            <div>Id Volume</div>
+                                            <div>Id SubVolume</div>
+                                            <div>Descrição</div>
+                                            <div>Quantidade</div>
+                                        </li>
+                                        {subVolumeSelecionado.length > 0 ? (
+                                            subVolumeSelecionado && subVolumeSelecionado.map((subVolume, idVolume) => (
+                                                <li key={idVolume} className='li-listagem-produto-subvolume'>
+                                                    <div>{subVolume.id?.idVolume}</div>
+                                                    <div>{subVolume.id?.idSubVolume}</div>
+                                                    <div>{subVolume.descricao}</div>
+                                                    <div>{subVolume.quantidade}</div>
+                                                </li>
+                                            ))) : (
+                                            <div id="nao-existe-subvolume">
+                                                <li>
+                                                    Não há nada para exibir, adicione um sub-volume...
+                                                </li>
+                                            </div>
 
+                                        )}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )
             }
+
+
+
+            {contextMenu.visible && (
+                <div className="context-menu" style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}>
+                    <button onClick={handleEdit}>Editar</button>
+                    <button onClick={handleSubVolumes}>Adicionar Sub-Volume</button>
+                    <button onClick={handleDelete}>Excluir</button>
+                </div>
+            )}
+
 
 
             {

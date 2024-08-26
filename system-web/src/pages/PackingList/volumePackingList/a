@@ -1,0 +1,64 @@
+<div>
+                <div className="container-listagem-produto-volume">
+                    <div className="subcontainer-listagem-produto-volume">
+                        <Button
+                            className={'button-adicionar-volume'}
+                            text={'Adicionar Volume'}
+                            padding={10}
+                            fontSize={15}
+                            borderRadius={5}
+                            onClick={handleAddVolume}
+                        />
+                    </div>
+
+                        <ul id="lista-volume-ul">
+                                    <li id="header-lista-volume">
+                                        <div>ID Volume</div>
+                                        <div>Tipo do Volume</div>
+                                        <div>Quantidade de Itens</div>
+                                        <div>Descrição</div>
+                                        <div>Altura</div>
+                                        <div>Largura</div>
+                                        <div>Comprimento</div>
+                                        <div>Peso Líquido</div>
+                                        <div>Peso Bruto</div>
+                                        <div>Observação</div>
+                                    </li>
+
+                            {volumes.length > 0 ? (
+                                volumes.map((v) => (
+                                            <li onContextMenu={(e) => handleRightClick(e, v.idVolume)} className="li-listagem-volume">
+                                                <div>{v.idVolume}</div>
+                                                <div>{tiposDeVolume[v.idTipoVolumeId]}</div>
+                                                <div>{v.quantidadeItens}</div>
+                                                <div>{v.descricao}</div>
+                                                <div>{v.altura}</div>
+                                                <div>{v.largura}</div>
+                                                <div>{v.comprimento}</div>
+                                                <div>{v.pesoLiquido}</div>
+                                                <div>{v.pesoBruto}</div>
+                                                <div>{v.observacao}</div>
+                                            </li>
+                                ))
+                            ) : (
+                                <div id="nao-existe-volume">
+                                    <li>Não há nada para exibir, adicione um novo volume...</li>
+                                </div>
+                            )}
+                        </ul>
+                </div>
+            </div>
+
+            {
+                contextMenu.visible && (
+                    <div
+                        className="context-menu"
+                        style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
+                        ref={contextMenuRef}
+                    >
+                        <button onClick={handleEdit}>Editar</button>
+                        <button onClick={handleSubVolumes}>Listar Sub-Volumes</button>
+                        <button onClick={handleDelete}>Excluir</button>
+                    </div>
+                )
+            }
