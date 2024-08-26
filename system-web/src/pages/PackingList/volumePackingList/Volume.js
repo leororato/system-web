@@ -36,6 +36,9 @@ function Volume() {
     const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedIdVolume: '' });
 
     const [contextSubVolumeLista, setContextSubVolumeLista] = useState({ visible: false, selectedIdVolume: '' });
+    const [subVolumesPorVolume, setSubVolumesPorVolume] = useState({});
+    const [definirBotaoMostrarMais, setDefinirBotaoMostrarMais] = useState({});
+
 
     // PARTES DA FUNÇAO PARA 
     const overlayRef = useRef(null);
@@ -271,18 +274,18 @@ function Volume() {
 
 
     // BUSCANDO OS SUBVOLUMES EXISTENTES PELO IDVOLUME
-    useEffect(() => {
-        const fetchSubVolumes = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${salvarIdVolume}`);
-                setSubVolumeSelecionado(response.data);
-            } catch (error) {
-                console.error("Erro ao buscar sub volumes: ", error);
-            }
+    const fetchSubVolumes = async (idVolume) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${idVolume}`);
+            setSubVolumesPorVolume(prevState => ({
+                ...prevState,
+                [idVolume]: response.data
+            }));
+        } catch (error) {
+            console.error("Erro ao buscar sub volumes: ", error);
         }
+    }
 
-        fetchSubVolumes();
-    }, [salvarIdVolume, atualizarEstadoListaSubVolumes]);
 
     //ATUALIZANDO O VOLUME
     const handleAtualizarVolume = (e) => {
@@ -330,19 +333,18 @@ function Volume() {
 
 
     // BUSCAR OS SUBVOLUMES DO ITEM SELECIONADO
-    useEffect(() => {
-        const savingIdVolume = contextSubVolumeLista.selectedIdVolume;
-        const fetchSubVolumes = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${savingIdVolume}`);
-                setSubVolumesLista(response.data);
-            } catch (error) {
-                console.error("Erro ao buscar sub volumes: ", error);
-            }
-        }
+    const fetchSubVolumesContexto = async (idVolume) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${idVolume}`);
+            setSubVolumeSelecionado(response.data);
+            console.log('testee', response.data)
+        } catch (error) {
+            console.error("Erro ao buscar sub volumes: ", error);
+            console.log('testee deu erro')
 
-        fetchSubVolumes();
-    }, [contextSubVolumeLista]);
+        }
+    }
+
 
 
     // FUNÇAO PARA CONVERTER O MAPEAMENTO DOS IDS EM UM ARRAY PARA O AUTOCOMPLETE
@@ -466,7 +468,6 @@ function Volume() {
             setFormDataSubVolume({});
         }
 
-
     }
 
     // AÇAO PARA QUANDO CLICAR COM O BOTAO DIREITO EM CIMA DE ALGUM ITEM
@@ -484,11 +485,78 @@ function Volume() {
     // ABRIR LISTA DE SUBVOLUMES AO CLICAR NO MAIS +
     const handleSubVolumeList = (e, idVolume) => {
         e.preventDefault();
-        setContextSubVolumeLista({
+
+        // Verifica se já temos os subvolumes carregados para este volume
+        if (!subVolumesPorVolume[idVolume]) {
+            fetchSubVolumes(idVolume);
+        }
+
+        setDefinirBotaoMostrarMais(prevState => ({
+            ...prevState,
+            [idVolume]: 'diminuir'
+        }));
+
+        setContextSubVolumeLista(prevState => ({
+            ...prevState,
+            [idVolume]: !prevState[idVolume] // Alterna o estado de visibilidade para este volume específico
+        }));
+
+        console.log('idVolume', idVolume);
+    };
+
+
+
+    // FECHAR LISTA DE SUBVOLUMES AO CLICAR NO MENOS -
+    const hideSubVolumeList = (e, idVolume) => {
+        e.preventDefault();
+
+        setDefinirBotaoMostrarMais(prevState => ({
+            ...prevState,
+            [idVolume]: 'mostrar'
+        }));
+
+        setContextSubVolumeLista(prevState => ({
+            ...prevState,
+            [idVolume]: false // Esconde o subvolume para este volume específico
+        }));
+
+        console.log('idVolume', idVolume);
+    };
+
+
+
+
+    // AÇAO PARA IR AOS SUB VOLUMES
+    const handleSubVolumes = () => {
+        setContextMenu({
+            visible: false,
+            x: 0,
+            y: 0,
+            selectedIdVolume: null
+        });
+
+        setFormDataSubVolume(
+            {
+                id: {
+                    idVolume: contextMenu.selectedIdVolume,
+                },
+                descricao: "",
+                quantidade: ""
+            }
+        );
+
+        fetchSubVolumesContexto(salvarIdVolume);
+
+        setContextSubVolumes({
             visible: true,
-            selectedIdVolume: idVolume
-        })
+            x: 0,
+            y: 0,
+            selectedIdVolume: contextMenu.selectedIdVolume
+        });
+
+        setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
     }
+
 
 
     // AÇAO PARA QUANDO CLICAR NO BOTAO EDITAR
@@ -503,33 +571,6 @@ function Volume() {
     }
 
 
-    // AÇAO PARA IR AOS SUB VOLUMES
-    const handleSubVolumes = () => {
-        setContextMenu({
-            visible: false,
-            x: 0,
-            y: 0,
-            selectedIdVolume: null
-        });
-        setContextSubVolumes({
-            visible: true,
-            x: 0,
-            y: 0,
-            selectedIdVolume: contextMenu.selectedIdVolume
-        });
-
-        setFormDataSubVolume(
-            {
-                id: {
-                    idVolume: contextMenu.selectedIdVolume,
-                },
-                descricao: "",
-                quantidade: ""
-            }
-        );
-
-        setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
-    }
 
 
     // AÇAO PARA QUANDO CLICAR NO BOTAO EXCLUIR
@@ -599,8 +640,6 @@ function Volume() {
     }
 
 
-
-
     return (
         <div className="volume-container">
             <Header />
@@ -636,7 +675,6 @@ function Volume() {
 
             <div className="org-lista-1">
                 <div className="org-lista-2">
-
                     <div id="container-botao-add-volume">
                         <Button
                             className={'button-adicionar-volume'}
@@ -680,45 +718,47 @@ function Volume() {
                                                 <div id="list-vol">{v.observacao}</div>
                                             </div>
                                             <div id="container-icon-plus">
-                                                <Icon icon="ic:outline-plus" id="ic-outline-plus" onClick={(e) => handleSubVolumeList(e, v.idVolume)} />
+                                                {definirBotaoMostrarMais[v.idVolume] === 'diminuir' ? (
+                                                    <Icon icon="ic:baseline-minus" id="ic-outline-plus" onClick={(e) => hideSubVolumeList(e, v.idVolume)} />
+                                                ) : (
+                                                    <Icon icon="ic:outline-plus" id="ic-outline-plus" onClick={(e) => handleSubVolumeList(e, v.idVolume)} />
+                                                )}
                                             </div>
                                         </div>
-                                        
-                                        {contextSubVolumeLista.visible && (
+
+                                        {contextSubVolumeLista[v.idVolume] && (
                                             <div id="listagem-subvolume">
                                                 <div className="lista-subvolume-overlay">
                                                     <div className="ul-lista-subvolume">
                                                         <ul>
-                                                            <li className="header-produto-subvolume">
-                                                                <div>Id Volume</div>
-                                                                <div>Id SubVolume</div>
-                                                                <div>Descrição</div>
-                                                                <div>Quantidade</div>
+                                                            <li className="header-produto-subvolume" id="grid-lista">
+                                                                <div id="lista-1">Id Volume</div>
+                                                                <div id="lista-1">Id SubVolume</div>
+                                                                <div id="lista-1">Descrição</div>
+                                                                <div id="lista-1">Quantidade</div>
                                                             </li>
-                                                            {subVolumeSelecionado.length > 0 ? (
-                                                                subVolumeSelecionado && subVolumeSelecionado.map((subVolume, idVolume) => (
-                                                                    <li key={idVolume} className='li-listagem-produto-subvolume'>
-                                                                        <div>{subVolume.id?.idVolume}</div>
-                                                                        <div>{subVolume.id?.idSubVolume}</div>
+                                                            {subVolumesPorVolume[v.idVolume] && subVolumesPorVolume[v.idVolume].length > 0 ? (
+                                                                subVolumesPorVolume[v.idVolume].map((subVolume) => (
+                                                                    <li key={subVolume.id.idSubVolume} className='li-listagem-produto-subvolume' id="grid-lista">
+                                                                        <div>{subVolume.id.idVolume}</div>
+                                                                        <div>{subVolume.id.idSubVolume}</div>
                                                                         <div>{subVolume.descricao}</div>
                                                                         <div>{subVolume.quantidade}</div>
                                                                     </li>
-                                                                ))) : (
-                                                                <div id="nao-existe-subvolume">
-                                                                    <li>
-                                                                        Não há nada para exibir, adicione um sub-volume...
-                                                                    </li>
+                                                                ))
+                                                            ) : (
+                                                                <div id="container-nao-existe-subvolume">
+                                                                    <div id="nao-existe-subvolume">
+                                                                        <li>Não há nada para exibir, adicione um sub-volume...</li>
+                                                                    </div>
                                                                 </div>
-
                                                             )}
                                                         </ul>
                                                     </div>
                                                 </div>
                                             </div>
                                         )}
-
                                     </li>
-
                                 ))
                             ) : (
                                 <div id="nao-existe-volume">
@@ -744,7 +784,7 @@ function Volume() {
                                 <div className="container-input-adicionar-volume">
                                     <form>
                                         <div className="input-group-volume">
-                                            <div id="div-tipo-de-volume">
+                                            <div>
                                                 <label>Tipo de volume:</label>
                                                 <Autocomplete
                                                     data={getTipoDeVolumeArray()}
@@ -752,7 +792,7 @@ function Volume() {
                                                     displayField={'descricao'}
                                                 />
                                             </div>
-                                            <div id="div-quantidade-itens">
+                                            <div>
                                                 <label>Quantidade de itens:</label>
                                                 <Input
                                                     type={'number'}
@@ -763,7 +803,7 @@ function Volume() {
                                                     onChange={handleChange}
                                                 />
                                             </div>
-                                            <div id="div-descricao">
+                                            <div>
                                                 <label>Descrição:</label>
                                                 <Input
                                                     type={'text'}
@@ -773,7 +813,7 @@ function Volume() {
                                                     onChange={handleChange}
                                                 />
                                             </div>
-                                            <div id="div-altura">
+                                            <div>
                                                 <label>Altura:</label>
                                                 <Input
                                                     type={'number'}
@@ -784,7 +824,7 @@ function Volume() {
                                                     onChange={handleChange}
                                                 />
                                             </div>
-                                            <div id="div-largura">
+                                            <div>
                                                 <label>Largura:</label>
                                                 <Input
                                                     type={'number'}
@@ -806,7 +846,7 @@ function Volume() {
                                                     onChange={handleChange}
                                                 />
                                             </div>
-                                            <div id="div-peso-liquido">
+                                            <div>
                                                 <label>Peso Líquido:</label>
                                                 <Input
                                                     type={'number'}
@@ -817,7 +857,7 @@ function Volume() {
                                                     onChange={handleChange}
                                                 />
                                             </div>
-                                            <div id="div-peso-bruto">
+                                            <div>
                                                 <label>Peso Bruto:</label>
                                                 <Input
                                                     type={'number'}
@@ -880,7 +920,7 @@ function Volume() {
                                 <div className="container-input-adicionar-volume">
                                     <form>
                                         <div className="input-group-volume">
-                                            <div id="div-tipo-de-volume">
+                                            <div>
                                                 <label>Tipo de volume:</label>
                                                 <Autocomplete
                                                     data={getTipoDeVolumeArray()}
@@ -889,7 +929,7 @@ function Volume() {
                                                     value={salvarTipoDeVolumeAtual.descricao}
                                                 />
                                             </div>
-                                            <div id="div-quantidade-itens">
+                                            <div>
                                                 <label>Quantidade de itens:</label>
                                                 <Input
                                                     type={'number'}
@@ -900,7 +940,7 @@ function Volume() {
                                                     onChange={handleChangeEdicao}
                                                 />
                                             </div>
-                                            <div id="div-descricao">
+                                            <div>
                                                 <label>Descrição:</label>
                                                 <Input
                                                     type={'text'}
@@ -910,7 +950,7 @@ function Volume() {
                                                     onChange={handleChangeEdicao}
                                                 />
                                             </div>
-                                            <div id="div-altura">
+                                            <div>
                                                 <label>Altura:</label>
                                                 <Input
                                                     type={'number'}
@@ -921,7 +961,7 @@ function Volume() {
                                                     onChange={handleChangeEdicao}
                                                 />
                                             </div>
-                                            <div id="div-largura">
+                                            <div>
                                                 <label>Largura:</label>
                                                 <Input
                                                     type={'number'}
@@ -932,7 +972,7 @@ function Volume() {
                                                     onChange={handleChangeEdicao}
                                                 />
                                             </div>
-                                            <div id="div-comprimento">
+                                            <div>
                                                 <label>Comprimento:</label>
                                                 <Input
                                                     type={'number'}
@@ -943,7 +983,7 @@ function Volume() {
                                                     onChange={handleChangeEdicao}
                                                 />
                                             </div>
-                                            <div id="div-peso-liquido">
+                                            <div>
                                                 <label>Peso Líquido:</label>
                                                 <Input
                                                     type={'number'}
@@ -954,7 +994,7 @@ function Volume() {
                                                     onChange={handleChangeEdicao}
                                                 />
                                             </div>
-                                            <div id="div-peso-bruto">
+                                            <div>
                                                 <label>Peso Bruto:</label>
                                                 <Input
                                                     type={'number'}
@@ -965,7 +1005,7 @@ function Volume() {
                                                     onChange={handleChangeEdicao}
                                                 />
                                             </div>
-                                            <div id="div-observacao">
+                                            <div>
                                                 <label>Observação:</label>
                                                 <Input
                                                     type={'text'}
@@ -1080,7 +1120,7 @@ function Volume() {
                             <div className="lista-subvolume-overlay">
                                 <div className="ul-lista-subvolume">
                                     <ul>
-                                        <li className="header-produto-subvolume">
+                                        <li className="header-produto-subvolume" id="grid-lista-2"> 
                                             <div>Id Volume</div>
                                             <div>Id SubVolume</div>
                                             <div>Descrição</div>
@@ -1113,7 +1153,7 @@ function Volume() {
 
 
             {contextMenu.visible && (
-                <div className="context-menu" style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}>
+                <div className="context-menu" style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }} ref={contextMenuRef}>
                     <button onClick={handleEdit}>Editar</button>
                     <button onClick={handleSubVolumes}>Adicionar Sub-Volume</button>
                     <button onClick={handleDelete}>Excluir</button>

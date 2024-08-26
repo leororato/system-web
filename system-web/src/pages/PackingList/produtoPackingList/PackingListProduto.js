@@ -428,7 +428,7 @@ function PackingListProduto() {
                             </li>
                             {filteredProdutos.length > 0 ? (
                                 filteredProdutos.map((p) => (
-                                    <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.id.idProduto, p.id.seq)}>
+                                    <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.id.idProduto, p.id.seq)} id="lista-prod-1">
                                         <div>{packingList.idPackingList}</div>
                                         <div>{p.id.idProduto}</div>
                                         <div>{p.id.seq}</div>

@@ -45,6 +45,11 @@ body {
     cursor: pointer;
     display: table-row;
     border-bottom: 1px solid #ddd; /* Linha de separação entre os itens */
+    transition: 0.5ms ease-in;
+}
+
+.li-listagem:hover {
+    background-color: #dddddd5b;
 }
 
 /* Estilo do cabeçalho da tabela */
