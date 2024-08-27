@@ -32,7 +32,7 @@
     border-right: 1px solid #ddd;
     overflow: hidden;
     text-overflow: ellipsis;
-    word-wrap: break-word; 
+    word-wrap: break-word;
 }
 
 .header-produto-volume {
@@ -48,7 +48,7 @@
 
 .li-listagem-produto-volume {
     display: table-row;
-    border-bottom: 1px solid #ddd; 
+    border-bottom: 1px solid #ddd;
 }
 
 /* FIM DO PRODUTO SELECIONADO */
@@ -60,18 +60,23 @@
 /* INICIO DO CONTAINER DO BOTAO E VOLUMES */
 
 #message {
-    z-index: 1000;   
+    z-index: 1000;
 }
-
-
 
 .org-lista-1 {
     display: flex;
     justify-content: center;
+    margin-top: 20px;
+    padding: 20px;
+    width: 100%;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 #container-botao-add-volume {
-    margin-bottom: 10px;
+    text-align: right;
+    margin-bottom: 15px;
 }
 
 .button-adicionar-volume {
@@ -82,7 +87,6 @@
 .button-adicionar-volume:hover {
     background-color: #0056b3;
 }
-
 
 .container-listagem-volume {
     display: table-cell;
@@ -100,15 +104,28 @@
     max-width: 142.506px;
     overflow: hidden;
     text-overflow: ellipsis;
-    word-wrap: break-word;    
+    word-wrap: break-word;
 }
 
+.container-listagem-volume ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
 
 .header-volume {
+    display: flex;
+    justify-content: space-between;
+    background-color: #1780e2;
     list-style-type: none;
+    color: white;
+    padding-right: 40px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
-.header-volume div{
+.header-volume div {
     display: table-row;
     font-weight: bold;
     border-radius: 5px;
@@ -116,6 +133,18 @@
     color: white;
 }
 
+.li-listagem-volume {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .li-listagem-volume #list-vol {
     border-left: 1px solid #ddd;
     border-top: 1px solid #ddd;
@@ -126,20 +155,28 @@
     border-right: 1px solid #ddd;
 }
 
+#container-list-vol {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
 #list-vol-divs {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
     width: 100%;
     transition: 0.5ms ease-in;
 }
 
 #list-vol-divs:hover {
+    cursor: pointer;
     background-color: #dddddd5b;
 }
 
-.li-listagem-volume {
-    cursor: pointer;
-}
-
-.li-listagem-volume div{
+.li-listagem-volume div {
     cursor: pointer;
     display: table-row;
 }
@@ -154,15 +191,15 @@
     border-right: 1px solid #ddd;
 }
 
-#list-vol-divs {
-    transition: 0.5ms ease-in;
-}
-
 #list-vol-divs:hover {
     background-color: #dddddd5b;
 }
 
 #container-icon-plus {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+    margin-left: 10px;
     align-self: center;
     transition: 0.5ms ease;
 }
@@ -188,99 +225,24 @@
     width: 100%;
 }
 
-
-/* Estilo principal para o container dos volumes */
-.org-lista-1 {
-    display: flex;
-    justify-content: center;
-  margin-top: 20px;
-  padding: 20px;
-  width: 100%;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-
-/* Estilo do botão Adicionar Volume */
-#container-botao-add-volume {
-  text-align: right;
-  margin-bottom: 15px;
-}
-
-/* Estilo da lista de volumes */
-.container-listagem-volume ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* Estilo para os headers dos volumes */
-.header-volume {
-  display: flex;
-  justify-content: space-between;
-  background-color: #1780e2;
-  color: white;
-  padding-right: 40px;
-  border-radius: 5px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-/* Estilo para cada item de volume */
-.li-listagem-volume {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  background-color: white;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* Espaçamento interno nos volumes */
-#container-list-vol {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-/* Estilo para as divs dos volumes */
-#list-vol-divs {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
 #list-vol {
-  flex: 1;
-  padding: 0 10px;
+    flex: 1;
+    padding: 0 10px;
 }
 
-/* Estilo para o ícone de adicionar/remover subvolume */
-#container-icon-plus {
-  width: 20px;
-  height: 20px;
-  flex: 0 0 auto;
-  margin-left: 10px;
-}
-
-/* Estilo para a listagem de subvolumes */
 #listagem-subvolume {
+    cursor: default;
     display: flex;
     justify-content: center;
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .lista-subvolume-overlay {
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
 
 .ul-lista-subvolume {
@@ -294,17 +256,16 @@
     word-wrap: break-word;
 }
 
-.ul-lista-subvolume #grid-lista
-{
+.ul-lista-subvolume #grid-lista {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     border-left: 1px solid #ddd;
 }
 
 .ul-lista-subvolume ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 
 .ul-lista-subvolume ul #lista-1 {
@@ -316,36 +277,34 @@
 }
 
 .header-produto-subvolume {
-  display: flex;
-  justify-content: space-between;
-  background-color: #0056b3;
-  color: white;
-  padding: 8px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    background-color: #0056b3;
+    color: white;
+    padding: 8px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    font-weight: bold;
 }
 
 .li-listagem-produto-subvolume {
-  width: 100%;
-  background-color: white;
-  padding: 8px;
-  border-radius: 5px;
-  margin-top: 1px;
-  margin-bottom: 5px;
-  border: 1px solid #ddd;
+    width: 100%;
+    background-color: white;
+    padding: 8px;
+    border-radius: 5px;
+    margin-top: 1px;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
 }
 
 #nao-existe-volume,
 #nao-existe-subvolume {
-  color: #6c757d;
-  text-align: center;
-  
+    color: #6c757d;
+    text-align: center;
+
 }
 
-/* 6c757d */
-
-#nao-existe-subvolume li{
+#nao-existe-subvolume li {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     background-color: #dddddd8a;
@@ -361,67 +320,9 @@
     display: flex;
     justify-content: center;
     width: 100%;
-    
+
 }
 
-/*
-#listagem-subvolume li {
-    list-style-type: none;
-}
-
-.lista-subvolume-overlay {
-    display: flex;
-    justify-content: center;
-}
-
-.ul-lista-subvolume li {
-    display: grid;
-    
-    grid-template-columns: repeat(4, 1fr);
-    border-left: 1px solid #ddd;
-}
-
-.ul-lista-subvolume {
-    display: table-cell;
-    unicode-bidi: isolate;
-    width: 100%;
-    padding: 5px;
-    text-align: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-wrap: break-word;
-}
-
-.header-produto-subvolume {
-    background-color: #1780e2;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-}
-
-.header-produto-subvolume div {
-    padding: 5px;
-    border-right: 1px solid #ddd;
-}
-
-.header-produto-subvolume div:last-child {
-    border-right: none;
-}
-
-.li-listagem-produto-subvolume div {
-    border-right: 1px solid #ddd;
-    padding: 10px;
-}
-
-#nao-existe-subvolume {
-    text-align: center;
-}
-
-#nao-existe-subvolume li{
-    grid-template-columns: repeat(1, 1fr);
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
 
 /* FIM DA LISTAGEM DO SUBVOLUME NA PAGINA */
 
@@ -625,5 +526,3 @@
 
 
 /* FIM DO CONTEXTO DE CRIAR SUBVOLUMES */
-
-
