@@ -22,7 +22,7 @@ const Button = ({ onClick, type, text, padding, backgroundColor, borderRadius, o
             </a>
         </button>
     ) : (
-        <button type={type} onClick={onClick} className={className} style={style} formNoValidate={formNoValidate}>
+        <button type={type} onClick={onClick} className={className} title={title} style={style} formNoValidate={formNoValidate}>
             {text}
         </button>
     )

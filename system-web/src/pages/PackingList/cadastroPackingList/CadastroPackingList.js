@@ -107,6 +107,7 @@ function CadastroPackingList() {
                                 data={clientesNomus}
                                 onSelect={(item) => setFormData({ ...formData, idImportador: item.id })}
                                 displayField={'nome'}
+                                title={'Busque pelo Importador...'}
                             />
                         </div>
                         <div className="form-consignatario">
@@ -115,6 +116,7 @@ function CadastroPackingList() {
                                 data={clientesNomus}
                                 onSelect={(item) => setFormData({ ...formData, idConsignatario: item.id })}
                                 displayField={'nome'}
+                                title={'Busque pelo Consignatário...'}
                             />
                         </div>
                         <div className="form-notificado">
@@ -123,6 +125,7 @@ function CadastroPackingList() {
                                 data={clientesNomus}
                                 onSelect={(item) => setFormData({ ...formData, idNotificado: item.id })}
                                 displayField={'nome'}
+                                title={'Busque pelo Notificado...'}
                             />
                         </div>
 
@@ -130,7 +133,7 @@ function CadastroPackingList() {
                         <Select
                             className={"form-pais-origem"}
                             label={"País de origem:"}
-                            title={"Selecione o país de origem"}
+                            title={"Selecione o país de origem..."}
                             name="paisOrigem"
                             padding={7}
                             cursor={'pointer'}
@@ -144,8 +147,8 @@ function CadastroPackingList() {
                         <Input
                             type={"text"}
                             id="input-fronteira"
-                            title={"Digite a fronteira"}
-                            placeholder={"Digite a fronteira..."}
+                            title={"Digite a fronteira..."}
+                            placeholder={"Ex: PARANAGUÁ, PR, BRASIL..."}
                             name="fronteira"
                             padding={7}
                             required
@@ -156,8 +159,8 @@ function CadastroPackingList() {
                         <Input
                             type={"text"}
                             id="input-local-embarque"
-                            title={"Digite o local de embarque dos itens"}
-                            placeholder={"Digite o local de embarque..."}
+                            title={"Digite o local de embarque dos itens..."}
+                            placeholder={"Ex: ARARUNA, PR, BRASIL..."}
                             name="localEmbarque"
                             padding={7}
                             required
@@ -168,8 +171,8 @@ function CadastroPackingList() {
                         <Input
                             type={"text"}
                             id="input-local-destino"
-                            title={"Digite o local de destino dos itens"}
-                            placeholder={"Digite o local de destino..."}
+                            title={"Digite o local de destino dos itens..."}
+                            placeholder={"Ex: PUERTO CORTÉS, HONDURAS..."}
                             padding={7}
                             name="localDestino"
                             required
@@ -180,8 +183,8 @@ function CadastroPackingList() {
                         <Input
                             type={"text"}
                             id="input-termos-pagamento"
-                            title={"Digite os termos de pagamento"}
-                            placeholder={"Digite os termos de pagamento..."}
+                            title={"Digite os termos de pagamento..."}
+                            placeholder={"Ex: (5% ADVANCE) + (45% EN ENERO) + (50% EN LA ENTREGA)..."}
                             name="termosPagamento"
                             padding={7}
                             required
@@ -192,8 +195,8 @@ function CadastroPackingList() {
                         <Input
                             type={"text"}
                             id="input-dados-bancarios"
-                            title={"Digite os dados bancários do cliente"}
-                            placeholder={"Digite os dados bancários do cliente..."}
+                            title={"Digite os dados bancários do cliente..."}
+                            placeholder={"Ex: BANCO XXXXX; AGENCIA: XXXX-X; CUENTA: XXXXX-X SWIFT: XXXXX IBAN: XXXXX..."}
                             name="dadosBancarios"
                             padding={7}
                             required
@@ -204,8 +207,8 @@ function CadastroPackingList() {
                         <Input
                             type={"text"}
                             id="input-incoterm"
-                            title={"Digite o código INCOTERM"}
-                            placeholder={"Digite o código INCOTERM..."}
+                            title={"Digite o código INCOTERM..."}
+                            placeholder={"Ex: FCA - ARARUNA, PR, BRASIL..."}
                             name="incoterm"
                             padding={7}
                             required
@@ -216,8 +219,8 @@ function CadastroPackingList() {
                         <Input
                             type={"text"}
                             id="input-invoice"
-                            title={"Digite o código INVOICE"}
-                            placeholder={"Digite o código INVOICE..."}
+                            title={"Digite o código INVOICE..."}
+                            placeholder={"Ex: INV01..."}
                             name="invoice"
                             padding={7}
                             required
@@ -228,8 +231,8 @@ function CadastroPackingList() {
                         <Input
                             type={"text"}
                             id="input-tipo-transporte"
-                            title={"Digite o meio de transporte utilizado"}
-                            placeholder={"Digite o tipo de meio de transporte utilizado..."}
+                            title={"Digite o meio de transporte utilizado..."}
+                            placeholder={"Ex: MARÍTIMO..."}
                             name="tipoTransporte"
                             padding={7}
                             required
@@ -240,8 +243,8 @@ function CadastroPackingList() {
                         <Input
                             type={"number"}
                             id="input-peso-liquido"
-                            title={"Digite o peso LÍQUIDO total"}
-                            placeholder={"Digite o peso LÍQUIDO total..."}
+                            title={"Digite o peso LÍQUIDO total..."}
+                            placeholder={"Ex: 24366,275..."}
                             name="pesoLiquidoTotal"
                             padding={7}
                             required
@@ -252,8 +255,8 @@ function CadastroPackingList() {
                         <Input
                             type={"number"}
                             id="input-peso-bruto"
-                            title={"Digite o peso BRUTO total"}
-                            placeholder={"Digite o peso BRUTO total..."}
+                            title={"Digite o peso BRUTO total..."}
+                            placeholder={"Ex: 24921,710..."}
                             name="pesoBrutoTotal"
                             padding={7}
                             required
@@ -264,7 +267,7 @@ function CadastroPackingList() {
                             <Select
                                 className={"form-idioma"}
                                 label={"Idioma:"}
-                                title={"Selecione o idioma"}
+                                title={"Selecione o idioma..."}
                                 name="idioma"
                                 padding={7}
                                 cursor={'pointer'}

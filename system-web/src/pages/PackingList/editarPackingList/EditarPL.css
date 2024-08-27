@@ -27,6 +27,10 @@
     margin-bottom: 20px;
 }
 
+#div-input-customizado {
+    width: 100%;
+}
+
 .input-group input[type="text"],
 .input-group Select {
     width: 100%;

@@ -99,7 +99,7 @@
 .container-listagem-volume #list-vol {
     display: table-cell;
     padding: 10px;
-    text-align: left;
+    text-align: center;
     min-width: 142.506px;
     max-width: 142.506px;
     overflow: hidden;
@@ -115,11 +115,12 @@
 
 .header-volume {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
     background-color: #1780e2;
+    padding-top: 10px;
+    padding-bottom: 10px;
     list-style-type: none;
     color: white;
-    padding-right: 40px;
     border-radius: 5px;
     font-weight: bold;
     margin-bottom: 10px;
@@ -128,9 +129,18 @@
 .header-volume div {
     display: table-row;
     font-weight: bold;
-    border-radius: 5px;
     background-color: #1780e2;
     color: white;
+    border-right: 1px solid #ddd;
+}
+
+.header-volume div:first-child {
+    border-left: 1px solid #ddd;
+
+}
+
+.header-volume #list-vol:first-child {
+    margin-left: 12px;
 }
 
 .li-listagem-volume {
@@ -259,6 +269,7 @@
 .ul-lista-subvolume #grid-lista {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    text-align: center;
     border-left: 1px solid #ddd;
 }
 
@@ -269,7 +280,7 @@
 }
 
 .ul-lista-subvolume ul #lista-1 {
-    width: 250px;
+    width: 180px;
 }
 
 #grid-lista div {
@@ -295,6 +306,20 @@
     margin-top: 1px;
     margin-bottom: 5px;
     border: 1px solid #ddd;
+    transition: 0.5ms ease-in;
+}
+
+.li-listagem-produto-subvolume:hover {
+    background-color: #dddddd5b;
+}
+
+.button-adicionar-subvolume {
+    background-color: #0056b3;
+    transition: 0.5ms ease-in;
+}
+
+.button-adicionar-subvolume:hover {
+    background-color: #1780e2;
 }
 
 #nao-existe-volume,
@@ -375,9 +400,12 @@
     gap: 15px;
 }
 
+.input-group-volume input {
+    width: 690.56px;
+}
+
 .input-group-volume input[type="text"],
 .input-group-volume input[type="number"] {
-    width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -437,10 +465,48 @@
 
 /* INICIO DO CONTEXTO DE CRIAR SUBVOLUMES */
 
+.overlay-content-subvolume {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 70%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
 .title-subvolume-lista {
     margin-bottom: 20px;
     width: 100%;
     text-align: center;
+}
+
+.header-produto-subvolume-overlay {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    background-color: #0056b3;
+    color: white;
+    padding: 8px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    font-weight: bold;
+}
+
+.li-listagem-produto-subvolume-overlay {
+    width: 100%;
+    background-color: white;
+    padding: 8px;
+    border-radius: 5px;
+    margin-top: 1px;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: 0.5ms ease-in;
+}
+
+.li-listagem-produto-subvolume-overlay:hover {
+    background-color: #dddddd5b;
 }
 
 .subcontainer-subvolume {
@@ -526,3 +592,35 @@
 
 
 /* FIM DO CONTEXTO DE CRIAR SUBVOLUMES */
+
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 200px; /* Largura do tooltip */
+    background-color: black; /* Cor de fundo */
+    color: #fff; /* Cor do texto */
+    text-align: center;
+    border-radius: 5px; /* Borda arredondada */
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Posição do tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.tooltip-wrapper:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}

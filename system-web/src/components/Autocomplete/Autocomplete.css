@@ -1,4 +1,16 @@
 /* src/components/Autocomplete/Autocomplete.css */
+
+.tooltip {
+    background-color: rgba(0, 87, 179, 0.644);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+    font-size: 14px;
+}
+
 .autocomplete-container {
     position: relative;
     width: 100%;

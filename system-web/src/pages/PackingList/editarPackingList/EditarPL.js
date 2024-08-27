@@ -214,6 +214,7 @@ function EditarPL() {
                         <div>
                         <label>Fronteira:</label>
                         <Input
+                            id="input-group-2"
                             type="text"
                             name="fronteira"
                             placeholder={'Digite a fronteira...'}

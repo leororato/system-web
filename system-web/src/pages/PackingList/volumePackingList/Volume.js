@@ -10,7 +10,7 @@ import Input from "../../../components/Input";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import Text from "../../../components/Text";
-import { format } from "date-fns";
+import { format, sub } from "date-fns";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 function Volume() {
@@ -93,17 +93,28 @@ function Volume() {
 
     // ------------------------------------- SUB VOLUMES ------------------------------------- //
 
+    // CONTEXTO OPÇÕES EDITAR ADICIONAR EXCLUIR
     const [contextMenuSubVolume, setContextMenuSubVolume] = useState({ visible: false, selectedIdVolume: '', selectedIdSubVolume: '' });
-
+    // OVERLAY ADICIONAR EDITAR 
     const [contextSubVolumes, setContextSubVolumes] = useState({ visible: false, selectedIdVolume: '' });
-
+    // CONTAINER DOS SUBVOLUMES PESQUISADOR PELO IDVOLUME
     const [subVolumesPorVolume, setSubVolumesPorVolume] = useState({});
+
+    // CONTAINER QUE GUARDA O SUBVOLUME QUE VAI SER EDITADO
+    const [subVolumeEdicao, setSubVolumeEdicao] = useState({})
 
     // CONTAINER QUE POSSUI TODOS OS SUBVOLUMES
     const [subVolumeSelecionado, setSubVolumeSelecionado] = useState([]);
 
     // SALVAR OS IDS PARA EDITAR OU DELETAR SUBVOLUMES
     const [subVolumesIds, setSubVolumesIds] = useState({});
+
+    // ESTADO DO OVERLAY ( ADICIONAR OU EDITAR)
+    const [estadoSubVolumeOverlay, setEstadoSubVolumeOverlay] = useState('');
+
+    // ESTADO DO EXCLUIR (VOLUME OU SUBVOLUME)
+    const [estadoExcluirOverlay, setEstadoExcluirOverlay] = useState('');
+
 
     // FORM DATA SUBVOLUME
     const [formDataSubVolume, setFormDataSubVolume] = useState({});
@@ -112,9 +123,17 @@ function Volume() {
     const [definirBotaoMostrarMais, setDefinirBotaoMostrarMais] = useState({});
 
     const [contextDeleteSubVolume, setContextDeleteSubVolume] = useState({ visible: false, x: 0, y: 0, selectedIdVolume: '', selectedIdSubVolume: '' });
-    const [contextEditarSubVolume, setContextEditarSubVolume] = useState({ visible: false, x: 0, y: 0, selectedIdVolume: '', selectedIdSubVolume: '' });
 
-
+    const [formDataEditarSubVolume, setFormDataEditarSubVolume] = useState(
+        {
+            id: {
+                idVolume: '',
+                idSubVolume: ''
+            },
+            descricao: "",
+            quantidade: ""
+        }
+    );
 
 
 
@@ -397,6 +416,7 @@ function Volume() {
             y: e.pageY,
             selectedIdVolume: contextMenu.selectedIdVolume
         })
+        setEstadoExcluirOverlay('volume');
     }
 
     // AÇAO PARA CONFIRMAR A EXCLUSAO DO VOLUME
@@ -486,6 +506,80 @@ function Volume() {
             })
     }
 
+    // ATUALIZAR SUB VOLUME
+    const handleSalvarEdicaoSubVolume = async (e) => {
+        e.preventDefault();
+
+        const idVolume = subVolumesIds.idVolume;
+        const idSubVolume = subVolumesIds.idSubVolume;
+
+        if (formDataEditarSubVolume.descricao === null) {
+            setErrorMessage('Preencha o campo DESCRIÇÃO');
+            return;
+        } else if (formDataEditarSubVolume.quantidade === null) {
+            setErrorMessage('Preencha o campo QUANTIDADE');
+            return;
+        }
+        await axios.put(`http://localhost:8080/api/subvolume/${idVolume}/${idSubVolume}`, formDataEditarSubVolume)
+            .then(() => {
+
+                setSucessMessage('Sub Volume atualizado com sucesso');
+
+                setTimeout(() => setSucessMessage(null), 5000);
+                setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
+
+                fetchSubVolumesContexto(salvarIdVolume);
+                setFormDataEditarSubVolume(
+                    {
+                        id: {
+                            idVolume: '',
+                            idSubVolume: '',
+                        },
+                        descricao: "",
+                        quantidade: ""
+                    }
+                );
+
+            })
+            .catch(error => {
+                const errorMessage = error.response?.data || "Erro desconhecido ao atualizar Sub Volume";
+                setErrorMessage(errorMessage);
+                setTimeout(() => setErrorMessage(null), 5000);
+            })
+    }
+
+
+    // DELETANDO O SUB VOLUME
+    const handleDeleteSubVolumeConfirm = () => {
+
+        const idVolume = subVolumesIds.idVolume;
+        const idSubVolume = subVolumesIds.idSubVolume;
+        const descricao = subVolumesIds.descricao;
+        axios.delete(`http://localhost:8080/api/subvolume/${idVolume}/${idSubVolume}`)
+            .then(() => {
+                setSucessMessage(`Sub Volume '${descricao}' deletado com sucesso!`);
+                setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
+
+                if (contextSubVolumes.visible === true) {
+                    fetchSubVolumesContexto(idVolume);
+                } else (fetchSubVolumes(idVolume));
+
+                setTimeout(() => {
+                    setSucessMessage(null)
+                }, 5000);
+            })
+            .catch((error) => {
+
+                const errorMessage = error.response?.data || "Erro desconhecido ao deletar Sub Volume";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+
+            });
+    }
+
 
     // BUSCANDO OS SUBVOLUMES EXISTENTES PELO IDVOLUME
     const fetchSubVolumes = async (idVolume) => {
@@ -501,12 +595,11 @@ function Volume() {
     }
 
 
-    // BUSCAR OS SUBVOLUMES DO ITEM SELECIONADO
+    // BUSCAR OS SUBVOLUMES DO ITEM SELECIONADO PARA EXIBIR A LISTA NO OVERLAY DO CONTEXTO ADICIONAR SUBVOLUME
     const fetchSubVolumesContexto = async (idVolume) => {
         try {
             const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${idVolume}`);
             setSubVolumeSelecionado(response.data);
-            console.log('testee', response.data)
         } catch (error) {
             console.error("Erro ao buscar sub volumes: ", error);
             console.log('testee deu erro')
@@ -533,7 +626,7 @@ function Volume() {
         setFormDataSubVolume(
             {
                 id: {
-                    idVolume: contextMenu.selectedIdVolume,
+                    idVolume: contextMenu.selectedIdVolume || subVolumesIds.idVolume,
                 },
                 descricao: "",
                 quantidade: ""
@@ -547,6 +640,7 @@ function Volume() {
             y: 0,
             selectedIdVolume: contextMenu.selectedIdVolume
         });
+        setEstadoSubVolumeOverlay('adicionar');
         setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
     }
 
@@ -566,7 +660,7 @@ function Volume() {
         }));
         setContextSubVolumeLista(prevState => ({
             ...prevState,
-            [idVolume]: !prevState[idVolume] // Alterna o estado de visibilidade para este volume específico
+            [idVolume]: !prevState[idVolume]
         }));
     };
 
@@ -582,7 +676,7 @@ function Volume() {
 
         setContextSubVolumeLista(prevState => ({
             ...prevState,
-            [idVolume]: false // Esconde o subvolume para este volume específico
+            [idVolume]: false
         }));
 
         console.log('idVolume', idVolume);
@@ -596,29 +690,79 @@ function Volume() {
             y: 0,
             selectedIdVolume: null
         });
-        setContextEditarSubVolume({ visible: true, selectedIdVolume: contextMenu.selectedIdVolume });
+        setContextSubVolumes({
+            visible: true,
+            x: 0,
+            y: 0,
+            selectedIdVolume: contextMenu.selectedIdVolume
+        });
+        setFormDataEditarSubVolume(
+            {
+                id: {
+                    idVolume: subVolumesIds.idVolume,
+                    idSubVolume: subVolumesIds.idSubVolume
+                },
+                descricao: subVolumesIds.descricao,
+                quantidade: subVolumesIds.quantidade
+            }
+        )
+        setEstadoSubVolumeOverlay('editar');
+        fetchSubVolumesContexto(salvarIdVolume);
+        setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
+
     }
 
 
-     // AÇAO PARA QUANDO CLICAR NO BOTAO EXCLUIR VOLUME
-     const handleDeleteSubVolume = (e) => {
+    // AÇAO PARA QUANDO CLICAR NO BOTAO EXCLUIR VOLUME
+    const handleDeleteSubVolume = (e) => {
         setContextMenuSubVolume({
             visible: false,
             x: 0,
             y: 0,
             selectedIdVolume: null
         });
-        setContextDeleteSubVolume({
+        setContextDelete({
             visible: true,
             x: e.pageX,
             y: e.pageY,
             selectedIdVolume: contextMenuSubVolume.idVolume,
             selectedIdSubVolume: contextMenuSubVolume.idSubVolume
         })
+        setEstadoExcluirOverlay('subvolume');
     }
 
 
+    const handleRightClickSubVolume = (e, idVolume, idSubVolume, descricao, quantidade) => {
+        e.preventDefault();
+        setContextMenuSubVolume({
+            visible: true,
+            x: e.pageX,
+            y: e.pageY,
+            selectedIdVolume: idVolume,
+            selectedIdSubVolume: idSubVolume
+        });
 
+        // Usando callback para garantir que o estado seja atualizado corretamente
+        setSubVolumesIds(prevState => {
+            const newState = {
+                idVolume: idVolume,
+                idSubVolume: idSubVolume,
+                descricao: descricao,
+                quantidade: quantidade
+            };
+            return newState;
+        });
+    };
+
+
+    // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NOS INPUTS DO PUT
+    const handleChangeEdicao = (e) => {
+        const { name, value } = e.target;
+        setFormDataEditarSubVolume(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
 
 
@@ -679,19 +823,22 @@ function Volume() {
     }
 
 
-    // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NOS INPUTS DO PUT
-    const handleChangeEdicao = (e) => {
-        const { name, value } = e.target;
-        setVolumeEdicao(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
+
 
     // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NOS INPUTS DO SUBVOLUME
     const handleChangeSubVolume = (e) => {
         const { name, value } = e.target;
         setFormDataSubVolume(prevData => ({
+            ...prevData,
+            [name]: value
+        }));
+    }
+
+
+    // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NOS INPUTS DO SUBVOLUME NA EDIÇAO
+    const handleChangeEdicaoSubVolume = (e) => {
+        const { name, value } = e.target;
+        setFormDataEditarSubVolume(prevData => ({
             ...prevData,
             [name]: value
         }));
@@ -777,32 +924,6 @@ function Volume() {
     };
 
 
-    // AÇAO PARA QUANDO CLICAR COM O BOTAO DIREITO EM CIMA DE ALGUM SUBVOLUME
-    const handleRightClickSubVolume = (e, idVolume, idSubVolume) => {
-        e.preventDefault();
-        setContextMenuSubVolume({
-            visible: true,
-            x: e.pageX,
-            y: e.pageY,
-            selectedIdVolume: idVolume,
-            selectedIdSubVolume: idSubVolume
-        });
-        setSubVolumesIds({
-            idVolume: idVolume,
-            idSubVolume: idSubVolume
-        });
-    };
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -862,7 +983,7 @@ function Volume() {
                             <li className="header-volume">
                                 <div id="list-vol">ID Volume</div>
                                 <div id="list-vol">Tipo do Volume</div>
-                                <div id="list-vol">Quantidade de Itens</div>
+                                <div id="list-vol">Quantidade Itens</div>
                                 <div id="list-vol">Descrição</div>
                                 <div id="list-vol">Altura</div>
                                 <div id="list-vol">Largura</div>
@@ -911,7 +1032,9 @@ function Volume() {
                                                             {subVolumesPorVolume[v.idVolume] && subVolumesPorVolume[v.idVolume].length > 0 ? (
                                                                 subVolumesPorVolume[v.idVolume].map((subVolume) => (
                                                                     <li key={subVolume.id.idSubVolume} className='li-listagem-produto-subvolume' id="grid-lista"
-                                                                        onContextMenu={(e) => handleRightClickSubVolume(e, subVolume.idVolume)}>
+                                                                        onContextMenu={(e) => handleRightClickSubVolume(
+                                                                            e, subVolume.id.idVolume, subVolume.id.idSubVolume, subVolume.descricao, subVolume.quantidade
+                                                                        )}>
                                                                         <div>{subVolume.id.idVolume}</div>
                                                                         <div>{subVolume.id.idSubVolume}</div>
                                                                         <div>{subVolume.descricao}</div>
@@ -962,6 +1085,7 @@ function Volume() {
                                                     data={getTipoDeVolumeArray()}
                                                     onSelect={handleAutocompleteChangeTipoVolume}
                                                     displayField={'descricao'}
+                                                    title={'Digite o tipo de volume...'}
                                                 />
                                             </div>
                                             <div>
@@ -1216,12 +1340,12 @@ function Volume() {
 
 
             {
-                contextSubVolumes.visible && (
+                contextSubVolumes.visible && (estadoSubVolumeOverlay === 'adicionar' || estadoSubVolumeOverlay === 'editar') && (
                     <div className="overlay">
-                        <div className="overlay-content" ref={contextSubVolumesRef}>
+                        <div className="overlay-content-subvolume" ref={contextSubVolumesRef}>
                             <div className="title-subvolume-lista">
                                 <Title
-                                    text={'Adicionar Sub-Volumes'}
+                                    text={estadoSubVolumeOverlay === 'adicionar' ? 'Adicionar Sub-Volumes' : 'Editar Sub-Volume'}
                                     color={'#1780e2'}
                                 />
                             </div>
@@ -1238,8 +1362,9 @@ function Volume() {
                                                         type={'text'}
                                                         placeholder={'Digite a descrição...'}
                                                         name={'descricao'}
-                                                        onChange={handleChangeSubVolume}
-                                                        value={formDataSubVolume.descricao}
+                                                        title={'Digite uma descrição para o sub-volume...'}
+                                                        onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
+                                                        value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.descricao : formDataEditarSubVolume.descricao}
                                                     />
                                                 </div>
 
@@ -1248,18 +1373,19 @@ function Volume() {
                                                     <Input
                                                         placeholder={'Digite a quantidade...'}
                                                         name={'quantidade'}
+                                                        title={'Digite a quantidade de itens dentro do sub volume...'}
                                                         type={'number'}
                                                         min={'1'}
-                                                        onChange={handleChangeSubVolume}
-                                                        value={formDataSubVolume.quantidade}
+                                                        onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
+                                                        value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.quantidade : formDataEditarSubVolume.quantidade}
                                                     />
                                                 </div>
                                             </div>
                                         </div>
                                     </form>
-
                                 </div>
                             </div>
+
                             <div className="buttons-adicionar-subvolume">
                                 <Button
                                     className={'button-salvar-add-subvolume'}
@@ -1267,7 +1393,7 @@ function Volume() {
                                     fontSize={15}
                                     padding={10}
                                     borderRadius={5}
-                                    onClick={handleSalvarSubVolume}
+                                    onClick={estadoSubVolumeOverlay === 'adicionar' ? handleSalvarSubVolume : handleSalvarEdicaoSubVolume}
                                 />
                                 <Button
                                     className={'button-cancelar-add-subvolume'}
@@ -1279,8 +1405,6 @@ function Volume() {
                                 />
                             </div>
 
-
-
                             <div id="title-lista-subvolume">
                                 <Text
                                     text={'| Lista de Sub Volumes |'}
@@ -1289,20 +1413,38 @@ function Volume() {
                                 />
                             </div>
 
+                            {estadoSubVolumeOverlay === 'adicionar' ? <div></div> :
+                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <div style={{ width: '779.31px' }}>
+                                        <Button
+                                            className={'button-adicionar-subvolume'}
+                                            text={'Adicionar Sub Volume'}
+                                            title={'Abrir tela de adição de sub volumes...'}
+                                            padding={5}
+                                            fontSize={10}
+                                            borderRadius={2}
+                                            onClick={handleSubVolumes}
+                                        />
+                                    </div>
+                                </div>
+                            }
                             <div id="listagem-subvolume">
+
                                 <div className="lista-subvolume-overlay">
                                     <div className="ul-lista-subvolume">
                                         <ul>
-                                            <li className="header-produto-subvolume" id="grid-lista">
+                                            <li className="header-produto-subvolume-overlay" id="grid-lista">
                                                 <div id="lista-1">Id Volume</div>
                                                 <div id="lista-1">Id SubVolume</div>
                                                 <div id="lista-1">Descrição</div>
                                                 <div id="lista-1">Quantidade</div>
                                             </li>
                                             {subVolumeSelecionado.length > 0 ? (
-                                                subVolumeSelecionado && subVolumeSelecionado.map((subVolume, idVolume) => (
-                                                    <li key={subVolume.id.idSubVolume} className='li-listagem-produto-subvolume' id="grid-lista"
-                                                        onContextMenu={(e) => handleRightClickSubVolume(e, subVolume.idVolume)}>
+                                                subVolumeSelecionado.map((subVolume) => (
+                                                    <li key={subVolume.id.idSubVolume} className='li-listagem-produto-subvolume-overlay' id="grid-lista"
+                                                        onContextMenu={(e) => handleRightClickSubVolume(
+                                                            e, subVolume.id.idVolume, subVolume.id.idSubVolume, subVolume.descricao, subVolume.quantidade
+                                                        )}>
                                                         <div>{subVolume.id.idVolume}</div>
                                                         <div>{subVolume.id.idSubVolume}</div>
                                                         <div>{subVolume.descricao}</div>
@@ -1349,13 +1491,13 @@ function Volume() {
 
 
             {
-                contextDelete.visible && (
+                contextDelete.visible && (estadoExcluirOverlay === 'volume' || estadoExcluirOverlay === 'subvolume') && (
                     <>
                         <div className="overlay"></div>
                         <div className="context-delete">
                             <div>
                                 <Text
-                                    text={'Tem certeza que deseja excluir o Produto?'}
+                                    text={estadoExcluirOverlay === 'volume' ? 'Tem certeza que deseja excluir o Produto?' : `Tem certeza que deseja excluir o Sub Volume '${subVolumesIds.descricao}' ?`}
                                     fontSize={20}
                                 />
                             </div>
@@ -1371,7 +1513,7 @@ function Volume() {
                                     className={'button-excluir'}
                                     text={'EXCLUIR'}
                                     fontSize={20}
-                                    onClick={handleDeleteConfirm}
+                                    onClick={estadoExcluirOverlay === 'volume' ? handleDeleteConfirm : handleDeleteSubVolumeConfirm}
                                 />
                             </div>
                         </div>
