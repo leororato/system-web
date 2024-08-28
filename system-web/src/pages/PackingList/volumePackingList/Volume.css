@@ -319,6 +319,7 @@
 }
 
 .button-adicionar-subvolume:hover {
+    transform: scale(1.1);
     background-color: #1780e2;
 }
 

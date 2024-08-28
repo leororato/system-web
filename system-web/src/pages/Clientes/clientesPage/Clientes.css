@@ -1,52 +1,115 @@
-/* Adiciona um reset de margin e padding global para evitar problemas de layout */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Define o estilo básico do container */
 .clientes-container {
     width: 100%;
     margin: 0 auto;
     padding: 20px;
 }
 
-.li-listagem div{
-    border-bottom: 1px solid #ddd;
+.container-listagem-cliente {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 50px;
 }
 
-.li-listagem #id {
+.subcontainer-listagem-cliente {
+    width: 90%;
+    margin-top: 50px;
+    border-collapse: collapse;
+}
+
+.subcontainer-listagem-cliente li div {
+    display: table-cell;
+    unicode-bidi: isolate;
+    padding: 5px;
+    max-width: 200px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+}
+
+.container-listagem-cliente {
+    text-align: center;
+}
+
+.container-listagem-cliente {
+    list-style-type: none; 
+    padding: 0; 
+    margin: 0;
+}
+
+.container-listagem-cliente li{
+    display: grid;
+    border-top: none;
+}
+
+.container-listagem-cliente li {
+    grid-template-columns: repeat(7, 1fr);
+    border-bottom: none;
     border-left: 1px solid #ddd;
 }
 
-/* Estilo do sub-container que organiza os inputs */
+.container-listagem-cliente .header-cliente {
+    background-color: #1780e2;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+.container-listagem-cliente .header-cliente div {
+    padding: 10px;
+    border-right: 1px solid #ddd; 
+}
+
+.container-listagem-cliente .header-cliente div:last-child {
+    border-right: none; 
+}
+
+.li-listagem-cliente div{
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.li-listagem-cliente {
+    cursor: pointer;
+    transition: 0.5ms ease-in;
+
+}
+
+.li-listagem-cliente:hover {
+    background-color: #dddddd5b;
+}
+
 .sub-container-clientes {
     width: 100%;
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap; /* Adiciona quebra de linha quando necessário */
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 10px; /* Reduz o espaçamento entre inputs */
+    gap: 10px;
 }
 
-/* Ajusta a largura dos containers de input */
 .clientes-input-container {
-    flex: 1 1 auto; /* Permite que o container de input se ajuste ao tamanho necessário */
-    max-width: 200px; /* Define um tamanho máximo para o container de input */
+    flex: 1 1 auto;
+    max-width: 200px;
 }
 
-/* Ajusta os estilos dos inputs */
 .clientes-input-container input {
-    width: 100%; /* Garante que o input ocupe toda a largura do container */
+    width: 100%; 
     padding: 8px;
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-/* Estilo para a lista de clientes */
 .clientes-list-container {
     margin-top: 20px;
     display: flex;

@@ -12,6 +12,7 @@ import Title from "../../../components/Title";
 import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 function PackingListProduto() {
     const { id } = useParams();
@@ -339,6 +340,7 @@ function PackingListProduto() {
                     <Input
                         type={'text'}
                         placeholder={'ID do Produto'}
+                        title={'Pesquise pelo ID do produto...'}
                         value={buscaIdProduto}
                         onChange={(e) => setBuscaIdProduto(e.target.value)}
                     />
@@ -347,6 +349,7 @@ function PackingListProduto() {
                     <Input
                         type={'text'}
                         placeholder={'Descrição do Produto'}
+                        title={'Pesquise pela descrição do produto...'}
                         value={buscaDescricaoProduto}
                         onChange={(e) => setBuscaDescricaoProduto(e.target.value)}
                     />
@@ -355,6 +358,7 @@ function PackingListProduto() {
                     <Input
                         type={'text'}
                         placeholder={'Ordem de Produção'}
+                        title={'Pesquise pela ordem de produção do produto...'}
                         value={buscaOrdemDeProducao}
                         onChange={(e) => setBuscaOrdemDeProducao(e.target.value)}
                     />
@@ -444,10 +448,20 @@ function PackingListProduto() {
                 </div>
 
                 {contextMenu.visible && (
-                    <div className="context-menu" style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}>
-                        <button onClick={handleEdit}>Listar Volumes</button>
-                        <button onClick={handleDelete}>Excluir</button>
+                    <div className='context-menu' style={{
+                        top: `${contextMenu.y}px`, left: `${contextMenu.x}px`
+                    }}>
+                        <div id='container-icon-menu' onClick={handleEdit}>
+                            <Icon icon="mdi:edit" id='icone-menu'/>
+                            <p>Editar</p>
+                        </div>
+                        <div id='container-icon-menu-excluir' onClick={handleDelete} >
+                            <Icon icon="material-symbols:delete-outline" id='icone-menu'/>
+                            <p>Excluir</p>
+                        </div>
                     </div>
+                        
+        
                 )}
 
                 {contextDelete.visible && (

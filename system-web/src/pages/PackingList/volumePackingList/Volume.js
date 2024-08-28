@@ -482,7 +482,7 @@ function Volume() {
         await axios.post(`http://localhost:8080/api/subvolume`, formDataSubVolume)
             .then(() => {
 
-                setSucessMessage('Sub Volume adicionado com sucesso');
+                setSucessMessage('Subvolume adicionado com sucesso');
 
                 setTimeout(() => setSucessMessage(null), 5000);
                 setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
@@ -500,7 +500,7 @@ function Volume() {
 
             })
             .catch(error => {
-                const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Sub Volume";
+                const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Subvolume";
                 setErrorMessage(errorMessage);
                 setTimeout(() => setErrorMessage(null), 5000);
             })
@@ -523,7 +523,7 @@ function Volume() {
         await axios.put(`http://localhost:8080/api/subvolume/${idVolume}/${idSubVolume}`, formDataEditarSubVolume)
             .then(() => {
 
-                setSucessMessage('Sub Volume atualizado com sucesso');
+                setSucessMessage('Subvolume atualizado com sucesso');
 
                 setTimeout(() => setSucessMessage(null), 5000);
                 setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
@@ -542,7 +542,7 @@ function Volume() {
 
             })
             .catch(error => {
-                const errorMessage = error.response?.data || "Erro desconhecido ao atualizar Sub Volume";
+                const errorMessage = error.response?.data || "Erro desconhecido ao atualizar Subvolume";
                 setErrorMessage(errorMessage);
                 setTimeout(() => setErrorMessage(null), 5000);
             })
@@ -557,7 +557,7 @@ function Volume() {
         const descricao = subVolumesIds.descricao;
         axios.delete(`http://localhost:8080/api/subvolume/${idVolume}/${idSubVolume}`)
             .then(() => {
-                setSucessMessage(`Sub Volume '${descricao}' deletado com sucesso!`);
+                setSucessMessage(`Subvolume '${descricao}' deletado com sucesso!`);
                 setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
 
                 if (contextSubVolumes.visible === true) {
@@ -570,7 +570,7 @@ function Volume() {
             })
             .catch((error) => {
 
-                const errorMessage = error.response?.data || "Erro desconhecido ao deletar Sub Volume";
+                const errorMessage = error.response?.data || "Erro desconhecido ao deletar Subvolume";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {
@@ -590,7 +590,7 @@ function Volume() {
                 [idVolume]: response.data
             }));
         } catch (error) {
-            console.error("Erro ao buscar sub volumes: ", error);
+            console.error("Erro ao buscar subvolumes: ", error);
         }
     }
 
@@ -601,7 +601,7 @@ function Volume() {
             const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${idVolume}`);
             setSubVolumeSelecionado(response.data);
         } catch (error) {
-            console.error("Erro ao buscar sub volumes: ", error);
+            console.error("Erro ao buscar subvolumes: ", error);
             console.log('testee deu erro')
 
         }
@@ -1044,7 +1044,7 @@ function Volume() {
                                                             ) : (
                                                                 <div id="container-nao-existe-subvolume">
                                                                     <div id="nao-existe-subvolume">
-                                                                        <li>Não há nada para exibir, adicione um sub-volume...</li>
+                                                                        <li>Não há nada para exibir, adicione um subvolume...</li>
                                                                     </div>
                                                                 </div>
                                                             )}
@@ -1345,7 +1345,7 @@ function Volume() {
                         <div className="overlay-content-subvolume" ref={contextSubVolumesRef}>
                             <div className="title-subvolume-lista">
                                 <Title
-                                    text={estadoSubVolumeOverlay === 'adicionar' ? 'Adicionar Sub-Volumes' : 'Editar Sub-Volume'}
+                                    text={estadoSubVolumeOverlay === 'adicionar' ? 'Adicionar Subvolumes' : 'Editar Subvolume'}
                                     color={'#1780e2'}
                                 />
                             </div>
@@ -1362,7 +1362,7 @@ function Volume() {
                                                         type={'text'}
                                                         placeholder={'Digite a descrição...'}
                                                         name={'descricao'}
-                                                        title={'Digite uma descrição para o sub-volume...'}
+                                                        title={'Digite uma descrição para o subvolume...'}
                                                         onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
                                                         value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.descricao : formDataEditarSubVolume.descricao}
                                                     />
@@ -1373,7 +1373,7 @@ function Volume() {
                                                     <Input
                                                         placeholder={'Digite a quantidade...'}
                                                         name={'quantidade'}
-                                                        title={'Digite a quantidade de itens dentro do sub volume...'}
+                                                        title={'Digite a quantidade de itens dentro do subvolume...'}
                                                         type={'number'}
                                                         min={'1'}
                                                         onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
@@ -1407,7 +1407,7 @@ function Volume() {
 
                             <div id="title-lista-subvolume">
                                 <Text
-                                    text={'| Lista de Sub Volumes |'}
+                                    text={'Lista de Subvolumes'}
                                     color={'#1780e2'}
                                     fontSize={17}
                                 />
@@ -1418,8 +1418,8 @@ function Volume() {
                                     <div style={{ width: '779.31px' }}>
                                         <Button
                                             className={'button-adicionar-subvolume'}
-                                            text={'Adicionar Sub Volume'}
-                                            title={'Abrir tela de adição de sub volumes...'}
+                                            text={'Adicionar Subvolume'}
+                                            title={'Abrir tela de adição de subvolumes...'}
                                             padding={5}
                                             fontSize={10}
                                             borderRadius={2}
@@ -1435,7 +1435,7 @@ function Volume() {
                                         <ul>
                                             <li className="header-produto-subvolume-overlay" id="grid-lista">
                                                 <div id="lista-1">Id Volume</div>
-                                                <div id="lista-1">Id SubVolume</div>
+                                                <div id="lista-1">Id Subvolume</div>
                                                 <div id="lista-1">Descrição</div>
                                                 <div id="lista-1">Quantidade</div>
                                             </li>
@@ -1454,7 +1454,7 @@ function Volume() {
                                             ) : (
                                                 <div id="container-nao-existe-subvolume">
                                                     <div id="nao-existe-subvolume">
-                                                        <li>Não há nada para exibir, adicione um sub-volume...</li>
+                                                        <li>Não há nada para exibir, adicione um subvolume...</li>
                                                     </div>
                                                 </div>
                                             )}
@@ -1471,22 +1471,45 @@ function Volume() {
 
             {
                 contextMenu.visible && (
-                    <div className="context-menu" style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }} ref={contextMenuRef}>
-                        <button onClick={handleEdit}>Editar</button>
-                        <button onClick={handleSubVolumes}>Adicionar Sub-Volume</button>
-                        <button onClick={handleDelete}>Excluir</button>
+                    <div className='context-menu' style={{
+                        top: `${contextMenu.y}px`, left: `${contextMenu.x}px`, width: '230px'
+                    }} ref={contextMenuRef}>
+                        <div id='container-icon-menu' onClick={handleEdit}>
+                            <Icon icon="mdi:edit" id='icone-menu' />
+                            <p>Editar</p>
+                        </div>
+                        <div id='container-icon-menu' onClick={handleSubVolumes} >
+                            <Icon icon="ci:list-add" id='icone-menu' />
+                            <p>Adicionar Subvolume</p>
+                        </div>
+                        <div id='container-icon-menu-excluir' onClick={handleDelete} >
+                            <Icon icon="material-symbols:delete-outline" id='icone-menu' />
+                            <p>Excluir</p>
+                        </div>
                     </div>
                 )}
 
 
             {
                 contextMenuSubVolume.visible && (
-                    <div className="context-menu" style={{ top: `${contextMenuSubVolume.y}px`, left: `${contextMenuSubVolume.x}px` }} ref={contextMenuSubVolumeRef}>
-                        <button onClick={handleEditSubVolume}>Editar Sub-Volume</button>
-                        <button onClick={handleSubVolumes}>Adicionar Sub-Volume</button>
-                        <button onClick={handleDeleteSubVolume}>Excluir Sub-Volume</button>
+                    <div className='context-menu' style={{
+                        top: `${contextMenuSubVolume.y}px`, left: `${contextMenuSubVolume.x}px`, width: '230px'
+                    }} ref={contextMenuSubVolumeRef}>
+                        <div id='container-icon-menu' onClick={handleEditSubVolume}>
+                            <Icon icon="mdi:edit" id='icone-menu' />
+                            <p>Editar Subvolume</p>
+                        </div>
+                        <div id='container-icon-menu' onClick={handleSubVolumes} >
+                            <Icon icon="ci:list-add" id='icone-menu' />
+                            <p>Adicionar Subvolume</p>
+                        </div>
+                        <div id='container-icon-menu-excluir' onClick={handleDeleteSubVolume} >
+                            <Icon icon="material-symbols:delete-outline" id='icone-menu' />
+                            <p>Excluir Subvolume</p>
+                        </div>
                     </div>
                 )}
+
 
 
 
@@ -1497,7 +1520,7 @@ function Volume() {
                         <div className="context-delete">
                             <div>
                                 <Text
-                                    text={estadoExcluirOverlay === 'volume' ? 'Tem certeza que deseja excluir o Produto?' : `Tem certeza que deseja excluir o Sub Volume '${subVolumesIds.descricao}' ?`}
+                                    text={estadoExcluirOverlay === 'volume' ? 'Tem certeza que deseja excluir o Produto?' : `Tem certeza que deseja excluir o Subvolume '${subVolumesIds.descricao}' ?`}
                                     fontSize={20}
                                 />
                             </div>

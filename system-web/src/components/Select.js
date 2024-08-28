@@ -40,9 +40,9 @@ const Select = ({
         position: 'fixed',
         top: tooltipPosition.y + 20 + 'px', // Ajusta a posição vertical para ficar um pouco abaixo do cursor
         left: tooltipPosition.x + 15 + 'px', // Ajusta a posição horizontal para ficar à direita do cursor
-        backgroundColor: 'rgba(0, 87, 179, 0.644)',
+        backgroundColor: '#1780e2',
         color: '#fff',
-        borderRadius: '4px',
+        borderRadius: '2px',
         padding: '5px 10px',
         fontSize: '14px',
         whiteSpace: 'nowrap',

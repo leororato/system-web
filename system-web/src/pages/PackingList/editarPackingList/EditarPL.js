@@ -85,7 +85,6 @@ function EditarPL() {
                 setErrorMessage(null);
             }, 5000);
 
-            console.error("Erro ao atualizar o Packing List", error);
         }
     };
 
@@ -158,7 +157,7 @@ function EditarPL() {
         <div>
             <Header />
             <ErrorNotification message={errorMessage} onClose={handleErrorClose} />
-           <SucessNotification message={sucessMessage} onClose={() =>  setSucessMessage(null) }/>
+            <SucessNotification message={sucessMessage} onClose={() => setSucessMessage(null)} />
             <div className="body-editar">
                 <form onSubmit={handleSubmit} className="form-editar-pl">
                     <div className="input-group">
@@ -181,160 +180,160 @@ function EditarPL() {
                         </div>
 
                         <div>
-                        <label>Consignatário:</label>
-                        <Autocomplete
-                            data={clientesNomus}
-                            onSelect={handleAutocompleteChange('idConsignatario')}
-                            displayField={'nome'}
-                            value={guardarNomes.nomeConsignatario}
-                        />
+                            <label>Consignatário:</label>
+                            <Autocomplete
+                                data={clientesNomus}
+                                onSelect={handleAutocompleteChange('idConsignatario')}
+                                displayField={'nome'}
+                                value={guardarNomes.nomeConsignatario}
+                            />
                         </div>
 
                         <div>
-                        <label>Notificado:</label>
-                        <Autocomplete
-                            data={clientesNomus}
-                            onSelect={handleAutocompleteChange('idNotificado')}
-                            displayField={'nome'}
-                            value={guardarNomes.nomeNotificado}
-                        />
+                            <label>Notificado:</label>
+                            <Autocomplete
+                                data={clientesNomus}
+                                onSelect={handleAutocompleteChange('idNotificado')}
+                                displayField={'nome'}
+                                value={guardarNomes.nomeNotificado}
+                            />
                         </div>
 
                         <div id="select-div">
-                        <label>País de Origem:</label>
-                        <Select
-                            className="form-pais-origem"
-                            name="paisOrigem"
-                            options={[{ value: 'Brasil', label: 'Brasil' }]}
-                            value={formData.paisOrigem}
-                            onChange={e => setFormData({ ...formData, paisOrigem: e.target.value })}
-                        />
+                            <label>País de Origem:</label>
+                            <Select
+                                className="form-pais-origem"
+                                name="paisOrigem"
+                                options={[{ value: 'Brasil', label: 'Brasil' }]}
+                                value={formData.paisOrigem}
+                                onChange={e => setFormData({ ...formData, paisOrigem: e.target.value })}
+                            />
                         </div>
 
                         <div>
-                        <label>Fronteira:</label>
-                        <Input
-                            id="input-group-2"
-                            type="text"
-                            name="fronteira"
-                            placeholder={'Digite a fronteira...'}
-                            value={formData.fronteira}
-                            onChange={handleChange}
-                        />
+                            <label>Fronteira:</label>
+                            <Input
+                                id="input-group-2"
+                                type="text"
+                                name="fronteira"
+                                placeholder={'Digite a fronteira...'}
+                                value={formData.fronteira}
+                                onChange={handleChange}
+                            />
                         </div>
 
                         <div>
-                        <label>Local de Embarque:</label>
-                        <Input
-                            type="text"
-                            name="localEmbarque"
-                            placeholder={'Digite o local de embarque...'}
-                            value={formData.localEmbarque}
-                            onChange={handleChange}
-                        />
+                            <label>Local de Embarque:</label>
+                            <Input
+                                type="text"
+                                name="localEmbarque"
+                                placeholder={'Digite o local de embarque...'}
+                                value={formData.localEmbarque}
+                                onChange={handleChange}
+                            />
                         </div>
 
                         <div>
-                        <label>Local de Destino:</label>
-                        <Input
-                            type="text"
-                            name="localDestino"
-                            placeholder={'Digite o local de destino...'}
-                            value={formData.localDestino}
-                            onChange={handleChange}
-                        />
+                            <label>Local de Destino:</label>
+                            <Input
+                                type="text"
+                                name="localDestino"
+                                placeholder={'Digite o local de destino...'}
+                                value={formData.localDestino}
+                                onChange={handleChange}
+                            />
                         </div>
 
                         <div>
-                        <label>Termos de Pagamento:</label>
-                        <Input
-                            type="text"
-                            name="termosPagamento"
-                            placeholder={'Digite os termos de pagamento...'}
-                            value={formData.termosPagamento}
-                            onChange={handleChange}
-                        />
+                            <label>Termos de Pagamento:</label>
+                            <Input
+                                type="text"
+                                name="termosPagamento"
+                                placeholder={'Digite os termos de pagamento...'}
+                                value={formData.termosPagamento}
+                                onChange={handleChange}
+                            />
                         </div>
 
                         <div>
-                        <label>Dados Bancários:</label>
-                        <Input
-                            type="text"
-                            name="dadosBancarios"
-                            placeholder={'Digite os dados bancários...'}
-                            value={formData.dadosBancarios}
-                            onChange={handleChange}
-                        />
+                            <label>Dados Bancários:</label>
+                            <Input
+                                type="text"
+                                name="dadosBancarios"
+                                placeholder={'Digite os dados bancários...'}
+                                value={formData.dadosBancarios}
+                                onChange={handleChange}
+                            />
                         </div>
 
                         <div>
-                        <label>Incoterm:</label>
-                        <Input
-                            type="text"
-                            name="incoterm"
-                            placeholder={'Digite o INCOTERM...'}
-                            value={formData.incoterm}
-                            onChange={handleChange}
-                        />
+                            <label>Incoterm:</label>
+                            <Input
+                                type="text"
+                                name="incoterm"
+                                placeholder={'Digite o INCOTERM...'}
+                                value={formData.incoterm}
+                                onChange={handleChange}
+                            />
                         </div>
 
                         <div>
-                        <label>Invoice:</label>
-                        <Input
-                            type="text"
-                            name="invoice"
-                            placeholder={'Digite o INVOICE...'}
-                            value={formData.invoice}
-                            onChange={handleChange}
-                        />
+                            <label>Invoice:</label>
+                            <Input
+                                type="text"
+                                name="invoice"
+                                placeholder={'Digite o INVOICE...'}
+                                value={formData.invoice}
+                                onChange={handleChange}
+                            />
                         </div>
 
                         <div>
-                        <label>Tipo de Transporte:</label>
-                        <Input
-                            type="text"
-                            name="tipoTransporte"
-                            placeholder={'Digite o tipo de transporte...'}
-                            value={formData.tipoTransporte}
-                            onChange={handleChange}
-                        />
+                            <label>Tipo de Transporte:</label>
+                            <Input
+                                type="text"
+                                name="tipoTransporte"
+                                placeholder={'Digite o tipo de transporte...'}
+                                value={formData.tipoTransporte}
+                                onChange={handleChange}
+                            />
                         </div>
 
                         <div>
-                        <label>Peso Líquido Total:</label>
-                        <Input
-                            type="text"
-                            name="pesoLiquidoTotal"
-                            placeholder={'Digite o peso LÍQUIDO total...'}
-                            value={formData.pesoLiquidoTotal}
-                            onChange={handleChange}
-                        />
+                            <label>Peso Líquido Total:</label>
+                            <Input
+                                type="text"
+                                name="pesoLiquidoTotal"
+                                placeholder={'Digite o peso LÍQUIDO total...'}
+                                value={formData.pesoLiquidoTotal}
+                                onChange={handleChange}
+                            />
                         </div>
 
                         <div>
-                        <label>Peso Bruto Total:</label>
-                        <Input
-                            type="text"
-                            name="pesoBrutoTotal"
-                            placeholder={'Digite o preso BRUTO total...'}
-                            value={formData.pesoBrutoTotal}
-                            onChange={handleChange}
-                        />
+                            <label>Peso Bruto Total:</label>
+                            <Input
+                                type="text"
+                                name="pesoBrutoTotal"
+                                placeholder={'Digite o preso BRUTO total...'}
+                                value={formData.pesoBrutoTotal}
+                                onChange={handleChange}
+                            />
                         </div>
 
                         <div id="select-div">
-                        <label>Idioma:</label>
-                        <Select
-                            className="form-idioma"
-                            name="idioma"
-                            options={[
-                                { value: 'Português', label: 'Português' },
-                                { value: 'Espanhol', label: 'Espanhol' },
-                                { value: 'Inglês', label: 'Inglês' }
-                            ]}
-                            value={formData.idioma}
-                            onChange={e => setFormData({ ...formData, idioma: e.target.value })}
-                        />
+                            <label>Idioma:</label>
+                            <Select
+                                className="form-idioma"
+                                name="idioma"
+                                options={[
+                                    { value: 'Português', label: 'Português' },
+                                    { value: 'Espanhol', label: 'Espanhol' },
+                                    { value: 'Inglês', label: 'Inglês' }
+                                ]}
+                                value={formData.idioma}
+                                onChange={e => setFormData({ ...formData, idioma: e.target.value })}
+                            />
                         </div>
 
                     </div>

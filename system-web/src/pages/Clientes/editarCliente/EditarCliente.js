@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Title from "../../../components/Title";
 import Input from "../../../components/Input";
 import Button from "../../../components/Button";
@@ -6,10 +6,18 @@ import Header from "../../../components/Header/Header";
 import { useEffect, useState } from "react";
 import './EditarCliente.css'
 import axios from "axios";
+import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
+import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 
 function EditarCliente() {
     const navigate = useNavigate();
     const { id } = useParams();
+
+    const location = useLocation();
+    const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
+    const [errorMessage, setErrorMessage] = useState(null);
+
+
     const [clienteExiste, setClienteExiste] = useState();
     const [containerNomus, setContainerNomus] = useState([]);
     const [formData, setFormData] = useState({
@@ -17,6 +25,7 @@ function EditarCliente() {
         sigla_codigo_identificacao: '',
         codigo_identificacao: ''
     })
+
 
 
     useEffect(() => {
@@ -51,6 +60,8 @@ function EditarCliente() {
         fetchContainers();
     }, [id]); // Fim do useEffect
 
+
+
     // Guardando as alterações/o que foi digitado no input
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -76,6 +87,8 @@ function EditarCliente() {
         return true;
     };
 
+
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!validateForm()) {
@@ -83,33 +96,62 @@ function EditarCliente() {
         }
         if (clienteExiste === true) {
             // Se o cliente já existe no banco App é realizado um PUT
+            const nome = containerNomus.nome;
             try {
                 await axios.put(`http://localhost:8080/api/clienteApp/${id}`, formData);
-                alert('Cliente Atualizado!');
-                navigate(0);
+
+                navigate('/clientes', { state: { sucessMessage: `O cliente '${nome}' foi atualizado com sucesso!` } });
+
             } catch (error) {
-                console.error('Erro ao atualizar o Cliente', error);
-                alert('Erro ao atualizar cliente!');
+
+                const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar o Cliente!";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
             }
 
         } // Fim do IF
         else {
             // Se o cliente não existe no banco App é realizado um POST
+            const nome = containerNomus.nome;
             try {
                 await axios.post(`http://localhost:8080/api/clienteApp`, formData);
-                alert('Cliente Criado com Sucesso!');
-                navigate(0);
+                navigate('/clientes', { state: { sucessMessage: `O cliente '${nome}' foi atualizado com sucesso!` } });
+                
             } catch (error) {
-                console.error('Erro ao Criar o Cliente!', error);
-                alert('Erro ao Criar o Cliente!');
+                const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar o Cliente!";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
             }
         } // Fim do Else
 
     } // Fim do handleSubmit
 
+
+
+    useEffect(() => {
+        if (sucessMessage) {
+            const timer = setTimeout(() => {
+                setSucessMessage(null);
+                // Limpa o estado de navegação para evitar que a mensagem apareça ao recarregar a página
+                navigate('/inicio', { replace: true, state: {} });
+            }, 5000);
+
+            // Limpar o timeout caso o componente seja desmontado antes dos 5 segundos
+            return () => clearTimeout(timer);
+        }
+    }, [sucessMessage, navigate]);
+
     return (
         <div>
             <Header />
+            <ErrorNotification message={errorMessage} onClose={() => setSucessMessage(null)} />
+            <SucessNotification message={sucessMessage} onClose={() => setSucessMessage(null)} />
 
             <div className='editar-encapsulado'>
                 <div className="form-container-cliente">
@@ -135,7 +177,7 @@ function EditarCliente() {
                                 <Input
                                     type="text"
                                     id="none-edit"
-                                    title="Nome"
+                                    title="Não é possível editar o nome do cliente..."
                                     placeholder={"Nome"}
                                     backgroundColor={'#ccc'}
                                     name="nome"
@@ -148,7 +190,7 @@ function EditarCliente() {
                                 <Input
                                     type="text"
                                     id="none-edit"
-                                    title="Endereço do cliente"
+                                    title="Não é possível editar o endereço do cliente..."
                                     placeholder="Endereço"
                                     backgroundColor={'#ccc'}
                                     name="endereco"
@@ -161,7 +203,7 @@ function EditarCliente() {
                                 <Input
                                     type="email"
                                     id="none-edit"
-                                    title="Email do cliente"
+                                    title="Não é possível editar o email do cliente..."
                                     placeholder="Email"
                                     backgroundColor={'#ccc'}
                                     name="email"
@@ -175,7 +217,7 @@ function EditarCliente() {
                                 <Input
                                     type="tel"
                                     id="none-edit"
-                                    title="Telefone/Fax do cliente"
+                                    title="Não é possível editar o telefone/fax do cliente..."
                                     placeholder="Telefone/Fax"
                                     backgroundColor={'#ccc'}
                                     name="telefoneFax"

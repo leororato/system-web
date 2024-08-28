@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 
-const Input = ({ 
-    type, 
-    placeholder, 
-    backgroundColor, 
-    fontSize, 
-    padding, 
-    name, 
-    onChange, 
-    title, 
-    value, 
-    readOnly, 
-    min 
+const Input = ({
+    type,
+    placeholder,
+    backgroundColor,
+    fontSize,
+    padding,
+    name,
+    onChange,
+    title,
+    value,
+    readOnly,
+    min
 }) => {
     const [tooltipVisible, setTooltipVisible] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
@@ -30,8 +30,8 @@ const Input = ({
 
     return (
         <div style={{ position: 'relative', display: 'inline-block' }} id='div-input-customizado'>
-            <input 
-                type={type} 
+            <input
+                type={type}
                 placeholder={placeholder}
                 name={name}
                 value={value}
@@ -39,8 +39,8 @@ const Input = ({
                 onChange={onChange}
                 readOnly={readOnly}
                 style={{
-                    backgroundColor: backgroundColor, 
-                    fontSize: fontSize, 
+                    backgroundColor: backgroundColor,
+                    fontSize: fontSize,
                     padding: padding,
                 }}
                 onMouseEnter={handleMouseEnter}
@@ -48,15 +48,16 @@ const Input = ({
                 onMouseMove={handleMouseMove}
             />
             {tooltipVisible && title && (
-                <div 
+                <div
                     style={{
                         position: 'fixed',
                         top: tooltipPosition.y + 'px',
                         left: tooltipPosition.x + 15 + 'px', // 15px à direita do cursor
-                        backgroundColor: 'rgba(0, 87, 179, 0.644)',
+                        backgroundColor: '#1780e2',
                         color: '#fff',
-                        padding: '5px 10px',
-                        borderRadius: '5px',
+                        padding: '4px 10px',
+                        fontSize: '14px',
+                        borderRadius: '2px',
                         whiteSpace: 'nowrap',
                         pointerEvents: 'none',
                         zIndex: 1000,
@@ -84,8 +85,8 @@ export default Input;
 
 // const Input = ({ type, placeholder, backgroundColor, fontSize, padding, name, onChange, title, value, readOnly, min }) => {
 //     return (
-//             <input 
-//             type={type} 
+//             <input
+//             type={type}
 //             placeholder={placeholder}
 //             name={name}
 //             value={value}
@@ -94,8 +95,8 @@ export default Input;
 //             title= {title}
 //             readOnly={readOnly}
 //             style={{
-//             backgroundColor: backgroundColor, 
-//             fontSize: fontSize, 
+//             backgroundColor: backgroundColor,
+//             fontSize: fontSize,
 //             padding: padding,
 //             }}
 //             />

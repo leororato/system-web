@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import Input from '../../../components/Input';
 import ErrorNotification from '../../../components/ErrorNotification/ErrorNotification';
 import SucessNotification from '../../../components/SucessNotification/SucessNotification';
+import { Icon } from '@iconify/react/dist/iconify.js';
 
 function PackingList() {
 
@@ -30,18 +31,18 @@ function PackingList() {
     });
 
     const [contextMenu, setContextMenu] = useState({
-         visible: false, x: 0, y: 0, selectedId: null 
-        });
+        visible: false, x: 0, y: 0, selectedId: null
+    });
 
     const [contextDelete, setContextDelete] = useState({
-         visible: false, x: 0, y: 0, selectedId: null 
-        });
+        visible: false, x: 0, y: 0, selectedId: null
+    });
 
     const [contextVolume, setContextVolume] = useState({
-         visible: false, x: 0, y: 0 
-        });
+        visible: false, x: 0, y: 0
+    });
 
-    
+
 
 
 
@@ -64,7 +65,7 @@ function PackingList() {
                     acc[cliente.id] = cliente.nome;
                     return acc;
                 }, {});
-                 setClientes(clientesData);
+                setClientes(clientesData);
             } catch (error) {
                 console.error('Erro ao buscar os clientes', error);
             }
@@ -141,8 +142,8 @@ function PackingList() {
         console.log("Excluir item com ID: ", contextMenu.selectedId);
         setContextMenu({ visible: false, x: 0, y: 0, selectedId: null });
         setContextDelete({
-             visible: true, x: event.pageX, y: event.pageY, selectedId: contextMenu.selectedId 
-            });
+            visible: true, x: event.pageX, y: event.pageY, selectedId: contextMenu.selectedId
+        });
     };
 
 
@@ -151,7 +152,7 @@ function PackingList() {
         const itemDeletado = contextDelete.selectedId;
         axios.delete(`http://localhost:8080/api/packinglist/${itemDeletado}`)
             .then(() => {
-                setPackingLists(packingLists.filter(packingList => 
+                setPackingLists(packingLists.filter(packingList =>
                     packingList.id !== contextDelete.selectedId));
                 setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
                 setSucessMessage(`PackingList ${itemDeletado} deletado com sucesso`);
@@ -171,31 +172,31 @@ function PackingList() {
         navigate(`/packing-list-produto/${contextMenu.selectedId}`);
     };
 
-    
+
 
     const handleCreateTipoDeVolume = (e) => {
         e.preventDefault();
 
         axios.post(`http://localhost:8080/api/tipo-de-volume`, tipoDeVolume)
-        .then((response) => {
+            .then((response) => {
 
-            setSucessMessage(`Tipo de Volume '${response.data.descricao}' criado com sucesso`);
-            
-            setTimeout(() => {
-                navigate(0);
-            }, 2000);
+                setSucessMessage(`Tipo de Volume '${response.data.descricao}' criado com sucesso`);
 
-         })
-         .catch (error => {
-            const errorMessage = error.response?.data || "Erro desconhecido ao criar o Tipo de Volume";
-            setErrorMessage(errorMessage);
-           
-           setTimeout(() => {
-            setErrorMessage(null);
-           }, 5000);
-           
-            console.error("Erro ao criar o Tipo de Volume: ", error)
-         });
+                setTimeout(() => {
+                    navigate(0);
+                }, 2000);
+
+            })
+            .catch(error => {
+                const errorMessage = error.response?.data || "Erro desconhecido ao criar o Tipo de Volume";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+
+                console.error("Erro ao criar o Tipo de Volume: ", error)
+            });
     }
 
     const handleErrorClose = () => {
@@ -207,7 +208,8 @@ function PackingList() {
         <div>
             <Header />
             <ErrorNotification message={errorMessage} onClose={handleErrorClose} />
-            {sucessMessage && <SucessNotification message={sucessMessage} onClose={() =>  setSucessMessage(null) }/>}
+            {sucessMessage && <SucessNotification message={sucessMessage} onClose={() => setSucessMessage(null)} />}
+           
             <div className='title-container'>
                 <Title
                     classname={'title'}
@@ -217,17 +219,9 @@ function PackingList() {
                 />
             </div>
 
-            <div className='buttons'>
-                <div className='button-container-listagem'>
-                    <Button
-                        className={'button-item'}
-                        text={'Novo Packing List'}
-                        padding={10}
-                        borderRadius={5}
-                        fontSize={15}
-                        onClick={() => navigate('/cadastrar-packing-list')}
-                    />
-                </div>
+
+
+            {/*
                 <div className='button-container-listagem'>
                     <Button
                         className={'button-item'}
@@ -247,10 +241,22 @@ function PackingList() {
                         fontSize={15}
                         onClick={handleVolume}
                     />
-                </div>
-            </div>
+            </div> */}
 
             <div className='container-listagem'>
+                <div className='buttons'>
+                    <div className='button-container-listagem'>
+                        <Button
+                            className={'button-item'}
+                            text={'Novo Packing List'}
+                            title={'Clique aqui para adicionar um novo PackingList...'}
+                            padding={10}
+                            borderRadius={2}
+                            fontSize={15}
+                            onClick={() => navigate('/cadastrar-packing-list')}
+                        />
+                    </div>
+                </div>
                 <div className='container-listagem-inicio'>
                     <ul>
                         <li className="header">
@@ -274,7 +280,7 @@ function PackingList() {
                         </li>
 
                         {Array.isArray(packingLists) && packingLists.map((p) => (
-                            <li key={p.idPackingList} onContextMenu={(event) => 
+                            <li key={p.idPackingList} onContextMenu={(event) =>
                                 handleRightClick(event, p.idPackingList)} className='li-listagem'>
                                 <div>{p.idPackingList}</div>
                                 <div>{formatarData(p.dtCriacao)}</div>
@@ -300,12 +306,20 @@ function PackingList() {
                 {contextMenu.visible && (
 
                     <div className='context-menu' style={{
-                         top: `${contextMenu.y}px`, left: `${contextMenu.x}px` 
-                         }}>
-
-                        <button onClick={handleEdit}>Editar</button>
-                        <button onClick={handleList}>Listar Produto</button>
-                        <button onClick={handleDelete}>Excluir</button>
+                        top: `${contextMenu.y}px`, left: `${contextMenu.x}px`
+                    }}>
+                        <div id='container-icon-menu' onClick={handleEdit}>
+                            <Icon icon="mdi:edit" id='icone-menu'/>
+                            <p>Editar</p>
+                        </div>
+                        <div id='container-icon-menu' onClick={handleList}>
+                            <Icon icon="ci:list-add" id='icone-menu'/>
+                            <p>Listar Produto</p>
+                        </div>
+                        <div id='container-icon-menu-excluir' onClick={handleDelete} >
+                            <Icon icon="material-symbols:delete-outline" id='icone-menu'/>
+                            <p>Excluir</p>
+                        </div>
                     </div>
                 )}
 
@@ -344,18 +358,19 @@ function PackingList() {
                         <div className='context-volume'>
                             <div className='container-text-input'>
                                 <div className='container-text-cv'>
-                                <Text
-                                    text={'CRIAR TIPO DE VOLUME:'}
-                                    fontSize={15}
-                                /></div>
-                            <div className='container-input-criar-volume'>
-                            <Input
-                                className={"input-tipo-volume"}
-                                placeholder={'Digite o tipo de volume...'}
-                                padding={7}
-                                onChange={(e) => setTipoDeVolume({descricao: e.target.value})}
-                                /></div>
-                                </div>
+                                    <Text
+                                        text={'Criar tipo de volume:'}
+                                        fontSize={15}
+                                    /></div>
+                                <div className='container-input-criar-volume'>
+                                    <Input
+                                        className={"input-tipo-volume"}
+                                        placeholder={'Ex: Pallet...'}
+                                        padding={7}
+                                        title={'Digite o tipo de volume...'}
+                                        onChange={(e) => setTipoDeVolume({ descricao: e.target.value })}
+                                    /></div>
+                            </div>
 
                             <div className='buttons-create'>
                                 <Button

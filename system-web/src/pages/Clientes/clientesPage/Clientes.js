@@ -3,10 +3,17 @@ import axios from 'axios';
 import './Clientes.css';
 import Input from '../../../components/Input';
 import Header from '../../../components/Header/Header';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import ErrorNotification from '../../../components/ErrorNotification/ErrorNotification';
+import SucessNotification from '../../../components/SucessNotification/SucessNotification';
 
 function Clientes() {
     const navigate = useNavigate();
+
+    // Variáveis de notificações
+    const location = useLocation();
+    const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     // Variáveis dos inputs de busca
     const [buscaId, setBuscaId] = useState('');
@@ -82,7 +89,9 @@ function Clientes() {
     return (
         <div>
             <Header />
-
+            <ErrorNotification message={errorMessage} onClose={() => setSucessMessage(null)} />
+            {sucessMessage && <SucessNotification message={sucessMessage} onClose={() => setSucessMessage(null)} />}
+            
             <div className="clientes-container">
                 <div className='sub-container-clientes'>
                     <div className='clientes-input-container'>
@@ -152,29 +161,37 @@ function Clientes() {
                 <div className="clientes-list-container">
                     {pesquisa ? (
                         clientesFiltrados.length > 0 ? (
-                            <div className='list-ul'>
-                                <ul>
-                                    <li className="header">
-                                        <div>ID</div>
-                                        <div>Nome</div>
-                                        <div>Email</div>
-                                        <div>Endereço</div>
-                                        <div>Telefone</div>
-                                        <div>Sigla IDF</div>
-                                        <div>Código IDF</div>
-                                    </li>
-                                    {clientesFiltrados.map((c) => (
-                                        <li key={c.id} onClick={(event) => handleClickCliente(event, c)} className="li-listagem">
-                                            <div id='id'>{c.id}</div>
-                                            <div>{c.nome}</div>
-                                            <div>{c.email}</div>
-                                            <div>{c.endereco}</div>
-                                            <div>{c.telefoneFax}</div>
-                                            <div>{c.sigla_codigo_identificacao}</div>
-                                            <div>{c.codigo_identificacao}</div>
+                            <div className='container-listagem-cliente'>
+                                <div className='subcontainer-listagem-cliente'>
+                                    <ul>
+                                        <li className="header-cliente">
+                                            <div>ID</div>
+                                            <div>Nome</div>
+                                            <div>Email</div>
+                                            <div>Endereço</div>
+                                            <div>Telefone</div>
+                                            <div>Sigla IDF</div>
+                                            <div>Código IDF</div>
                                         </li>
-                                    ))}
-                                </ul>
+                                        {clientesFiltrados.map((c) => (
+                                            
+                                            <li className="li-listagem-cliente" title='Clique para editar o cliente...' 
+                                            
+                                            key={c.id} onClick={(event) =>
+                                                handleClickCliente(event, c)} 
+                                                                >
+                                                <div id='id'>{c.id}</div>
+                                                <div>{c.nome}</div>
+                                                <div>{c.email}</div>
+                                                <div>{c.endereco}</div>
+                                                <div>{c.telefoneFax}</div>
+                                                <div>{c.sigla_codigo_identificacao}</div>
+                                                <div>{c.codigo_identificacao}</div>
+                                                
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
                         ) : (
                             <div className="clientes-no-results">Nenhum cliente encontrado</div>

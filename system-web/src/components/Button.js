@@ -29,9 +29,3 @@ const Button = ({ onClick, type, text, padding, backgroundColor, borderRadius, o
 }
 
 export default Button;
-// style={{
-//     padding: padding,
-//     backgroundColor: backgroundColor,
-//     borderRadius: borderRadius,
-
-// }}>

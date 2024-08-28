@@ -1,10 +1,10 @@
 /* src/components/Autocomplete/Autocomplete.css */
 
 .tooltip {
-    background-color: rgba(0, 87, 179, 0.644);
+    background-color: #1780e2;
     color: #fff;
-    padding: 5px 10px;
-    border-radius: 4px;
+    padding: 4px 10px;
+    border-radius: 2px;
     white-space: nowrap;
     pointer-events: none;
     z-index: 1000;
