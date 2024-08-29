@@ -14,9 +14,9 @@ function Autocomplete({ data, onSelect, displayField, value, title }) {
     };
 
     const handleSelect = (item) => {
-        setInputValue(item[displayField] || ''); // Definir o valor do input como o displayField do item
+        setInputValue(item[displayField] || '');
         setShowResults(false);
-        onSelect(item); // Passar o item completo para a função onSelect
+        onSelect(item); 
     };
 
     const handleClickOutside = (event) => {
@@ -45,7 +45,7 @@ function Autocomplete({ data, onSelect, displayField, value, title }) {
     }, []);
 
     useEffect(() => {
-        setInputValue(value || ''); // Atualize o estado do inputValue sempre que a propriedade value mudar
+        setInputValue(value || ''); 
     }, [value]);
 
     const filteredData = data.filter(item =>
@@ -63,7 +63,7 @@ function Autocomplete({ data, onSelect, displayField, value, title }) {
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 onMouseMove={handleMouseMove}
-                // Remover o atributo title para evitar o tooltip nativo
+                
             />
             {showResults && filteredData.length > 0 && (
                 <div className="autocomplete-results">
@@ -83,11 +83,11 @@ function Autocomplete({ data, onSelect, displayField, value, title }) {
                     className="tooltip"
                     style={{
                         position: 'fixed',
-                        top: tooltipPosition.y + 20 + 'px', // Ajusta a posição vertical para ficar um pouco abaixo do cursor
-                        left: tooltipPosition.x + 15 + 'px', // Ajusta a posição horizontal para ficar à direita do cursor
+                        top: tooltipPosition.y + 20 + 'px', 
+                        left: tooltipPosition.x + 15 + 'px',
                     }}
                 >
-                    {title} {/* Exibindo o texto do tooltip passado via title */}
+                    {title}
                 </div>
             )}
         </div>

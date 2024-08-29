@@ -4,7 +4,6 @@ import './ErrorNotification.css';
 const ErrorNotification = ({ message, onClose }) => {
     if (!message) return null;
 
-    // Se message for um objeto, converta para uma string
     const displayMessage = typeof message === 'object' ? JSON.stringify(message) : message;
 
     return (

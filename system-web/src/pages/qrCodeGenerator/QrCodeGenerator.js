@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import QRCode from 'react-qr-code';
 import QRCodeLink from 'qrcode'
-// import './QrCodeGenerator.css';
+import './QrCodeGenerator.css';
 import Button from '../../components/Button';
 import Title from '../../components/Title';
 import Header from '../../components/Header/Header';
+import Input from '../../components/Input';
 
 
 function QrCodeGenerator() {
@@ -13,32 +14,7 @@ function QrCodeGenerator() {
     const [qrCodeLista, setQrCodeLista] = useState([]) // array que guarda os qrcodes
     const valueQrCode = [{
 
-        idPackList: 1,
-
-        idCliente: 532,
-
-        nomeCliente: "Ortobom",
-
-        idProduto: "MP000325",
-
-        nomeProduto: "BATEDOR CF 17000",
-
-        TipoVolume: "Plastico Bolha",
-
-        idVolume: 1,
-
-        qtVolume: 1,
-
-        descricaoVolume: "Cupula",
-
-        pesoLiquidoVolume: 650,
-
-        pesoBrutoVolume: 700,
-
-        idSubVolume: null,
-
-        descricaoSubVolume: null
-
+        qrCodeVolumeProduto: '27-1-16-15-48'
     },
 
     {
@@ -47,27 +23,11 @@ function QrCodeGenerator() {
 
         idCliente: 342,
 
-        nomeCliente: "Ortobom",
+        nomeCliente: 2,
 
-        idProduto: "MP000325",
+        idProduto: 3,
 
-        nomeProduto: "TORNO DE LAMINAR ESPUMAS CF 2002",
-
-        TipoVolume: "Plastico Bolha",
-
-        idVolume: 2,
-
-        qtVolume: 1,
-
-        descricaoVolume: "Balde",
-
-        pesoLiquidoVolume: 550,
-
-        pesoBrutoVolume: 600,
-
-        idSubVolume: null,
-
-        descricaoSubVolume: null
+        nomeProduto: 3
 
     },
 
@@ -344,63 +304,68 @@ function QrCodeGenerator() {
     }
 
     return (
-        <div className='geral'>
-            <Header className='header'/>
+        <div className='container-qrcodes'>
+            <Header />
 
 
-            <div className='container'>
+            <div className='container-gerar-qrcodes'>
 
-            <div className='title'>
-                <Title
-                    text={'Gerador de QRCode'}
-                    color={'black'}
-                    fontSize={'30px'}
-                />
-            </div>
+                <div>
+                    <Title
+                        text={'Gerador de QRCode'}
+                        color={'black'}
+                        fontSize={'30px'}
+                    />
+                </div>
 
-                <div className='input-qrcode'>
-                    <input
+                <div>
+                    <Input
                         value={quantidadeEtiquetas}
                         type='number'
                         min={1}
-                        max={valueQrCode.length}
+                        max={valueQrCode.length }
                         placeholder='Quantidade de etiquetas'
                         onChange={handleQrcode}
                     />
                 </div>
 
-                <Button
-                    onClick={handleGenerate}
-                    className='button-generator'
-                    text={'Gerar Lista'}
-                    color={'white'}
-                    padding={'10px'}
-                    fontSize={'23px'}
-                    borderRadius={'5px'}
-                    width={250}
-                />
+                <div className='container-botoes-qrcode'>
 
-                <Button
-                    onClick={handlePrint}
-                    className='button-printer'
-                    text={'Imprimir Etiquetas'}
-                    color={'white'}
-                    padding={'10px'}
-                    fontSize={'23px'}
-                    borderRadius={'5px'}
-                    width={250}
-                />
-                <div >
-                    <Button
-                        href={qrCodeLink}
-                        className='button-download'
-                        download={`qrcode.png`}
-                        text={'Baixar QRCode'}
-                        padding={'10px'}
-                        borderRadius={'5px'}
-                        fontSize={'23px'}
-                        width={250}
-                    />
+                    <div id='div-botao-gerar-lista'>
+                        <Button
+                            onClick={handleGenerate}
+                            className='button-generator'
+                            text={'Gerar Lista'}
+                            color={'white'}
+                            fontSize={'15px'}
+                            padding={'5px'}
+                            borderRadius={'5px'}
+                        />
+                    </div>
+
+                    <div id='div-botao-imprimir'>
+                        <Button
+                            onClick={handlePrint}
+                            className='button-printer'
+                            text={'Imprimir Etiquetas'}
+                            color={'white'}
+                            fontSize={'15px'}
+                            padding={'5px'}
+                            borderRadius={'5px'}
+                        />
+                    </div>
+
+                    <div id='div-botao-baixar'>
+                        <Button
+                            href={qrCodeLink}
+                            className='button-download'
+                            download={`qrcode.png`}
+                            text={'Baixar QRCode'}
+                            fontSize={'15px'}
+                            padding={'5px'}
+                            borderRadius={'5px'}
+                        />
+                    </div>
                 </div>
             </div>
 

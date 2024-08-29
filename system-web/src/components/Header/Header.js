@@ -75,8 +75,6 @@ const Header = () => {
         setTimeout(() => {
           setErrorMessage(null);
         }, 5000);
-
-        console.error("Erro ao criar o Tipo de Volume: ", error)
       });
   }
 
@@ -102,7 +100,7 @@ const Header = () => {
 
       <div className="header-final">
       <div className="header-conta" title="Configurações da conta">
-        <Link to="/login">
+        <Link to="/minha-conta">
           <Icon icon="mdi:account-box" id="icon-conta" />
         </Link>
       </div>
@@ -125,6 +123,10 @@ const Header = () => {
 
           <div id="encontrar-clientes-header">
             <Text text={'Encontrar Clientes'} onClick={() => navigate('/clientes')} />
+          </div>
+
+          <div id="gerar-qr-codes-header">
+            <Text text={'Gerar QR Codes'} onClick={() => navigate('/gerar-qr-code')} />
           </div>
         </div>
       )}

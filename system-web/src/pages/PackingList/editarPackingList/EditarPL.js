@@ -53,7 +53,14 @@ function EditarPL() {
                 const response = await axios.get(`http://localhost:8080/api/packinglist/${id}`);
                 setFormData(response.data);
             } catch (error) {
-                console.error("Erro ao buscar Packing List", error);
+
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar PackingList";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+
             }
         };
 
@@ -62,8 +69,20 @@ function EditarPL() {
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/clienteNomus')
-            .then(response => setClientesNomus(response.data))
-            .catch(error => console.error('Erro ao buscar clientes nomus:', error));
+            .then(response =>
+
+                setClientesNomus(response.data))
+
+            .catch(error => {
+
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar cliente Nomus";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000)
+
+            })
 
     }, []);
 
@@ -103,7 +122,16 @@ function EditarPL() {
                     nomeNotificado: responses[2].data.nome
                 });
             })
-                .catch(error => console.error('Erro ao buscar nomes dos atuais IMP, CONS e NOTIF:', error));
+                .catch(error => {
+
+                    const errorMessage = error.response?.data || "Erro desconhecido ao buscar nomes dos clientes atuais";
+                    setErrorMessage(errorMessage);
+
+                    setTimeout(() => {
+                        setErrorMessage(null);
+                    }, 5000);
+                });
+
         }
     }, [formData.idImportador, formData.idConsignatario, formData.idNotificado]);
 

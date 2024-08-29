@@ -242,9 +242,9 @@ li div {
 }
 
 #nao-existe-packinglist {
-    color: #6c757d;
+    color: #dddddd8a;
     text-align: center;
     list-style-type: none;
-    background-color: #d8d8d8;
+    background-color: #6c757d;
     padding: 30px;
 }

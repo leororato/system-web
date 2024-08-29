@@ -3,13 +3,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import QrCodeGenerator from './pages/qrCodeGenerator/QrCodeGenerator';
 import Login from './pages/Login/loginPage/Login';
 import CadastroItem from './pages/PackingList/cadastroPackingList/CadastroPackingList';
-import CadastroTipoVolume from './pages/cadastroTipoVolume/CadastroTipoVolume';
 import Clientes from './pages/Clientes/clientesPage/Clientes';
 import PackingListProduto from './pages/PackingList/produtoPackingList/PackingListProduto';
 import EditarPL from './pages/PackingList/editarPackingList/EditarPL';
 import EditarCliente from './pages/Clientes/editarCliente/EditarCliente';
 import PackingList from './pages/PackingList/ExibirPackingList/PackingList';
 import Volume from './pages/PackingList/volumePackingList/Volume';
+import Conta from './pages/Login/Conta/Conta';
 
 
 function App() {
@@ -19,10 +19,10 @@ function App() {
             <Routes>
                 <Route path='/' element={<Navigate to="/login" />} />
                 <Route path='/login' element={<Login />} />
-                <Route path='/inicio' element={<PackingList />}/>
+                <Route path='/inicio' element={<PackingList />} />
+                <Route path='/minha-conta' element={<Conta />} />
                 <Route path='/gerar-qr-code' element={<QrCodeGenerator />} />
                 <Route path='/cadastrar-packing-list' element={<CadastroItem />} />
-                <Route path='/cadastro-tipo-volume' element={<CadastroTipoVolume />} />
                 <Route path='/clientes' element={<Clientes />} />
                 <Route path='/editar-packing-list/:id' element={<EditarPL />} />
                 <Route path='/packing-list-produto/:id' element={<PackingListProduto />} />

@@ -14,7 +14,7 @@ import ErrorNotification from "../../../components/ErrorNotification/ErrorNotifi
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 
 function CadastroPackingList() {
-    
+
     const navigate = useNavigate();
 
     const [sucessMessage, setSucessMessage] = useState(null);
@@ -41,8 +41,20 @@ function CadastroPackingList() {
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/clienteNomus')
-            .then(response => setClientesNomus(response.data))
-            .catch(error => console.error('Erro ao buscar clientes:', error));
+            .then(response => 
+
+                setClientesNomus(response.data))
+
+            .catch(error => {
+                
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar clientes";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null)
+                }, 5000);
+            })
+
     }, []);
 
     const handleChange = (e) => {
@@ -60,13 +72,14 @@ function CadastroPackingList() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-    
+
         axios.post('http://localhost:8080/api/packinglist', formData)
             .then(() => {
                 setSucessMessage('PackingList criado com sucesso!');
                 navigate('/inicio', { state: { sucessMessage: 'PackingList criado com sucesso!' } });
             })
             .catch(error => {
+
                 const errorMessage = error.response?.data || "Erro desconhecido ao criar PackingList";
                 setErrorMessage(errorMessage);
 
@@ -74,7 +87,6 @@ function CadastroPackingList() {
                     setErrorMessage(null);
                 }, 5000)
 
-                console.error("Erro ao criar PackingList", error);
             });
     };
 
@@ -92,7 +104,7 @@ function CadastroPackingList() {
         <div>
             <Header />
             <ErrorNotification message={errorMessage} onClose={handleErrorClose} />
-            <SucessNotification message={sucessMessage} onClose={() => { setSucessMessage(null) }}/>
+            <SucessNotification message={sucessMessage} onClose={() => { setSucessMessage(null) }} />
 
             <div className="title-container">
                 <Title text={"Cadastro de Packing List"} className={"title"} />
@@ -101,7 +113,7 @@ function CadastroPackingList() {
                 <form onSubmit={handleSubmit} className="form-cadastro-pl">
                     <div className="input-group">
 
-                    <div className="form-importador">
+                        <div className="form-importador">
                             <label htmlFor="idImportador">Importador:</label>
                             <Autocomplete
                                 data={clientesNomus}
@@ -130,139 +142,139 @@ function CadastroPackingList() {
                         </div>
 
                         <div id="select-container">
-                        <Select
-                            className={"form-pais-origem"}
-                            label={"País de origem:"}
-                            title={"Selecione o país de origem..."}
-                            name="paisOrigem"
-                            padding={7}
-                            cursor={'pointer'}
-                            placeholder={'Selecione'}
-                            required
-                            options={[{ value: 'Brasil', label: 'Brasil' }]}
-                            onChange={handleSelectChangePaisOrigem}
-                        /></div>
+                            <Select
+                                className={"form-pais-origem"}
+                                label={"País de origem:"}
+                                title={"Selecione o país de origem..."}
+                                name="paisOrigem"
+                                padding={7}
+                                cursor={'pointer'}
+                                placeholder={'Selecione'}
+                                required
+                                options={[{ value: 'Brasil', label: 'Brasil' }]}
+                                onChange={handleSelectChangePaisOrigem}
+                            /></div>
                         <div>
                             <label>Fronteira:</label>
-                        <Input
-                            type={"text"}
-                            id="input-fronteira"
-                            title={"Digite a fronteira..."}
-                            placeholder={"Ex: PARANAGUÁ, PR, BRASIL..."}
-                            name="fronteira"
-                            padding={7}
-                            required
-                            onChange={handleChange}
-                        /></div>
+                            <Input
+                                type={"text"}
+                                id="input-fronteira"
+                                title={"Digite a fronteira..."}
+                                placeholder={"Ex: PARANAGUÁ, PR, BRASIL..."}
+                                name="fronteira"
+                                padding={7}
+                                required
+                                onChange={handleChange}
+                            /></div>
                         <div>
                             <label>Local de Embarque:</label>
-                        <Input
-                            type={"text"}
-                            id="input-local-embarque"
-                            title={"Digite o local de embarque dos itens..."}
-                            placeholder={"Ex: ARARUNA, PR, BRASIL..."}
-                            name="localEmbarque"
-                            padding={7}
-                            required
-                            onChange={handleChange}
-                        /></div>
+                            <Input
+                                type={"text"}
+                                id="input-local-embarque"
+                                title={"Digite o local de embarque dos itens..."}
+                                placeholder={"Ex: ARARUNA, PR, BRASIL..."}
+                                name="localEmbarque"
+                                padding={7}
+                                required
+                                onChange={handleChange}
+                            /></div>
                         <div>
-                        <label>Local de Destino:</label>
-                        <Input
-                            type={"text"}
-                            id="input-local-destino"
-                            title={"Digite o local de destino dos itens..."}
-                            placeholder={"Ex: PUERTO CORTÉS, HONDURAS..."}
-                            padding={7}
-                            name="localDestino"
-                            required
-                            onChange={handleChange}
-                        /></div>
+                            <label>Local de Destino:</label>
+                            <Input
+                                type={"text"}
+                                id="input-local-destino"
+                                title={"Digite o local de destino dos itens..."}
+                                placeholder={"Ex: PUERTO CORTÉS, HONDURAS..."}
+                                padding={7}
+                                name="localDestino"
+                                required
+                                onChange={handleChange}
+                            /></div>
                         <div>
-                        <label>Termos de Pagamento:</label>
-                        <Input
-                            type={"text"}
-                            id="input-termos-pagamento"
-                            title={"Digite os termos de pagamento..."}
-                            placeholder={"Ex: (5% ADVANCE) + (45% EN ENERO) + (50% EN LA ENTREGA)..."}
-                            name="termosPagamento"
-                            padding={7}
-                            required
-                            onChange={handleChange}
-                        /></div>
+                            <label>Termos de Pagamento:</label>
+                            <Input
+                                type={"text"}
+                                id="input-termos-pagamento"
+                                title={"Digite os termos de pagamento..."}
+                                placeholder={"Ex: (5% ADVANCE) + (45% EN ENERO) + (50% EN LA ENTREGA)..."}
+                                name="termosPagamento"
+                                padding={7}
+                                required
+                                onChange={handleChange}
+                            /></div>
                         <div>
-                        <label>Dados Bancários:</label>
-                        <Input
-                            type={"text"}
-                            id="input-dados-bancarios"
-                            title={"Digite os dados bancários do cliente..."}
-                            placeholder={"Ex: BANCO XXXXX; AGENCIA: XXXX-X; CUENTA: XXXXX-X SWIFT: XXXXX IBAN: XXXXX..."}
-                            name="dadosBancarios"
-                            padding={7}
-                            required
-                            onChange={handleChange}
-                        /></div>
+                            <label>Dados Bancários:</label>
+                            <Input
+                                type={"text"}
+                                id="input-dados-bancarios"
+                                title={"Digite os dados bancários do cliente..."}
+                                placeholder={"Ex: BANCO XXXXX; AGENCIA: XXXX-X; CUENTA: XXXXX-X SWIFT: XXXXX IBAN: XXXXX..."}
+                                name="dadosBancarios"
+                                padding={7}
+                                required
+                                onChange={handleChange}
+                            /></div>
                         <div>
-                        <label>Incoterm:</label>
-                        <Input
-                            type={"text"}
-                            id="input-incoterm"
-                            title={"Digite o código INCOTERM..."}
-                            placeholder={"Ex: FCA - ARARUNA, PR, BRASIL..."}
-                            name="incoterm"
-                            padding={7}
-                            required
-                            onChange={handleChange}
-                        /></div>
+                            <label>Incoterm:</label>
+                            <Input
+                                type={"text"}
+                                id="input-incoterm"
+                                title={"Digite o código INCOTERM..."}
+                                placeholder={"Ex: FCA - ARARUNA, PR, BRASIL..."}
+                                name="incoterm"
+                                padding={7}
+                                required
+                                onChange={handleChange}
+                            /></div>
                         <div>
-                        <label>Invoice</label>
-                        <Input
-                            type={"text"}
-                            id="input-invoice"
-                            title={"Digite o código INVOICE..."}
-                            placeholder={"Ex: INV01..."}
-                            name="invoice"
-                            padding={7}
-                            required
-                            onChange={handleChange}
-                        /></div>
+                            <label>Invoice</label>
+                            <Input
+                                type={"text"}
+                                id="input-invoice"
+                                title={"Digite o código INVOICE..."}
+                                placeholder={"Ex: INV01..."}
+                                name="invoice"
+                                padding={7}
+                                required
+                                onChange={handleChange}
+                            /></div>
                         <div>
-                        <label>Tipo de Transporte</label>
-                        <Input
-                            type={"text"}
-                            id="input-tipo-transporte"
-                            title={"Digite o meio de transporte utilizado..."}
-                            placeholder={"Ex: MARÍTIMO..."}
-                            name="tipoTransporte"
-                            padding={7}
-                            required
-                            onChange={handleChange}
-                        /></div>
+                            <label>Tipo de Transporte</label>
+                            <Input
+                                type={"text"}
+                                id="input-tipo-transporte"
+                                title={"Digite o meio de transporte utilizado..."}
+                                placeholder={"Ex: MARÍTIMO..."}
+                                name="tipoTransporte"
+                                padding={7}
+                                required
+                                onChange={handleChange}
+                            /></div>
                         <div>
-                        <label>Peso Líquido Total</label>
-                        <Input
-                            type={"number"}
-                            id="input-peso-liquido"
-                            title={"Digite o peso LÍQUIDO total..."}
-                            placeholder={"Ex: 24366,275..."}
-                            name="pesoLiquidoTotal"
-                            padding={7}
-                            required
-                            onChange={handleChange}
-                        /></div>
+                            <label>Peso Líquido Total</label>
+                            <Input
+                                type={"number"}
+                                id="input-peso-liquido"
+                                title={"Digite o peso LÍQUIDO total..."}
+                                placeholder={"Ex: 24366,275..."}
+                                name="pesoLiquidoTotal"
+                                padding={7}
+                                required
+                                onChange={handleChange}
+                            /></div>
                         <div>
-                        <label>Peso Bruto Total</label>
-                        <Input
-                            type={"number"}
-                            id="input-peso-bruto"
-                            title={"Digite o peso BRUTO total..."}
-                            placeholder={"Ex: 24921,710..."}
-                            name="pesoBrutoTotal"
-                            padding={7}
-                            required
-                            onChange={handleChange}
-                        /></div>
-                        
+                            <label>Peso Bruto Total</label>
+                            <Input
+                                type={"number"}
+                                id="input-peso-bruto"
+                                title={"Digite o peso BRUTO total..."}
+                                placeholder={"Ex: 24921,710..."}
+                                name="pesoBrutoTotal"
+                                padding={7}
+                                required
+                                onChange={handleChange}
+                            /></div>
+
                         <div className="form-idioma">
                             <Select
                                 className={"form-idioma"}
@@ -283,25 +295,25 @@ function CadastroPackingList() {
                         </div>
                     </div>
                     <div className="botoes-finais">
-                    <div className="container-button-save">
-                        <Button
-                            className={"button-save"}
-                            text={"Salvar"}
-                            title={"Salvar"}
-                            type={"submit"}
-                            onClick={handleSubmit}
-                        />
-                    </div>
+                        <div className="container-button-save">
+                            <Button
+                                className={"button-save"}
+                                text={"Salvar"}
+                                title={"Salvar"}
+                                type={"submit"}
+                                onClick={handleSubmit}
+                            />
+                        </div>
 
-                    <div className="container-button-cancel">
-                        <Button
-                            className={"button-cancel"}
-                            text={"Cancelar"}
-                            title={"Cancelar"}
-                            type={"button"}
-                            onClick={handleCancel}
-                        />
-                    </div>
+                        <div className="container-button-cancel">
+                            <Button
+                                className={"button-cancel"}
+                                text={"Cancelar"}
+                                title={"Cancelar"}
+                                type={"button"}
+                                onClick={handleCancel}
+                            />
+                        </div>
                     </div>
                 </form>
             </div>

@@ -57,7 +57,6 @@ function Clientes() {
     // Ações para serem executadas quando o usuário clicar em cima de algum cliente após busca
     const handleClickCliente = (event, cliente) => {
         event.preventDefault();
-        console.log("Cliente clicado:", cliente);
         navigate(`/editar-cliente/${cliente.id}`);
     };
 
@@ -79,7 +78,12 @@ function Clientes() {
                 setClientesApp(clientesAppResponse.data);
 
             } catch (error) {
-                console.error('Erro ao buscar os clientes', error);
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar clientes";
+                setErrorMessage(errorMessage);
+
+                        setTimeout(() => {
+                            setErrorMessage(null)
+                        }, 5000);
             }
         };
 

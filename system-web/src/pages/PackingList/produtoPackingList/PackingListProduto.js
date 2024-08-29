@@ -51,10 +51,19 @@ function PackingListProduto() {
 
         const fetchPackingList = async () => {
             try {
+
                 const response = await axios.get(`http://localhost:8080/api/packinglist/${id}`);
                 setPackingList(response.data);
+
             } catch (error) {
-                console.error('Erro ao carregar a packing list:', error);
+                
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar Packing List";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null)
+                }, 5000);
+
             }
         };
 
@@ -66,7 +75,12 @@ function PackingListProduto() {
 
             } catch (error) {
 
-                console.error('Erro ao carregar produtos:', error);
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar produtos";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null)
+                }, 5000);
 
             }
         };
@@ -106,9 +120,21 @@ function PackingListProduto() {
 
     useEffect(() => {
         axios.get(`http://localhost:8080/api/ordens/details`)
-            .then(response => setProdutoNomus(response.data))
-            .catch(error => console.error('Erro ao buscar todos os produtos Nomus: ', error));
-    }, []);
+            .then(response => 
+                
+                setProdutoNomus(response.data))
+            
+                .catch((error) => {
+
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar ordens";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null)
+                }, 5000);
+            })
+
+        }, []);
 
 
 
@@ -452,16 +478,16 @@ function PackingListProduto() {
                         top: `${contextMenu.y}px`, left: `${contextMenu.x}px`
                     }}>
                         <div id='container-icon-menu' onClick={handleEdit}>
-                            <Icon icon="mdi:edit" id='icone-menu'/>
+                            <Icon icon="mdi:edit" id='icone-menu' />
                             <p>Listar Volumes</p>
                         </div>
                         <div id='container-icon-menu-excluir' onClick={handleDelete} >
-                            <Icon icon="material-symbols:delete-outline" id='icone-menu'/>
+                            <Icon icon="material-symbols:delete-outline" id='icone-menu' />
                             <p>Excluir</p>
                         </div>
                     </div>
-                        
-        
+
+
                 )}
 
                 {contextDelete.visible && (

@@ -6,6 +6,8 @@ import Text from "../../../components/Text";
 import Logo from "../../../components/Logo";
 import Input from "../../../components/Input";
 import Button from "../../../components/Button";
+import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
+import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 
 
 function Login() {
@@ -13,6 +15,9 @@ function Login() {
     const [login, setLogin] = useState("");
     const [senha, setSenha] = useState("");
     const [error, setError] = useState("");
+
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [sucessMessage, setSucessMessage] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -32,20 +37,40 @@ function Login() {
             navigate('/inicio');
         } catch (error) {
             if (error.response) {
-                setError('Usuário ou senha incorretos.');
-                console.log("Erro: ", error.response.data);
+
+                const errorMessage = error.response?.data || "Erro desconhecido ao fazer Login";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+
             } else if (error.request) {
-                setError('Erro ao conectar com o servidor.');
-                console.log("Erro de conexão: ", error.request);
+
+                const errorMessage = error.response?.data || "Erro desconhecido ao fazer Login";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+
             } else {
-                setError('Erro inesperado: ' + error.message);
-                console.log("Erro: ", error.message);
+
+                const errorMessage = error.response?.data || "Erro desconhecido ao fazer Login";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+
             }
         }
     };
 
     return (
         <div>
+            <ErrorNotification message={errorMessage} onClose={setErrorMessage(null)} />
+            <SucessNotification message={sucessMessage} onClose={setSucessMessage(null)} />
             <div className="login-aba">
                 <div className="login-bloco">
 

@@ -49,10 +49,19 @@ function PackingList() {
     useEffect(() => {
         const fetchPackingLists = async () => {
             try {
+
                 const response = await axios.get('http://localhost:8080/api/packinglist');
                 setPackingLists(response.data);
+
             } catch (error) {
-                console.error('Erro ao buscar os Packing lists', error);
+
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar os PackingLists";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+
             }
         };
 
@@ -66,8 +75,16 @@ function PackingList() {
                     return acc;
                 }, {});
                 setClientes(clientesData);
+
             } catch (error) {
-                console.error('Erro ao buscar os clientes', error);
+
+                 const errorMessage = error.response?.data || "Erro desconhecido ao buscar clientes";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000)
+
             }
         };
 
@@ -131,7 +148,6 @@ function PackingList() {
 
 
     const handleEdit = () => {
-        console.log("Editar item com ID: ", contextMenu.selectedId);
         setContextMenu({ visible: false, x: 0, y: 0, selectedId: null });
         navigate(`/editar-packing-list/${contextMenu.selectedId}`);
     };
@@ -139,7 +155,6 @@ function PackingList() {
 
 
     const handleDelete = (event) => {
-        console.log("Excluir item com ID: ", contextMenu.selectedId);
         setContextMenu({ visible: false, x: 0, y: 0, selectedId: null });
         setContextDelete({
             visible: true, x: event.pageX, y: event.pageY, selectedId: contextMenu.selectedId
@@ -150,6 +165,8 @@ function PackingList() {
 
     const handleDeleteConfirm = () => {
         const itemDeletado = contextDelete.selectedId;
+
+        
         axios.delete(`http://localhost:8080/api/packinglist/${itemDeletado}`)
             .then(() => {
                 setPackingLists(packingLists.filter(packingList =>
@@ -160,8 +177,14 @@ function PackingList() {
                 setAtualizarEstadoLista(atualizarEstadoLista + 1);
             })
             .catch(error => {
-                console.error('Erro ao excluir o Packing List', error);
-                setErrorMessage('Erro ao excluir PackingList')
+                
+                const errorMessage = error.response?.data || "Erro desconhecido ao excluir PackingList";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000)
+
             });
     };
 
@@ -188,6 +211,7 @@ function PackingList() {
 
             })
             .catch(error => {
+
                 const errorMessage = error.response?.data || "Erro desconhecido ao criar o Tipo de Volume";
                 setErrorMessage(errorMessage);
 
@@ -195,7 +219,6 @@ function PackingList() {
                     setErrorMessage(null);
                 }, 5000);
 
-                console.error("Erro ao criar o Tipo de Volume: ", error)
             });
     }
 
