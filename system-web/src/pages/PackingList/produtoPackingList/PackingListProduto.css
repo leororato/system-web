@@ -32,6 +32,7 @@
 }
 
 .button-adicionar-produto:hover {
+    transform: scale(1.05);
     background-color: #0056b3;
 }
 
@@ -83,12 +84,13 @@
 
 .button-cancelar-add-prod {
     background-color: #fa0000;
+    transition: 0.5ms ease;
 }
 
 .button-salvar-add-prod,
 .button-cancelar-add-prod {
     width: 140px;
-    transition: background-color 0.3s;
+    transition: 0.3s ease;
 }
 
 .button-salvar-add-prod:hover {
@@ -96,7 +98,7 @@
 }
 
 .button-cancelar-add-prod:hover {
-    background-color: #b30e0e;
+    background-color: #521414;
 }
 
 .produto-container-prod {

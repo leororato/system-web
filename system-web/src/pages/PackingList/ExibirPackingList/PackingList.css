@@ -240,3 +240,11 @@ li div {
 .button-criar-volume:hover {
     background-color: #114b81;
 }
+
+#nao-existe-packinglist {
+    color: #6c757d;
+    text-align: center;
+    list-style-type: none;
+    background-color: #d8d8d8;
+    padding: 30px;
+}

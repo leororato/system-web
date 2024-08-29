@@ -453,7 +453,7 @@ function PackingListProduto() {
                     }}>
                         <div id='container-icon-menu' onClick={handleEdit}>
                             <Icon icon="mdi:edit" id='icone-menu'/>
-                            <p>Editar</p>
+                            <p>Listar Volumes</p>
                         </div>
                         <div id='container-icon-menu-excluir' onClick={handleDelete} >
                             <Icon icon="material-symbols:delete-outline" id='icone-menu'/>

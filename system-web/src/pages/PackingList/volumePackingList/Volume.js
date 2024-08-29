@@ -1009,7 +1009,7 @@ function Volume() {
                                                 <div id="list-vol">{v.pesoBruto}</div>
                                                 <div id="list-vol">{v.observacao}</div>
                                             </div>
-                                            <div id="container-icon-plus">
+                                            <div id="container-icon-plus" title='Exibir/Esconder subvolumes'>
                                                 {definirBotaoMostrarMais[v.idVolume] === 'diminuir' ? (
                                                     <Icon icon="ic:baseline-minus" id="ic-outline-plus" onClick={(e) => hideSubVolumeList(e, v.idVolume)} />
                                                 ) : (
@@ -1068,15 +1068,17 @@ function Volume() {
 
             {
                 overlayVisible && (
+
                     <div className="overlay">
                         <div className="overlay-content" ref={overlayRef}>
-                            <Title
-                                classname={'title-adicionar-volume'}
-                                text={'Adicionar um volume:'}
-                                color={'#1780e2'}
-                            />
+
                             <div className="subcontainer-volume">
                                 <div className="container-input-adicionar-volume">
+                                    <Title
+                                        classname={'title-adicionar-volume'}
+                                        text={'Adicionar um volume:'}
+                                        color={'#1780e2'}
+                                    />
                                     <form>
                                         <div className="input-group-volume">
                                             <div>
@@ -1352,58 +1354,63 @@ function Volume() {
 
                             <div className="subcontainer-subvolume">
                                 <div className="container-input-adicionar-subvolume">
-                                    <form>
-                                        <div className="input-group-subvolume">
-                                            <div className="container-input-subvolume">
+                                    <div className="input-group-subvolume">
 
-                                                <div>
-                                                    <label>Descrição:</label>
-                                                    <Input
-                                                        type={'text'}
-                                                        placeholder={'Digite a descrição...'}
-                                                        name={'descricao'}
-                                                        title={'Digite uma descrição para o subvolume...'}
-                                                        onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
-                                                        value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.descricao : formDataEditarSubVolume.descricao}
-                                                    />
-                                                </div>
+                                        <div className="container-input-subvolume">
+                                            <div id="div-descricao-subvolume">
+                                                <label>Descrição:</label>
+                                                <Input
+                                                    type={'text'}
+                                                    placeholder={'Digite a descrição...'}
+                                                    name={'descricao'}
+                                                    title={'Digite uma descrição para o subvolume...'}
+                                                    onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
+                                                    value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.descricao : formDataEditarSubVolume.descricao}
+                                                />
 
-                                                <div id="div-quantidade-subvolume">
-                                                    <label>Quantidade:</label>
-                                                    <Input
-                                                        placeholder={'Digite a quantidade...'}
-                                                        name={'quantidade'}
-                                                        title={'Digite a quantidade de itens dentro do subvolume...'}
-                                                        type={'number'}
-                                                        min={'1'}
-                                                        onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
-                                                        value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.quantidade : formDataEditarSubVolume.quantidade}
-                                                    />
-                                                </div>
+                                                
+                                            </div>
+
+                                            <div id="div-quantidade-subvolume">
+                                                <label>Quantidade:</label>
+                                                <Input
+                                                    placeholder={'Digite a quantidade...'}
+                                                    name={'quantidade'}
+                                                    title={'Digite a quantidade de itens dentro do subvolume...'}
+                                                    type={'number'}
+                                                    min={'1'}
+                                                    onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
+                                                    value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.quantidade : formDataEditarSubVolume.quantidade}
+                                                />
+
                                             </div>
                                         </div>
-                                    </form>
+
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="buttons-adicionar-subvolume">
-                                <Button
-                                    className={'button-salvar-add-subvolume'}
-                                    text={'SALVAR'}
-                                    fontSize={15}
-                                    padding={10}
-                                    borderRadius={5}
-                                    onClick={estadoSubVolumeOverlay === 'adicionar' ? handleSalvarSubVolume : handleSalvarEdicaoSubVolume}
-                                />
-                                <Button
-                                    className={'button-cancelar-add-subvolume'}
-                                    text={'CANCELAR'}
-                                    fontSize={15}
-                                    padding={10}
-                                    borderRadius={5}
-                                    onClick={handleCancelAddSubvolume}
-                                />
-                            </div>
+                        <div className="container-botoes-add-subvolumes">
+                            <Button
+                                className={'button-salvar-add-subvolume'}
+                                text={'SALVAR'}
+                                fontSize={15}
+                                padding={10}
+                                borderRadius={5}
+                                onClick={estadoSubVolumeOverlay === 'adicionar' ? handleSalvarSubVolume : handleSalvarEdicaoSubVolume}
+                            />
+
+
+                            <Button
+                                className={'button-cancelar-add-subvolume'}
+                                text={'CANCELAR'}
+                                fontSize={15}
+                                padding={10}
+                                borderRadius={5}
+                                onClick={handleCancelAddSubvolume}
+                            />
+                        </div>
+
 
                             <div id="title-lista-subvolume">
                                 <Text
