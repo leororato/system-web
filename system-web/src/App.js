@@ -21,7 +21,7 @@ function App() {
                 <Route path='/login' element={<Login />} />
                 <Route path='/inicio' element={<PackingList />} />
                 <Route path='/minha-conta' element={<Conta />} />
-                <Route path='/gerar-qr-code' element={<QrCodeGenerator />} />
+                <Route path='/gerar-qr-code/:idVolumeProduto/:idPackinglist/:idProduto/:seq/:idVolume' element={<QrCodeGenerator />} />
                 <Route path='/cadastrar-packing-list' element={<CadastroItem />} />
                 <Route path='/clientes' element={<Clientes />} />
                 <Route path='/editar-packing-list/:id' element={<EditarPL />} />

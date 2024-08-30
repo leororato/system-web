@@ -6,9 +6,13 @@ import Button from '../../components/Button';
 import Title from '../../components/Title';
 import Header from '../../components/Header/Header';
 import Input from '../../components/Input';
+import { useParams } from 'react-router-dom';
 
 
 function QrCodeGenerator() {
+
+    const { idVolumeProduto, idPackinglist, idProduto, seq, idVolume } = useParams();
+
     const [quantidadeEtiquetas, setQuantidadeEtiquetas] = useState('') // valor do input quantidade de qrcode a ser gerado
     const [qrCodeLink, setQrCodeLink] = useState('') // link para download do qrcode gerado
     const [qrCodeLista, setQrCodeLista] = useState([]) // array que guarda os qrcodes
@@ -89,186 +93,6 @@ function QrCodeGenerator() {
 
         descricaoSubVolume: null
 
-    },
-
-    {
-
-        idPackList: 1,
-
-        idCliente: 876,
-
-        nomeCliente: "Ortobom",
-
-        idProduto: "MP000325",
-
-        nomeProduto: "BATEDOR CF 2700",
-
-        TipoVolume: "Plastico Bolha",
-
-        idVolume: 5,
-
-        qtVolume: 3,
-
-        descricaoVolume: "Balte de tinta",
-
-        pesoLiquidoVolume: 70,
-
-        pesoBrutoVolume: 75,
-
-        idSubVolume: null,
-
-        descricaoSubVolume: null
-
-    },
-
-    {
-
-        idPackList: 1,
-
-        idCliente: 28,
-
-        nomeCliente: "Ortobom",
-
-        idProduto: "MP000325",
-
-        nomeProduto: "BATEDOR CF 7000",
-
-        TipoVolume: "Caixa MDF",
-
-        idVolume: 6,
-
-        qtVolume: 1,
-
-        descricaoVolume: "Peças diverças",
-
-        pesoLiquidoVolume: 500,
-
-        pesoBrutoVolume: 550,
-
-        idSubVolume: null,
-
-        descricaoSubVolume: null
-
-    },
-
-    {
-
-        idPackList: 1,
-
-        idCliente: 14,
-
-        nomeCliente: "Ortobom",
-
-        idProduto: "MP000325",
-
-        nomeProduto: "LAMINADORA CF 5310",
-
-        TipoVolume: "Caixa MDF",
-
-        idVolume: 6,
-
-        qtVolume: 1,
-
-        descricaoVolume: "Peças diverças",
-
-        pesoLiquidoVolume: null,
-
-        pesoBrutoVolume: null,
-
-        idSubVolume: 1,
-
-        descricaoSubVolume: "motor"
-
-    },
-
-    {
-
-        idPackList: 1,
-
-        idCliente: 66,
-
-        nomeCliente: "Ortobom",
-
-        idProduto: "MP000325",
-
-        nomeProduto: "LAMINAFORA HORIZONTAL CNC CF 16011",
-
-        TipoVolume: "Caixa MDF",
-
-        idVolume: 7,
-
-        qtVolume: 1,
-
-        descricaoVolume: "Peças diverças",
-
-        pesoLiquidoVolume: null,
-
-        pesoBrutoVolume: null,
-
-        idSubVolume: 2,
-
-        descricaoSubVolume: "valvula"
-
-    },
-
-    {
-
-        idPackList: 1,
-
-        idCliente: 344,
-
-        nomeCliente: "Ortobom",
-
-        idProduto: "MP000325",
-
-        nomeProduto: "MISTURADOR DE PET",
-
-        TipoVolume: "Caixa MDF",
-
-        idVolume: 8,
-
-        qtVolume: 1,
-
-        descricaoVolume: "Peças diverças",
-
-        pesoLiquidoVolume: null,
-
-        pesoBrutoVolume: null,
-
-        idSubVolume: 3,
-
-        descricaoSubVolume: "contator"
-
-    },
-
-    {
-
-        idPackList: 1,
-
-        idCliente: 786,
-
-        nomeCliente: "Ortobom",
-
-        idProduto: "MP000325",
-
-        nomeProduto: "PERFILADOR DE MANTAS CF 1400",
-
-        TipoVolume: "Caixa MDF",
-
-        idVolume: 9,
-
-        qtVolume: 1,
-
-        descricaoVolume: "Peças diverças",
-
-        pesoLiquidoVolume: null,
-
-        pesoBrutoVolume: null,
-
-        idSubVolume: 4,
-
-        descricaoSubVolume: "atuador"
-
     }]
 
     const handleQrcode = (event) => {
@@ -300,23 +124,24 @@ function QrCodeGenerator() {
     }
 
     const handlePrint = () => {
-        window.print();
+        window.print(); 
     }
 
     return (
         <div className='container-qrcodes'>
             <Header />
 
-
-            <div className='container-gerar-qrcodes'>
-
-                <div>
+            <div>
                     <Title
                         text={'Gerador de QRCode'}
                         color={'black'}
                         fontSize={'30px'}
                     />
-                </div>
+            </div>
+
+            <div className='container-gerar-qrcodes'>
+
+                
 
                 <div>
                     <Input

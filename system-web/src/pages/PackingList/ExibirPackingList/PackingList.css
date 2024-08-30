@@ -47,10 +47,6 @@ body {
     transition: 0.5ms ease-in;
 }
 
-.li-listagem:hover {
-    background-color: #dddddd5b;
-}
-
 .header {
     font-weight: bold;
     border: 1px solid #ddd;
@@ -242,9 +238,9 @@ li div {
 }
 
 #nao-existe-packinglist {
-    color: #dddddd8a;
+    color: #747474;
     text-align: center;
     list-style-type: none;
-    background-color: #6c757d;
+    background-color: #95a2ad46;
     padding: 30px;
 }

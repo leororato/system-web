@@ -14,7 +14,6 @@ function Login() {
     const navigate = useNavigate();
     const [login, setLogin] = useState("");
     const [senha, setSenha] = useState("");
-    const [error, setError] = useState("");
 
     const [errorMessage, setErrorMessage] = useState(null);
     const [sucessMessage, setSucessMessage] = useState(null);
@@ -69,8 +68,8 @@ function Login() {
 
     return (
         <div>
-            <ErrorNotification message={errorMessage} onClose={setErrorMessage(null)} />
-            <SucessNotification message={sucessMessage} onClose={setSucessMessage(null)} />
+            <ErrorNotification message={errorMessage} onClose={() => {setErrorMessage(null)}} />
+            <SucessNotification message={sucessMessage} onClose={() => {setSucessMessage(null)}} />
             <div className="login-aba">
                 <div className="login-bloco">
 
@@ -120,7 +119,6 @@ function Login() {
                     padding={10}
                     borderRadius={3}
                     />
-                {error && <Text className="error-message" text={error} color={'red'} />}
                     </div>
             </div>
         </div>

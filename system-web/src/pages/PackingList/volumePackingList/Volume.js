@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Header from "../../../components/Header/Header";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import './Volume.css';
 import axios from "axios";
 import Button from "../../../components/Button";
@@ -19,11 +19,10 @@ function Volume() {
 
     // CHAVES COMPOSTAS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const { id, idProduto, seq } = useParams();
+    const navigate = useNavigate();
 
     // CARREGA OS DADOS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const [produtoSelecionado, setProdutoSelecionado] = useState(null);
-
-
 
 
 
@@ -157,10 +156,23 @@ function Volume() {
     const [errorMessage, setErrorMessage] = useState(null);
     const [sucessMessage, setSucessMessage] = useState(null);
 
+    // ------------------------------------- ^CONTEXTOS^ ------------------------------------- //   
 
 
+    // ------------------------------------- QR CODE ------------------------------------- //   
 
-    // ------------------------------------- ^CONTEXTOS^ ------------------------------------- //              
+    const [idVolumeProduto, setIdVolumeProduto] = useState('');
+
+    // CARREGA O VALOR DOS IDS DO VOLUME PARA GERAR QRCODES
+    const [salvarIdsVolume, setSalvarIdsVolume] = useState({
+        idVolumeProduto: '',
+        idPackinglist: id,
+        idProduto: idProduto,
+        seq: seq,
+        idVolume: ''
+    });
+
+    // ------------------------------------- ^QR CODE^ ------------------------------------- //   
 
     // ------------------------------------- EXIBIR PRODUTO ------------------------------------- //
 
@@ -287,7 +299,7 @@ function Volume() {
         if (volumeCriado && idVolumeSave) {
             const salvarVolumeProduto = async () => {
                 try {
-                    await axios.post(`http://localhost:8080/api/volume-produto`, {
+                    const response = await axios.post(`http://localhost:8080/api/volume-produto`, {
                         id: {
                             idPackinglist: id,
                             idProduto: idProduto,
@@ -766,7 +778,39 @@ function Volume() {
 
 
 
-    // ------------------------------------- ^SUB VOLUMES^ ------------------------------------- //              
+
+
+
+
+    // ------------------------------------- ^SUB VOLUMES^ ------------------------------------- //    
+
+    // ------------------------------------- FUNÇÕES QR CODE ------------------------------------- //
+
+
+
+    const gerarQrCode = async (e) => {
+        e.preventDefault();
+        const idVolume = salvarIdVolume.idVolume;
+
+        try {
+
+            const response = await axios.get(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolume}`)
+            .then (() => {
+
+                setIdVolumeProduto(response.data.idVolumeProduto);
+                navigate(`/gerar-qr-code/${salvarIdsVolume.idVolumeProduto}/${salvarIdsVolume.idPackinglist}/${salvarIdsVolume.idProduto}/${salvarIdsVolume.seq}/${salvarIdsVolume.idVolume}`);
+            });
+
+        } catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao procurar Volume Produto";
+            setErrorMessage(errorMessage);
+            setTimeout(() => setErrorMessage(null), 5000);
+        }
+
+    }
+
+    // ------------------------------------- ^FUNÇÕES QR CODE^ ------------------------------------- //
+
 
     // ------------------------------------- FUNÇÕES PARALELAS ------------------------------------- //
 
@@ -920,8 +964,19 @@ function Volume() {
             y: e.pageY,
             selectedIdVolume: idVolume
         });
+
         setSalvarIdVolume(`${idVolume}`);
     };
+
+    useEffect(() => {
+        setSalvarIdsVolume({
+
+            idVolumeProduto: '',
+
+            idVolume: salvarIdVolume.idVolume
+
+        });
+    }, [salvarIdVolume]);
 
 
 
@@ -1368,7 +1423,7 @@ function Volume() {
                                                     value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.descricao : formDataEditarSubVolume.descricao}
                                                 />
 
-                                                
+
                                             </div>
 
                                             <div id="div-quantidade-subvolume">
@@ -1390,26 +1445,26 @@ function Volume() {
                                 </div>
                             </div>
 
-                        <div className="container-botoes-add-subvolumes">
-                            <Button
-                                className={'button-salvar-add-subvolume'}
-                                text={'SALVAR'}
-                                fontSize={15}
-                                padding={10}
-                                borderRadius={5}
-                                onClick={estadoSubVolumeOverlay === 'adicionar' ? handleSalvarSubVolume : handleSalvarEdicaoSubVolume}
-                            />
+                            <div className="container-botoes-add-subvolumes">
+                                <Button
+                                    className={'button-salvar-add-subvolume'}
+                                    text={'SALVAR'}
+                                    fontSize={15}
+                                    padding={10}
+                                    borderRadius={5}
+                                    onClick={estadoSubVolumeOverlay === 'adicionar' ? handleSalvarSubVolume : handleSalvarEdicaoSubVolume}
+                                />
 
 
-                            <Button
-                                className={'button-cancelar-add-subvolume'}
-                                text={'CANCELAR'}
-                                fontSize={15}
-                                padding={10}
-                                borderRadius={5}
-                                onClick={handleCancelAddSubvolume}
-                            />
-                        </div>
+                                <Button
+                                    className={'button-cancelar-add-subvolume'}
+                                    text={'CANCELAR'}
+                                    fontSize={15}
+                                    padding={10}
+                                    borderRadius={5}
+                                    onClick={handleCancelAddSubvolume}
+                                />
+                            </div>
 
 
                             <div id="title-lista-subvolume">
@@ -1488,6 +1543,10 @@ function Volume() {
                         <div id='container-icon-menu' onClick={handleSubVolumes} >
                             <Icon icon="ci:list-add" id='icone-menu' />
                             <p>Adicionar Subvolume</p>
+                        </div>
+                        <div id='container-icon-menu' onClick={gerarQrCode}>
+                            <Icon icon="vaadin:qrcode" id='icone-menu' />
+                            <p>Gerar QR Code</p>
                         </div>
                         <div id='container-icon-menu-excluir' onClick={handleDelete} >
                             <Icon icon="material-symbols:delete-outline" id='icone-menu' />
