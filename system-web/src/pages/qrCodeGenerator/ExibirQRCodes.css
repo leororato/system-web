@@ -1,0 +1,91 @@
+/* ExibirQRCodes.css */
+
+.container-exibir-qrcodes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+.title-qrcodes {
+    margin-bottom: 20px;
+    color: #1780e2;
+}
+
+.qr-code-lista {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 50px;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+}
+
+.qr-code-item {
+    display: flex;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    text-align: center;
+    width: 300px; /* Ajustado para acomodar o texto extra */
+}
+
+.texto-etiqueta {
+    border-radius: 4px;
+    padding: 10px;
+    text-align: left;
+}
+
+.texto-etiqueta p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+
+@media print {
+
+    @page {
+        size: auto;
+        margin: 0px;
+    }
+
+    .header-qrcode,
+    #texto-qrcode,
+    .input-baixar-qrcode,
+    .title-qrcodes
+    {
+        display: none;
+    }
+
+    .qr-code-lista {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100mm;
+        height: 41mm;
+    }
+
+    .qr-code-item {
+        display: flex;
+        align-items: center;
+        width: 100mm;
+        height: 41mm;
+        margin: 0;
+        page-break-inside: avoid;
+    }
+
+    .qr-code-img {
+        min-width: 36mm;
+        min-height: 36mm;
+    }
+
+    body {
+        background-color: white;
+        margin: 0;
+    }
+
+}

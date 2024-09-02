@@ -139,9 +139,7 @@ function QrCodeGenerator() {
                     />
             </div>
 
-            <div className='container-gerar-qrcodes'>
-
-                
+            <div className='container-gerar-qrcodes'>   
 
                 <div>
                     <Input

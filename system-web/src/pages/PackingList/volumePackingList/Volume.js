@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Header from "../../../components/Header/Header";
-import { useNavigate, useParams } from "react-router-dom";
+import { BrowserRouter, unstable_HistoryRouter, useNavigate, useParams } from "react-router-dom";
 import './Volume.css';
 import axios from "axios";
 import Button from "../../../components/Button";
@@ -10,7 +10,7 @@ import Input from "../../../components/Input";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import Text from "../../../components/Text";
-import { format, sub } from "date-fns";
+import { constructNow, format, sub } from "date-fns";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 function Volume() {
@@ -19,6 +19,7 @@ function Volume() {
 
     // CHAVES COMPOSTAS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const { id, idProduto, seq } = useParams();
+
     const navigate = useNavigate();
 
     // CARREGA OS DADOS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
@@ -161,7 +162,7 @@ function Volume() {
 
     // ------------------------------------- QR CODE ------------------------------------- //   
 
-    const [idVolumeProduto, setIdVolumeProduto] = useState('');
+    const [idVolumeProdutoState, setIdVolumeProdutoState] = useState('');
 
     // CARREGA O VALOR DOS IDS DO VOLUME PARA GERAR QRCODES
     const [salvarIdsVolume, setSalvarIdsVolume] = useState({
@@ -306,7 +307,8 @@ function Volume() {
                             seq: seq,
                             idVolume: idVolumeSave
                         },
-                        qrCodeVolumeProduto: "teste"
+                        qrCodeVolumeProduto: `${id}-${idProduto}-${seq}-${idVolumeSave}`
+
                     });
 
                     setAtualizarEstadoLista(atualizarEstadoLista + 1);
@@ -330,7 +332,7 @@ function Volume() {
     const handleAtualizarVolume = (e) => {
         e.preventDefault();
         axios.put(`http://localhost:8080/api/volume/${salvarIdVolume}`, volumeEdicao)
-            .then(response => {
+            .then(() => {
 
                 setFormDataVolume({
                     idTipoVolumeId: '',
@@ -365,6 +367,8 @@ function Volume() {
                 try {
                     const response = await axios.get(`http://localhost:8080/api/volume/${salvarIdVolume}`);
                     setVolumeEdicao(response.data);
+
+                    console.log(response.data);
                 } catch (error) {
                     console.error('Erro: ', error);
                 }
@@ -610,12 +614,10 @@ function Volume() {
     // BUSCAR OS SUBVOLUMES DO ITEM SELECIONADO PARA EXIBIR A LISTA NO OVERLAY DO CONTEXTO ADICIONAR SUBVOLUME
     const fetchSubVolumesContexto = async (idVolume) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${idVolume}`);
+            const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${idVolume.idVolume}`);
             setSubVolumeSelecionado(response.data);
         } catch (error) {
             console.error("Erro ao buscar subvolumes: ", error);
-            console.log('testee deu erro')
-
         }
     }
 
@@ -690,8 +692,6 @@ function Volume() {
             ...prevState,
             [idVolume]: false
         }));
-
-        console.log('idVolume', idVolume);
     };
 
 
@@ -721,7 +721,6 @@ function Volume() {
         setEstadoSubVolumeOverlay('editar');
         fetchSubVolumesContexto(salvarIdVolume);
         setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
-
     }
 
 
@@ -764,6 +763,7 @@ function Volume() {
             };
             return newState;
         });
+
     };
 
 
@@ -786,6 +786,16 @@ function Volume() {
 
     // ------------------------------------- FUNÇÕES QR CODE ------------------------------------- //
 
+    // QUANDO O SALVARIDVOLUME FOI ALTERADO, VAI CHAMAR ESTE useEFFECT PARA SETAR OS IDS USADOS NA REQUISIÇAO DO IDVOLUMEPRODUTO
+    useEffect(() => {
+        setSalvarIdsVolume({
+            idVolumeProduto: '',
+            idPackinglist: id,
+            idProduto: idProduto,
+            seq: seq,
+            idVolume: salvarIdVolume.idVolume
+        })
+    }, [salvarIdVolume]);
 
 
     const gerarQrCode = async (e) => {
@@ -793,21 +803,29 @@ function Volume() {
         const idVolume = salvarIdVolume.idVolume;
 
         try {
+            const response = await axios.get(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolume}`);
 
-            const response = await axios.get(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolume}`)
-            .then (() => {
+            // acessa o primeiro item do array e pega o idVolumeProduto
+            const primeiroItem = response.data[0];
+            const idVolumeProduto = primeiroItem?.idVolumeProduto;
 
-                setIdVolumeProduto(response.data.idVolumeProduto);
-                navigate(`/gerar-qr-code/${salvarIdsVolume.idVolumeProduto}/${salvarIdsVolume.idPackinglist}/${salvarIdsVolume.idProduto}/${salvarIdsVolume.seq}/${salvarIdsVolume.idVolume}`);
-            });
+            if (idVolumeProduto) {
+                setIdVolumeProdutoState(idVolumeProduto);
+
+                navigate(`/exibir-qrcodes/${idVolumeProduto}/${salvarIdsVolume.idPackinglist}/${salvarIdsVolume.idProduto}/${salvarIdsVolume.seq}/${salvarIdsVolume.idVolume}`);
+            } else {
+                console.error('idVolumeProduto não encontrado na resposta');
+            }
 
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao procurar Volume Produto";
             setErrorMessage(errorMessage);
             setTimeout(() => setErrorMessage(null), 5000);
         }
+    };
 
-    }
+
+
 
     // ------------------------------------- ^FUNÇÕES QR CODE^ ------------------------------------- //
 
@@ -817,7 +835,7 @@ function Volume() {
 
     // PARTE DA FUNÇÃO PARA FECHAR OS CONTEXTOS AO CLICAR FORA DELES 
     useEffect(() => {
-        if (overlayVisible || contextMenu.visible || contextEditar.visible || contextSubVolumes.visible) {
+        if (overlayVisible || contextMenu.visible || contextEditar.visible || contextSubVolumes.visible || contextMenuSubVolume) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -825,7 +843,7 @@ function Volume() {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         }
-    }, [overlayVisible, contextMenu, contextEditar, contextSubVolumes]);
+    }, [overlayVisible, contextMenu, contextEditar, contextSubVolumes, contextMenuSubVolume]);
 
 
     // FUNÇAO PARA CONVERTER O MAPEAMENTO DOS IDS EM UM ARRAY PARA O AUTOCOMPLETE
@@ -965,18 +983,17 @@ function Volume() {
             selectedIdVolume: idVolume
         });
 
-        setSalvarIdVolume(`${idVolume}`);
+        setSalvarIdVolume(prevState => {
+            const newState = {
+                idVolume: idVolume,
+            };
+            return newState;
+        });
+
     };
 
-    useEffect(() => {
-        setSalvarIdsVolume({
 
-            idVolumeProduto: '',
 
-            idVolume: salvarIdVolume.idVolume
-
-        });
-    }, [salvarIdVolume]);
 
 
 
@@ -1050,9 +1067,9 @@ function Volume() {
 
                             {volumes.length > 0 ? (
                                 volumes.map((v) => (
-                                    <li key={v.idVolume} onContextMenu={(e) => handleRightClick(e, v.idVolume)} className='li-listagem-volume'>
+                                    <li key={v.idVolume}  className='li-listagem-volume'>
                                         <div id="container-list-vol">
-                                            <div id="list-vol-divs">
+                                            <div id="list-vol-divs" onContextMenu={(e) => handleRightClick(e, v.idVolume)}>
                                                 <div id="list-vol">{v.idVolume}</div>
                                                 <div id="list-vol">{tiposDeVolume[v.idTipoVolumeId]}</div>
                                                 <div id="list-vol">{v.quantidadeItens}</div>
@@ -1574,7 +1591,8 @@ function Volume() {
                             <p>Excluir Subvolume</p>
                         </div>
                     </div>
-                )}
+                )
+            }
 
 
 
@@ -1586,7 +1604,7 @@ function Volume() {
                         <div className="context-delete">
                             <div>
                                 <Text
-                                    text={estadoExcluirOverlay === 'volume' ? 'Tem certeza que deseja excluir o Produto?' : `Tem certeza que deseja excluir o Subvolume '${subVolumesIds.descricao}' ?`}
+                                    text={estadoExcluirOverlay === 'volume' ? 'Tem certeza que deseja excluir o Volume?' : `Tem certeza que deseja excluir o Subvolume '${subVolumesIds.descricao}' ?`}
                                     fontSize={20}
                                 />
                             </div>

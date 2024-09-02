@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import Header from "../../../components/Header/Header";
-import { useNavigate, useParams } from "react-router-dom";
+import { BrowserRouter, unstable_HistoryRouter, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { format } from "date-fns";
 import './PackingListProduto.css';
@@ -56,7 +56,7 @@ function PackingListProduto() {
                 setPackingList(response.data);
 
             } catch (error) {
-                
+
                 const errorMessage = error.response?.data || "Erro desconhecido ao buscar Packing List";
                 setErrorMessage(errorMessage);
 
@@ -120,11 +120,11 @@ function PackingListProduto() {
 
     useEffect(() => {
         axios.get(`http://localhost:8080/api/ordens/details`)
-            .then(response => 
-                
+            .then(response =>
+
                 setProdutoNomus(response.data))
-            
-                .catch((error) => {
+
+            .catch((error) => {
 
                 const errorMessage = error.response?.data || "Erro desconhecido ao buscar ordens";
                 setErrorMessage(errorMessage);
@@ -134,7 +134,7 @@ function PackingListProduto() {
                 }, 5000);
             })
 
-        }, []);
+    }, []);
 
 
 
@@ -169,7 +169,7 @@ function PackingListProduto() {
             y: 0,
             selectedId: null
         });
-        navigate(`/sub-volume/${packingList.idPackingList}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
+        navigate(`/volumes/${packingList.idPackingList}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
     };
 
 
@@ -310,6 +310,12 @@ function PackingListProduto() {
     }
 
 
+    const handleGerarQRCodesProduto = () => {
+        // Redireciona para a página de exibir QR codes para todos os volumes do produto
+        navigate(`/exibir-qrcodes/${id}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
+    };
+    
+
 
     return (
         <div className="container-produto">
@@ -420,6 +426,7 @@ function PackingListProduto() {
                                     <Autocomplete
                                         id="input-autocomplete-adicionar-prod"
                                         data={produtoNomus}
+                                        title={'Pesquise pelo nome do produto ou pela OS...'}
                                         onSelect={(item) => handleAutocompleteChange(item)}
                                         displayField={'itensConcatenados'}
                                     />
@@ -480,6 +487,10 @@ function PackingListProduto() {
                         <div id='container-icon-menu' onClick={handleEdit}>
                             <Icon icon="mdi:edit" id='icone-menu' />
                             <p>Listar Volumes</p>
+                        </div>
+                        <div id='container-icon-menu' onClick={handleGerarQRCodesProduto}>
+                            <Icon icon="vaadin:qrcode" id='icone-menu' />
+                            <p>Gerar QR Code</p>
                         </div>
                         <div id='container-icon-menu-excluir' onClick={handleDelete} >
                             <Icon icon="material-symbols:delete-outline" id='icone-menu' />
