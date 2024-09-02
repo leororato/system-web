@@ -37,7 +37,6 @@ body {
 .container-listagem-inicio {
     display: table;
     border-collapse: collapse;
-    box-shadow: 0 7px 12px rgba(0, 0, 0, 0.411);
 }
 
 .li-listagem {
@@ -45,6 +44,10 @@ body {
     display: table-row;
     border-bottom: 1px solid #ddd;
     transition: 0.5ms ease-in;
+}
+
+.li-listagem:hover {
+    background-color: #dddddd5b;
 }
 
 .header {
@@ -64,10 +67,11 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     word-wrap: break-word;
+    font-size: 13px;
 }
 
-li div {
-    font-size: 13px;
+.container-listagem-inicio li div:first-child {
+    border-left: 1px solid #ddd;
 }
 
 .context-menu {

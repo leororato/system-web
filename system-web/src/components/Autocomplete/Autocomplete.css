@@ -17,7 +17,7 @@
 }
 
 .autocomplete-input {
-    width: 80%;
+    width: auto;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;

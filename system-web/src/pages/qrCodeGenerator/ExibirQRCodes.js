@@ -9,6 +9,7 @@ import Text from '../../components/Text';
 const ExibirQRCodes = () => {
     const { idVolumeProduto, idPackinglist, idProduto, seq, idVolume } = useParams();
     const [infoQrCodes, setInfoQrCodes] = useState([]);
+    const [pesquisaNosVolumes, setPesquisaNosVolumes] = useState([]);
     const [qrcodes, setQRCodes] = useState([]);
 
     const [nomeProduto, setNomeProduto] = useState('');
@@ -29,12 +30,25 @@ const ExibirQRCodes = () => {
             }
         };
 
+        const buscarInformacoesDeTodosOsVolumesDeUmProduto = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/volume/produto/${idPackinglist}/${idProduto}/${seq}`);
+                const volumesData = response.data || [];
+                setPesquisaNosVolumes(volumesData);
+            }
+            catch {
+
+            }
+        }
+
         buscarTodosOsQRCodesDeUmProduto();
+        buscarInformacoesDeTodosOsVolumesDeUmProduto();
     }, [idPackinglist, idProduto, seq]);
+
 
     useEffect(() => {
 
-        const buscarInvoiceEClienteDaPackinglistSelecionada = async () => {
+        const buscarInvoiceDaPackinglistSelecionada = async () => {
             try {
                 await axios.get(`http://localhost:8080/api/packinglist/${idPackinglist}`)
                     .then(response => {
@@ -43,10 +57,7 @@ const ExibirQRCodes = () => {
                         axios.get(`http://localhost:8080/api/clienteNomus/${idConsignatario}`)
                             .then(response => {
                                 setConsignatario(response.data.nome);
-                            })
-                            .catch((error) => {
-                                console.error('erro2: ', error);
-                            })
+                            });
                     })
                     .catch((error) => {
                         console.error('erro:', error)
@@ -68,10 +79,10 @@ const ExibirQRCodes = () => {
             }
         }
 
-        buscarInvoiceEClienteDaPackinglistSelecionada();
+        buscarInvoiceDaPackinglistSelecionada();
         buscarNomeDoProdutoSelecionado();
 
-    }, idPackinglist, idProduto, seq);
+    }, [idPackinglist, idProduto, seq]);
 
     return (
         <div>
@@ -99,12 +110,15 @@ const ExibirQRCodes = () => {
                                     <p><strong>Descrição: {nomeProduto} </strong></p>
                                     <p><strong>Invoice: {invoice} </strong></p>
                                     <p><strong>Cliente: {consignatario} </strong></p>
+                                    <p><strong>Volume: {pesquisaNosVolumes[index]?.descricao}</strong></p>
+                                    {console.log(pesquisaNosVolumes[index]?.descricao)}
+                                    <p><strong>Quantidade Itens: {pesquisaNosVolumes[index]?.quantidadeItens}</strong></p>
                                     <p><strong>QR Code:</strong> {item.qrCodeVolumeProduto}</p>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <p>Nenhum QR Code encontrado.</p>
+                        <p>Nenhum QR Code encontrado. Provavelmente não há volumes criados para este produto ainda...</p>
                     )}
                 </div>
             </div>

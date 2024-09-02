@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Header from "../../../components/Header/Header";
-import { BrowserRouter, unstable_HistoryRouter, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import './Volume.css';
 import axios from "axios";
 import Button from "../../../components/Button";
@@ -10,7 +10,7 @@ import Input from "../../../components/Input";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import Text from "../../../components/Text";
-import { constructNow, format, sub } from "date-fns";
+import { format } from "date-fns";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 function Volume() {
@@ -100,9 +100,6 @@ function Volume() {
     // CONTAINER DOS SUBVOLUMES PESQUISADOR PELO IDVOLUME
     const [subVolumesPorVolume, setSubVolumesPorVolume] = useState({});
 
-    // CONTAINER QUE GUARDA O SUBVOLUME QUE VAI SER EDITADO
-    const [subVolumeEdicao, setSubVolumeEdicao] = useState({})
-
     // CONTAINER QUE POSSUI TODOS OS SUBVOLUMES
     const [subVolumeSelecionado, setSubVolumeSelecionado] = useState([]);
 
@@ -121,8 +118,6 @@ function Volume() {
 
     const [contextSubVolumeLista, setContextSubVolumeLista] = useState({ visible: false, selectedIdVolume: '' });
     const [definirBotaoMostrarMais, setDefinirBotaoMostrarMais] = useState({});
-
-    const [contextDeleteSubVolume, setContextDeleteSubVolume] = useState({ visible: false, x: 0, y: 0, selectedIdVolume: '', selectedIdSubVolume: '' });
 
     const [formDataEditarSubVolume, setFormDataEditarSubVolume] = useState(
         {
@@ -181,6 +176,7 @@ function Volume() {
 
     // BUSCAR O PRODUTO QUE FOI SELECIONADO E OS SEUS VOLUMES
     useEffect(() => {
+
         const fetchProdutoSelecionado = async () => {
 
             try {
@@ -189,9 +185,7 @@ function Volume() {
             } catch (error) {
                 console.error("Erro ao carregar o produto selecionado: ", error);
             }
-
         };
-
 
         const fetchVolumes = async () => {
 
@@ -207,11 +201,6 @@ function Volume() {
         fetchVolumes();
 
     }, [id, idProduto, seq, atualizarEstadoLista]);
-
-
-
-
-
 
 
 
@@ -249,6 +238,7 @@ function Volume() {
     useEffect(() => {
         const fetchTipoDeVolume = async () => {
             if (!volumeEdicao.idTipoVolumeId) return;
+
             try {
                 const response = await axios.get(`http://localhost:8080/api/tipo-de-volume/${volumeEdicao.idTipoVolumeId}`);
                 setSalvarTipoDeVolumeAtual({ descricao: response.data.descricao });
@@ -300,7 +290,7 @@ function Volume() {
         if (volumeCriado && idVolumeSave) {
             const salvarVolumeProduto = async () => {
                 try {
-                    const response = await axios.post(`http://localhost:8080/api/volume-produto`, {
+                    await axios.post(`http://localhost:8080/api/volume-produto`, {
                         id: {
                             idPackinglist: id,
                             idProduto: idProduto,
@@ -310,8 +300,6 @@ function Volume() {
                         qrCodeVolumeProduto: `${id}-${idProduto}-${seq}-${idVolumeSave}`
 
                     });
-
-                    setAtualizarEstadoLista(atualizarEstadoLista + 1);
 
                     setVolumeCriado(false); // Reseta o estado após sucesso
 
@@ -331,7 +319,7 @@ function Volume() {
     //ATUALIZANDO O VOLUME
     const handleAtualizarVolume = (e) => {
         e.preventDefault();
-        axios.put(`http://localhost:8080/api/volume/${salvarIdVolume}`, volumeEdicao)
+        axios.put(`http://localhost:8080/api/volume/${salvarIdVolume.idVolume}`, volumeEdicao)
             .then(() => {
 
                 setFormDataVolume({
@@ -358,25 +346,6 @@ function Volume() {
                 console.error('Erro ao atualizar o volume: ', error);
             });
     }
-
-
-    // PARTE DA FUNÇAO PARA SALVAR OS ITENS EDITADOS PUT
-    useEffect(() => {
-        if (salvarIdVolume.length > 0) {
-            const fetchProdutoEdicao = async () => {
-                try {
-                    const response = await axios.get(`http://localhost:8080/api/volume/${salvarIdVolume}`);
-                    setVolumeEdicao(response.data);
-
-                    console.log(response.data);
-                } catch (error) {
-                    console.error('Erro: ', error);
-                }
-            };
-
-            fetchProdutoEdicao();
-        }
-    }, [salvarIdVolume]);
 
 
     // ENTRAR NO BOTAO ADICIONAR VOLUME
@@ -497,23 +466,21 @@ function Volume() {
 
         await axios.post(`http://localhost:8080/api/subvolume`, formDataSubVolume)
             .then(() => {
-
                 setSucessMessage('Subvolume adicionado com sucesso');
 
                 setTimeout(() => setSucessMessage(null), 5000);
-                setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
 
-                fetchSubVolumesContexto(salvarIdVolume);
+                fetchSubVolumes(salvarIdVolume.idVolume);
+                fetchSubVolumesContexto(salvarIdVolume.idVolume);
                 setFormDataSubVolume(
                     {
                         id: {
-                            idVolume: salvarIdVolume,
+                            idVolume: salvarIdVolume.idVolume,
                         },
                         descricao: "",
                         quantidade: ""
                     }
                 );
-
             })
             .catch(error => {
                 const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Subvolume";
@@ -542,9 +509,8 @@ function Volume() {
                 setSucessMessage('Subvolume atualizado com sucesso');
 
                 setTimeout(() => setSucessMessage(null), 5000);
-                setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
 
-                fetchSubVolumesContexto(salvarIdVolume);
+                fetchSubVolumesContexto(salvarIdVolume.idVolume);
                 setFormDataEditarSubVolume(
                     {
                         id: {
@@ -555,6 +521,9 @@ function Volume() {
                         quantidade: ""
                     }
                 );
+
+                fetchSubVolumes(idVolume);
+
 
             })
             .catch(error => {
@@ -614,7 +583,7 @@ function Volume() {
     // BUSCAR OS SUBVOLUMES DO ITEM SELECIONADO PARA EXIBIR A LISTA NO OVERLAY DO CONTEXTO ADICIONAR SUBVOLUME
     const fetchSubVolumesContexto = async (idVolume) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${idVolume.idVolume}`);
+            const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${idVolume}`);
             setSubVolumeSelecionado(response.data);
         } catch (error) {
             console.error("Erro ao buscar subvolumes: ", error);
@@ -646,8 +615,9 @@ function Volume() {
                 quantidade: ""
             }
         );
+        console.log('testando: ', salvarIdVolume.idVolume)
         setContextMenuSubVolume({ visible: false });
-        fetchSubVolumesContexto(salvarIdVolume);
+        fetchSubVolumesContexto(salvarIdVolume.idVolume);
         setContextSubVolumes({
             visible: true,
             x: 0,
@@ -655,7 +625,6 @@ function Volume() {
             selectedIdVolume: contextMenu.selectedIdVolume
         });
         setEstadoSubVolumeOverlay('adicionar');
-        setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
     }
 
 
@@ -719,8 +688,7 @@ function Volume() {
             }
         )
         setEstadoSubVolumeOverlay('editar');
-        fetchSubVolumesContexto(salvarIdVolume);
-        setAtualizarEstadoListaSubVolumes(atualizarEstadoListaSubVolumes + 1);
+        fetchSubVolumesContexto(salvarIdVolume.idVolume);
     }
 
 
@@ -751,6 +719,13 @@ function Volume() {
             y: e.pageY,
             selectedIdVolume: idVolume,
             selectedIdSubVolume: idSubVolume
+        });
+
+        setSalvarIdVolume(prevState => {
+            const newState = {
+                idVolume: idVolume,
+            };
+            return newState;
         });
 
         // Usando callback para garantir que o estado seja atualizado corretamente
@@ -967,14 +942,14 @@ function Volume() {
 
         if (contextSubVolumesRef.current && !contextSubVolumesRef.current.contains(event.target)) {
             setContextSubVolumes({ visible: false, selectedIdVolume: '' });
-
+            setSubVolumeSelecionado({})
             setFormDataSubVolume({});
         }
     }
 
 
     // AÇAO PARA QUANDO CLICAR COM O BOTAO DIREITO EM CIMA DE ALGUM ITEM
-    const handleRightClick = (e, idVolume) => {
+    const handleRightClick = (e, idVolume, tipoDeVolume, quantidadeItens, descricao, altura, largura, comprimento, pesoLiquido, pesoBruto, observacao) => {
         e.preventDefault();
         setContextMenu({
             visible: true,
@@ -989,6 +964,18 @@ function Volume() {
             };
             return newState;
         });
+
+        setVolumeEdicao({
+            idTipoVolumeId: tipoDeVolume,
+            quantidadeItens: quantidadeItens,
+            descricao: descricao,
+            altura: altura,
+            largura: largura,
+            comprimento: comprimento,
+            pesoLiquido: pesoLiquido,
+            pesoBruto: pesoBruto,
+            observacao: observacao,
+        })
 
     };
 
@@ -1067,9 +1054,10 @@ function Volume() {
 
                             {volumes.length > 0 ? (
                                 volumes.map((v) => (
-                                    <li key={v.idVolume}  className='li-listagem-volume'>
+                                    <li key={v.idVolume} className='li-listagem-volume'>
                                         <div id="container-list-vol">
-                                            <div id="list-vol-divs" onContextMenu={(e) => handleRightClick(e, v.idVolume)}>
+                                            <div id="list-vol-divs" onContextMenu={(e) => handleRightClick(e, v.idVolume, v.idTipoVolumeId,
+                                                v.quantidadeItens, v.descricao, v.altura, v.largura, v.comprimento, v.pesoLiquido, v.pesoBruto, v.observacao)}>
                                                 <div id="list-vol">{v.idVolume}</div>
                                                 <div id="list-vol">{tiposDeVolume[v.idTipoVolumeId]}</div>
                                                 <div id="list-vol">{v.quantidadeItens}</div>
@@ -1154,7 +1142,7 @@ function Volume() {
                                     <form>
                                         <div className="input-group-volume">
                                             <div>
-                                                <label>Tipo de volume:</label>
+                                                <label>Tipo de volume: *</label>
                                                 <Autocomplete
                                                     data={getTipoDeVolumeArray()}
                                                     onSelect={handleAutocompleteChangeTipoVolume}
@@ -1163,7 +1151,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Quantidade de itens:</label>
+                                                <label>Quantidade de itens: *</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'quantidadeItens'}
@@ -1174,7 +1162,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Descrição:</label>
+                                                <label>Descrição: *</label>
                                                 <Input
                                                     type={'text'}
                                                     name={'descricao'}
@@ -1217,7 +1205,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Peso Líquido:</label>
+                                                <label>Peso Líquido: *</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'pesoLiquido'}
@@ -1228,7 +1216,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Peso Bruto:</label>
+                                                <label>Peso Bruto: *</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'pesoBruto'}
@@ -1296,6 +1284,7 @@ function Volume() {
                                                     data={getTipoDeVolumeArray()}
                                                     onSelect={handleAutocompleteChangeTipoVolumeEdicao}
                                                     displayField={'descricao'}
+                                                    title={'Pesquise por algum tipo de volume...'}
                                                     value={salvarTipoDeVolumeAtual.descricao}
                                                 />
                                             </div>
@@ -1306,6 +1295,7 @@ function Volume() {
                                                     name={'quantidadeItens'}
                                                     min={'0'}
                                                     placeholder={'Quantidade de itens...'}
+                                                    title={'Digite a quantidade de itens dentro do volume...'}
                                                     value={volumeEdicao.quantidadeItens}
                                                     onChange={handleChangeEdicao}
                                                 />
@@ -1316,6 +1306,7 @@ function Volume() {
                                                     type={'text'}
                                                     name={'descricao'}
                                                     placeholder={'Descrição...'}
+                                                    title={'Digite a descrição do volume...'}
                                                     value={volumeEdicao.descricao}
                                                     onChange={handleChangeEdicao}
                                                 />
@@ -1327,6 +1318,7 @@ function Volume() {
                                                     name={'altura'}
                                                     min={'0'}
                                                     placeholder={'Altura...'}
+                                                    title={'Digite a altura do volume...'}
                                                     value={volumeEdicao.altura}
                                                     onChange={handleChangeEdicao}
                                                 />
@@ -1338,6 +1330,7 @@ function Volume() {
                                                     name={'largura'}
                                                     min={'0'}
                                                     placeholder={'Largura...'}
+                                                    title={'Digite a largura do volume...'}
                                                     value={volumeEdicao.largura}
                                                     onChange={handleChangeEdicao}
                                                 />
@@ -1349,6 +1342,7 @@ function Volume() {
                                                     name={'comprimento'}
                                                     min={'0'}
                                                     placeholder={'Comprimento...'}
+                                                    title={'Digite o comprimento do volume...'}
                                                     value={volumeEdicao.comprimento || ''}
                                                     onChange={handleChangeEdicao}
                                                 />
@@ -1360,6 +1354,7 @@ function Volume() {
                                                     name={'pesoLiquido'}
                                                     min={'0'}
                                                     placeholder={'Peso líquido...'}
+                                                    title={'Digite o peso líquido do volume...'}
                                                     value={volumeEdicao.pesoLiquido}
                                                     onChange={handleChangeEdicao}
                                                 />
@@ -1371,6 +1366,7 @@ function Volume() {
                                                     name={'pesoBruto'}
                                                     min={'0'}
                                                     placeholder={'Peso bruto...'}
+                                                    title={'Digite o peso bruto do volume...'}
                                                     value={volumeEdicao.pesoBruto}
                                                     onChange={handleChangeEdicao}
                                                 />
@@ -1381,6 +1377,7 @@ function Volume() {
                                                     type={'text'}
                                                     name={'observacao'}
                                                     placeholder={'Observação...'}
+                                                    title={'Digite alguma observação sobre o volume...'}
                                                     value={volumeEdicao.observacao || ''}
                                                     onChange={handleChangeEdicao}
                                                 />

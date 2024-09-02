@@ -71,7 +71,7 @@ const Select = ({
                     </option>
                 ))}
             </select>
-            {tooltipVisible && (
+            {tooltipVisible && title && (
                 <div className="tooltip" style={tooltipStyle}>
                     {title} {/* Exibindo o texto do tooltip passado via title */}
                 </div>

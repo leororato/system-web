@@ -78,7 +78,7 @@ function Autocomplete({ data, onSelect, displayField, value, title }) {
                     ))}
                 </div>
             )}
-            {tooltipVisible && (
+            {tooltipVisible && title && (
                 <div 
                     className="tooltip"
                     style={{

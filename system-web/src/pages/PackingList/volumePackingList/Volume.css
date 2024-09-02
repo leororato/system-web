@@ -157,13 +157,12 @@
 }
 
 .li-listagem-volume #list-vol {
-    border-left: 1px solid #ddd;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
+    height: 100%;
+    border-right: 1px solid #ddd;
 }
 
 .li-listagem-volume #list-vol:last-child {
-    border-right: 1px solid #ddd;
+    border-right: none;
 }
 
 #container-list-vol {
@@ -175,10 +174,10 @@
 }
 
 #list-vol-divs {
-    display: flex;
-    justify-content: space-between;
     width: 100%;
-    width: 100%;
+    border-left: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
     transition: 0.5ms ease-in;
 }
 
@@ -190,12 +189,6 @@
 .li-listagem-volume div {
     cursor: pointer;
     display: table-row;
-}
-
-.li-listagem-volume #list-vol {
-    border-left: 1px solid #ddd;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
 }
 
 .li-listagem-volume #list-vol:last-child {
@@ -375,7 +368,7 @@
     background: white;
     padding: 20px;
     border-radius: 8px;
-    width: 50%;
+    width: 750px;
     max-height: 90vh;
     overflow-y: auto;
     position: relative;

@@ -6,6 +6,7 @@ import './PackingList.css';
 import Title from '../../../components/Title';
 import Text from '../../../components/Text';
 import Button from '../../../components/Button';
+import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import Input from '../../../components/Input';
@@ -26,6 +27,9 @@ function PackingList() {
 
     const [clientes, setClientes] = useState({});
 
+    const [buscaInvoice, setBuscaInvoice] = useState('');
+    const [filteredPackinglist, setFilteredPackinglist] = ([]);
+
     const [tipoDeVolume, setTipoDeVolume] = useState({
         descricao: ''
     });
@@ -43,7 +47,12 @@ function PackingList() {
     });
 
 
-
+    useEffect(() => {
+        const filterPackinglist = packingLists.filter(p =>
+            (p.invoice ? p.invoice.toLowerCase() : '').includes(buscaInvoice.toLowerCase())
+        );
+        setFilteredPackinglist(filterPackinglist);
+    }, [buscaInvoice, packingLists]);
 
 
     useEffect(() => {
@@ -78,7 +87,7 @@ function PackingList() {
 
             } catch (error) {
 
-                 const errorMessage = error.response?.data || "Erro desconhecido ao buscar clientes";
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar clientes";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {
@@ -114,13 +123,6 @@ function PackingList() {
             return () => clearTimeout(timer);
         }
     }, [sucessMessage, navigate]);
-
-
-
-    const handleVolume = (e) => {
-        setContextVolume({ visible: true, x: e.pageX, y: e.pageY });
-    };
-
 
 
     const formatarData = (dtCriacao) => {
@@ -166,7 +168,7 @@ function PackingList() {
     const handleDeleteConfirm = () => {
         const itemDeletado = contextDelete.selectedId;
 
-        
+
         axios.delete(`http://localhost:8080/api/packinglist/${itemDeletado}`)
             .then(() => {
                 setPackingLists(packingLists.filter(packingList =>
@@ -177,7 +179,7 @@ function PackingList() {
                 setAtualizarEstadoLista(atualizarEstadoLista + 1);
             })
             .catch(error => {
-                
+
                 const errorMessage = error.response?.data || "Erro desconhecido ao excluir PackingList";
                 setErrorMessage(errorMessage);
 
@@ -226,6 +228,11 @@ function PackingList() {
         setErrorMessage(null);
     }
 
+    const handleAutocompleteChange = (item) => {
+        
+    };
+    
+
 
     return (
         <div>
@@ -242,30 +249,6 @@ function PackingList() {
                 />
             </div>
 
-
-
-            {/*
-                <div className='button-container-listagem'>
-                    <Button
-                        className={'button-item'}
-                        text={'Clientes'}
-                        padding={10}
-                        borderRadius={5}
-                        fontSize={15}
-                        onClick={() => navigate('/clientes')}
-                    />
-                </div>
-                <div className='button-container-listagem'>
-                    <Button
-                        className={'button-item'}
-                        text={'Tipo de Volume'}
-                        padding={10}
-                        borderRadius={5}
-                        fontSize={15}
-                        onClick={handleVolume}
-                    />
-            </div> */}
-
             <div className='container-listagem'>
                 <div className='buttons'>
                     <div className='button-container-listagem'>
@@ -279,6 +262,17 @@ function PackingList() {
                             onClick={() => navigate('/cadastrar-packing-list')}
                         />
                     </div>
+
+                    <div>
+                        <Input 
+                            type={'text'}
+                            placeholder={'Invoice'}
+                            title={'Pesquise pelo INVOICE da packinglist...'}
+                            value={buscaInvoice}
+                            onChange={(e) => {setBuscaInvoice(e.target.value)}}
+                        />
+                    </div>
+
                 </div>
                 <div className='container-listagem-inicio'>
                     <ul>
@@ -302,7 +296,37 @@ function PackingList() {
                             <div>Idioma</div>
                         </li>
 
-                        {packingLists.length > 0 ? (
+                        {filteredPackinglist.length > 0 ? (
+                                filteredPackinglist.map((p) => (
+                                    <li key={p.idPackingList} onContextMenu={(event) =>
+                                        handleRightClick(event, p.idPackingList)} className='li-listagem'>
+                                        <div>{p.idPackingList}</div>
+                                        <div>{formatarData(p.dtCriacao)}</div>
+                                        <div>{clientes[p.idImportador] || p.idImportador}</div>
+                                        <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
+                                        <div>{clientes[p.idNotificado] || p.idNotificado}</div>
+                                        <div>{p.paisOrigem}</div>
+                                        <div>{p.fronteira}</div>
+                                        <div>{p.localEmbarque}</div>
+                                        <div>{p.localDestino}</div>
+                                        <div>{p.termosPagamento}</div>
+                                        <div>{p.dadosBancarios}</div>
+                                        <div>{p.incoterm}</div>
+                                        <div>{p.invoice}</div>
+                                        <div>{p.tipoTransporte}</div>
+                                        <div>{p.pesoLiquidoTotal}</div>
+                                        <div>{p.pesoBrutoTotal}</div>
+                                        <div>{p.idioma}</div>
+                                    </li>
+                                ))
+    
+                            ) : (
+                                <div id="nao-existe-packinglist">
+                                    <li>Não há nada para exibir, adicione uma PackingList...</li>
+                                </div>
+                            )}
+
+                        {/* {packingLists.length > 0 ? (
 
                             Array.isArray(packingLists) && packingLists.map((p) => (
                                 <li key={p.idPackingList} onContextMenu={(event) =>
@@ -331,7 +355,7 @@ function PackingList() {
                             <div id="nao-existe-packinglist">
                                 <li>Não há nada para exibir, adicione uma PackingList...</li>
                             </div>
-                        )}
+                        )} */}
                     </ul>
                 </div>
                 {contextMenu.visible && (

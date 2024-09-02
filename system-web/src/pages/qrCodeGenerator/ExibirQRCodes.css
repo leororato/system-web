@@ -30,7 +30,16 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 15px;
     text-align: center;
-    width: 300px; /* Ajustado para acomodar o texto extra */
+    align-items: center;
+    width: 100mm;
+    height: 41mm;
+    margin: 0;
+    page-break-inside: avoid;
+}
+
+.qr-code-img {
+    min-width: 36mm;
+    min-height: 36mm;
 }
 
 .texto-etiqueta {

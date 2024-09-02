@@ -147,7 +147,6 @@ const Header = () => {
                   className={"input-tipo-volume"}
                   placeholder={'Ex: Pallet...'}
                   padding={7}
-                  title={'Digite o tipo de volume...'}
                   onChange={(e) => setTipoDeVolume({ descricao: e.target.value })}
                 /></div>
             </div>
