@@ -1,14 +1,17 @@
 /* ExibirQRCodes.css */
+.container-qrcode-div{
+    height: 100vh;
+    background-color: #f4f4f4;
+}
 
 .container-exibir-qrcodes {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
-    background-color: #f4f4f4;
 }
 
 .title-qrcodes {
+    margin-top: 40px;
     margin-bottom: 20px;
     color: #1780e2;
 }
@@ -60,41 +63,53 @@
     @page {
         size: auto;
         margin: 0px;
+        padding: 0;
+        gap: 0;
     }
 
     .header-qrcode,
     #texto-qrcode,
     .input-baixar-qrcode,
-    .title-qrcodes
-    {
+    .title-qrcodes {
         display: none;
     }
 
     .qr-code-lista {
         display: flex;
         align-items: center;
+        border-radius: none;
         justify-content: center;
-        width: 100mm;
-        height: 41mm;
+        margin: 0px;
+        padding: 0;
+        gap: 0;
     }
 
     .qr-code-item {
-        display: flex;
-        align-items: center;
-        width: 100mm;
-        height: 41mm;
+        border-radius: none;
+        box-shadow: none;
         margin: 0;
+        padding: 0;
+        gap: 0;
+        border: none;
         page-break-inside: avoid;
     }
 
     .qr-code-img {
+        margin-left: 10px;
         min-width: 36mm;
         min-height: 36mm;
+    }
+
+    .texto-etiqueta p {
+        margin: 0;
+        padding: 0;
+        gap: 0;
     }
 
     body {
         background-color: white;
         margin: 0;
+        padding: 0;
+        gap: 0;
     }
-
 }

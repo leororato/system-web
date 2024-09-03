@@ -23,6 +23,13 @@ body {
     gap: 30px;
 }
 
+.busca-invoice-input input{
+    width: 150px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
 .button-item {
     background-color: #1780e2;
     transition: 0.2 ease;

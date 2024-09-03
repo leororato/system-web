@@ -85,7 +85,7 @@ const ExibirQRCodes = () => {
     }, [idPackinglist, idProduto, seq]);
 
     return (
-        <div>
+        <div className='container-qrcode-div'>
             <div className='header-qrcode'>
                 <Header />
             </div>
@@ -112,8 +112,8 @@ const ExibirQRCodes = () => {
                                     <p><strong>Cliente: {consignatario} </strong></p>
                                     <p><strong>Volume: {pesquisaNosVolumes[index]?.descricao}</strong></p>
                                     {console.log(pesquisaNosVolumes[index]?.descricao)}
-                                    <p><strong>Quantidade Itens: {pesquisaNosVolumes[index]?.quantidadeItens}</strong></p>
-                                    <p><strong>QR Code:</strong> {item.qrCodeVolumeProduto}</p>
+                                    <p><strong>Quantidade Itens: {pesquisaNosVolumes[index]?.quantidadeItens}</strong></p> 
+                                    {/*<p><strong>QR Code:</strong> {item.qrCodeVolumeProduto}</p>*/}
                                 </div>
                             </div>
                         ))

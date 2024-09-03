@@ -28,7 +28,7 @@ function PackingList() {
     const [clientes, setClientes] = useState({});
 
     const [buscaInvoice, setBuscaInvoice] = useState('');
-    const [filteredPackinglist, setFilteredPackinglist] = ([]);
+    const [filteredPackinglist, setFilteredPackinglist] = useState([]);
 
     const [tipoDeVolume, setTipoDeVolume] = useState({
         descricao: ''
@@ -61,7 +61,7 @@ function PackingList() {
 
                 const response = await axios.get('http://localhost:8080/api/packinglist');
                 setPackingLists(response.data);
-
+                console.log(response.data);
             } catch (error) {
 
                 const errorMessage = error.response?.data || "Erro desconhecido ao buscar os PackingLists";
@@ -229,9 +229,9 @@ function PackingList() {
     }
 
     const handleAutocompleteChange = (item) => {
-        
+
     };
-    
+
 
 
     return (
@@ -263,13 +263,13 @@ function PackingList() {
                         />
                     </div>
 
-                    <div>
-                        <Input 
+                    <div className='busca-invoice-input'>
+                        <Input
                             type={'text'}
                             placeholder={'Invoice'}
                             title={'Pesquise pelo INVOICE da packinglist...'}
                             value={buscaInvoice}
-                            onChange={(e) => {setBuscaInvoice(e.target.value)}}
+                            onChange={(e) => setBuscaInvoice(e.target.value)}
                         />
                     </div>
 
@@ -296,35 +296,35 @@ function PackingList() {
                             <div>Idioma</div>
                         </li>
 
-                        {filteredPackinglist.length > 0 ? (
-                                filteredPackinglist.map((p) => (
-                                    <li key={p.idPackingList} onContextMenu={(event) =>
-                                        handleRightClick(event, p.idPackingList)} className='li-listagem'>
-                                        <div>{p.idPackingList}</div>
-                                        <div>{formatarData(p.dtCriacao)}</div>
-                                        <div>{clientes[p.idImportador] || p.idImportador}</div>
-                                        <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
-                                        <div>{clientes[p.idNotificado] || p.idNotificado}</div>
-                                        <div>{p.paisOrigem}</div>
-                                        <div>{p.fronteira}</div>
-                                        <div>{p.localEmbarque}</div>
-                                        <div>{p.localDestino}</div>
-                                        <div>{p.termosPagamento}</div>
-                                        <div>{p.dadosBancarios}</div>
-                                        <div>{p.incoterm}</div>
-                                        <div>{p.invoice}</div>
-                                        <div>{p.tipoTransporte}</div>
-                                        <div>{p.pesoLiquidoTotal}</div>
-                                        <div>{p.pesoBrutoTotal}</div>
-                                        <div>{p.idioma}</div>
-                                    </li>
-                                ))
-    
-                            ) : (
-                                <div id="nao-existe-packinglist">
-                                    <li>Não há nada para exibir, adicione uma PackingList...</li>
-                                </div>
-                            )}
+                        {filteredPackinglist && filteredPackinglist.length > 0 ? (
+                            filteredPackinglist.map((p) => (
+                                <li key={p.idPackingList} onContextMenu={(event) =>
+                                    handleRightClick(event, p.idPackingList)} className='li-listagem'>
+                                    <div>{p.idPackingList}</div>
+                                    <div>{formatarData(p.dtCriacao)}</div>
+                                    <div>{clientes[p.idImportador] || p.idImportador}</div>
+                                    <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
+                                    <div>{clientes[p.idNotificado] || p.idNotificado}</div>
+                                    <div>{p.paisOrigem}</div>
+                                    <div>{p.fronteira}</div>
+                                    <div>{p.localEmbarque}</div>
+                                    <div>{p.localDestino}</div>
+                                    <div>{p.termosPagamento}</div>
+                                    <div>{p.dadosBancarios}</div>
+                                    <div>{p.incoterm}</div>
+                                    <div>{p.invoice}</div>
+                                    <div>{p.tipoTransporte}</div>
+                                    <div>{p.pesoLiquidoTotal}</div>
+                                    <div>{p.pesoBrutoTotal}</div>
+                                    <div>{p.idioma}</div>
+                                </li>
+                            ))
+
+                        ) : (
+                            <div id="nao-existe-packinglist">
+                                <li>Não há nada para exibir, adicione uma PackingList...</li>
+                            </div>
+                        )}
 
                         {/* {packingLists.length > 0 ? (
 

@@ -49,8 +49,6 @@ function Volume() {
     // ATUALIZADOR DO ESTADO DA LISTA DE APRESENTAÇAO DE TODOS OS VOLUMES
     const [atualizarEstadoLista, setAtualizarEstadoLista] = useState(0);
 
-    const [atualizarEstadoListaSubVolumes, setAtualizarEstadoListaSubVolumes] = useState(0);
-
     // CONTAINER QUE POSSUI TODOS OS VOLUMES
     const [volumes, setVolumes] = useState([]);
 
