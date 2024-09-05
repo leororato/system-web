@@ -23,6 +23,8 @@ function App() {
                 <Route path='/inicio' element={<PackingList />} />
                 <Route path='/minha-conta' element={<Conta />} />
                 <Route path="/exibir-qrcodes/:idPackinglist/:idProduto/:seq/:idVolume?" element={<ExibirQRCodes />} />
+                <Route path="/exibir-qrcode/:idVolume" element={<ExibirQRCodes />} />
+                <Route path='/exibir-qrcode-packinglist/:idPackinglist' element={<ExibirQRCodes />} />
                 <Route path='/cadastrar-packing-list' element={<CadastroItem />} />
                 <Route path='/clientes' element={<Clientes />} />
                 <Route path='/editar-packing-list/:id' element={<EditarPL />} />

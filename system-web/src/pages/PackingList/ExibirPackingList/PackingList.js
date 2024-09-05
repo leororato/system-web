@@ -228,10 +228,18 @@ function PackingList() {
         setErrorMessage(null);
     }
 
-    const handleAutocompleteChange = (item) => {
+    const gerarQrCode = async (e) => {
+        e.preventDefault();
 
-    };
-
+        try {
+            navigate(`/exibir-qrcode-packinglist/${contextMenu.selectedId}`);
+        }
+        catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao ir para a página 'Gerar QR Code da Packinglist'";
+            setErrorMessage(errorMessage);
+            setTimeout(() => setErrorMessage(null), 5000);
+        }
+    }
 
 
     return (
@@ -325,37 +333,6 @@ function PackingList() {
                                 <li>Não há nada para exibir, adicione uma PackingList...</li>
                             </div>
                         )}
-
-                        {/* {packingLists.length > 0 ? (
-
-                            Array.isArray(packingLists) && packingLists.map((p) => (
-                                <li key={p.idPackingList} onContextMenu={(event) =>
-                                    handleRightClick(event, p.idPackingList)} className='li-listagem'>
-                                    <div>{p.idPackingList}</div>
-                                    <div>{formatarData(p.dtCriacao)}</div>
-                                    <div>{clientes[p.idImportador] || p.idImportador}</div>
-                                    <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
-                                    <div>{clientes[p.idNotificado] || p.idNotificado}</div>
-                                    <div>{p.paisOrigem}</div>
-                                    <div>{p.fronteira}</div>
-                                    <div>{p.localEmbarque}</div>
-                                    <div>{p.localDestino}</div>
-                                    <div>{p.termosPagamento}</div>
-                                    <div>{p.dadosBancarios}</div>
-                                    <div>{p.incoterm}</div>
-                                    <div>{p.invoice}</div>
-                                    <div>{p.tipoTransporte}</div>
-                                    <div>{p.pesoLiquidoTotal}</div>
-                                    <div>{p.pesoBrutoTotal}</div>
-                                    <div>{p.idioma}</div>
-                                </li>
-                            ))
-
-                        ) : (
-                            <div id="nao-existe-packinglist">
-                                <li>Não há nada para exibir, adicione uma PackingList...</li>
-                            </div>
-                        )} */}
                     </ul>
                 </div>
                 {contextMenu.visible && (
@@ -370,6 +347,10 @@ function PackingList() {
                         <div id='container-icon-menu' onClick={handleList}>
                             <Icon icon="ci:list-add" id='icone-menu' />
                             <p>Listar Produto</p>
+                        </div>
+                        <div id='container-icon-menu' onClick={gerarQrCode}>
+                            <Icon icon="vaadin:qrcode" id='icone-menu' />
+                            <p>Gerar QR Code</p>
                         </div>
                         <div id='container-icon-menu-excluir' onClick={handleDelete} >
                             <Icon icon="material-symbols:delete-outline" id='icone-menu' />

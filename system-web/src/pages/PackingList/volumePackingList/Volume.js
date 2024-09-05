@@ -46,9 +46,6 @@ function Volume() {
     // CARREGA A DESCRICAO DO TIPO DE VOLUME DO ITEM QUANDO CLICA EM CIMA
     const [salvarTipoDeVolumeAtual, setSalvarTipoDeVolumeAtual] = useState({ descricao: '' });
 
-    // ATUALIZADOR DO ESTADO DA LISTA DE APRESENTAÇAO DE TODOS OS VOLUMES
-    const [atualizarEstadoLista, setAtualizarEstadoLista] = useState(0);
-
     // CONTAINER QUE POSSUI TODOS OS VOLUMES
     const [volumes, setVolumes] = useState([]);
 
@@ -185,6 +182,12 @@ function Volume() {
             }
         };
 
+        fetchProdutoSelecionado();
+
+    }, [id, idProduto, seq]);
+
+
+    useEffect(() => {
         const fetchVolumes = async () => {
 
             try {
@@ -195,13 +198,19 @@ function Volume() {
             }
         }
 
-        fetchProdutoSelecionado();
         fetchVolumes();
-
-    }, [id, idProduto, seq, atualizarEstadoLista]);
-
+    }, [])
 
 
+    const fetchVolumes = async () => {
+
+        try {
+            const response = await axios.get(`http://localhost:8080/api/volume/produto/${id}/${idProduto}/${seq}`);
+            setVolumes(response.data);
+        } catch (error) {
+            console.error("Erro ao carregar os volumes: ", error);
+        }
+    }
 
 
 
@@ -252,10 +261,10 @@ function Volume() {
     // SALVANDO O VOLUME 
     const handleSalvarVolume = async (e) => {
         e.preventDefault();
+
         try {
             const response = await axios.post(`http://localhost:8080/api/volume`, formDataVolume);
             setIdVolumeSave(response.data.idVolume);
-            setAtualizarEstadoLista(atualizarEstadoLista + 1);
 
             setFormDataVolume({
                 idTipoVolumeId: '',
@@ -272,7 +281,9 @@ function Volume() {
             setOverlayVisible(false);
             setSucessMessage('Volume adicionado com sucesso!');
             setTimeout(() => setSucessMessage(null), 5000);
-            setVolumeCriado(true); // Define que o volume foi criado
+            setVolumeCriado(true);
+
+            navigate(0);
 
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume";
@@ -335,7 +346,9 @@ function Volume() {
                 setContextEditar({ visible: false, selectedIdVolume: '' });
                 setSucessMessage('Volume atualizado com sucesso!');
                 setTimeout(() => setSucessMessage(null), 5000);
-                setAtualizarEstadoLista(atualizarEstadoLista + 1);
+
+                fetchVolumes();
+ 
             })
             .catch(error => {
                 const errorMessage = error.response?.data || "Erro desconhecido ao atualizar Volume";
@@ -408,27 +421,26 @@ function Volume() {
         axios.delete(`http://localhost:8080/api/volume/${idVolumeSelecionado}`)
             .then(() => {
 
-                setAtualizarEstadoLista(atualizarEstadoLista + 1);
                 setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
-
+                
                 setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
-
+                
                 setTimeout(() => {
                     setSucessMessage(null)
                 }, 5000);
+                
+                fetchVolumes();
 
-
-
-
+                
                 axios.delete(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`)
                     .then(() => {
 
                         setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
-                        setAtualizarEstadoLista(atualizarEstadoLista + 1);
                         setTimeout(() => {
                             setSucessMessage(null)
                         }, 5000);
 
+                        fetchVolumes();
                     })
                     .catch((error) => {
 
@@ -521,7 +533,6 @@ function Volume() {
                 );
 
                 fetchSubVolumes(idVolume);
-
 
             })
             .catch(error => {
@@ -743,7 +754,7 @@ function Volume() {
     // FUNÇAO PARA SALVAR O QUE ESTA SENDO DIGITADO NOS INPUTS DO PUT
     const handleChangeEdicao = (e) => {
         const { name, value } = e.target;
-        setFormDataEditarSubVolume(prevState => ({
+        setVolumeEdicao(prevState => ({
             ...prevState,
             [name]: value
         }));
@@ -776,26 +787,40 @@ function Volume() {
         const idVolume = salvarIdVolume.idVolume;
 
         try {
-            const response = await axios.get(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolume}`);
-
-            // acessa o primeiro item do array e pega o idVolumeProduto
-            const primeiroItem = response.data[0];
-            const idVolumeProduto = primeiroItem?.idVolumeProduto;
-
-            if (idVolumeProduto) {
-                setIdVolumeProdutoState(idVolumeProduto);
-
-                navigate(`/exibir-qrcodes/${idVolumeProduto}/${salvarIdsVolume.idPackinglist}/${salvarIdsVolume.idProduto}/${salvarIdsVolume.seq}/${salvarIdsVolume.idVolume}`);
-            } else {
-                console.error('idVolumeProduto não encontrado na resposta');
-            }
-
-        } catch (error) {
-            const errorMessage = error.response?.data || "Erro desconhecido ao procurar Volume Produto";
+            navigate(`/exibir-qrcode/${idVolume}`);
+        }
+        catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao ir para a página 'Gerar QR Code'";
             setErrorMessage(errorMessage);
             setTimeout(() => setErrorMessage(null), 5000);
         }
-    };
+    }
+
+    // const gerarQrCode = async (e) => {
+    //     e.preventDefault();
+    //     const idVolume = salvarIdVolume.idVolume;
+
+    //     try {
+    //         const response = await axios.get(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolume}`);
+
+    //         // acessa o primeiro item do array e pega o idVolumeProduto
+    //         const primeiroItem = response.data[0];
+    //         const idVolumeProduto = primeiroItem?.idVolumeProduto;
+
+    //         if (idVolumeProduto) {
+    //             setIdVolumeProdutoState(idVolumeProduto);
+
+    //             navigate(`/exibir-qrcodes/${idVolumeProduto}/${salvarIdsVolume.idPackinglist}/${salvarIdsVolume.idProduto}/${salvarIdsVolume.seq}/${salvarIdsVolume.idVolume}`);
+    //         } else {
+    //             console.error('idVolumeProduto não encontrado na resposta');
+    //         }
+
+    //     } catch (error) {
+    //         const errorMessage = error.response?.data || "Erro desconhecido ao procurar Volume Produto";
+    //         setErrorMessage(errorMessage);
+    //         setTimeout(() => setErrorMessage(null), 5000);
+    //     }
+    // };
 
 
 
@@ -1341,7 +1366,7 @@ function Volume() {
                                                     min={'0'}
                                                     placeholder={'Comprimento...'}
                                                     title={'Digite o comprimento do volume...'}
-                                                    value={volumeEdicao.comprimento || ''}
+                                                    value={volumeEdicao.comprimento}
                                                     onChange={handleChangeEdicao}
                                                 />
                                             </div>
@@ -1376,7 +1401,7 @@ function Volume() {
                                                     name={'observacao'}
                                                     placeholder={'Observação...'}
                                                     title={'Digite alguma observação sobre o volume...'}
-                                                    value={volumeEdicao.observacao || ''}
+                                                    value={volumeEdicao.observacao}
                                                     onChange={handleChangeEdicao}
                                                 />
                                             </div>
