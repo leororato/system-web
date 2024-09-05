@@ -40,6 +40,7 @@
     background-color: #1780e2;
     color: white;
     display: table-row;
+    font-size: 14px;
 }
 
 .header-produto-volume div {
@@ -49,6 +50,7 @@
 .li-listagem-produto-volume {
     display: table-row;
     border-bottom: 1px solid #ddd;
+    font-size: 12px;
 }
 
 /* FIM DO PRODUTO SELECIONADO */
@@ -68,7 +70,6 @@
     justify-content: center;
     margin-top: 20px;
     padding: 20px;
-    width: 100%;
     background-color: #f5f5f5;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -76,10 +77,12 @@
 
 .org-lista-2 {
     display: flex;
-    width: 80%;
+    flex-direction: column;
+    width: 1180px;
 }
 
 #container-botao-add-volume {
+    width: 100%;
     text-align: right;
     margin-bottom: 15px;
 }
@@ -99,15 +102,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     word-wrap: break-word;
-    width: 100%;
+    font-size: 12px;
 }
 
 .container-listagem-volume #list-vol {
     display: table-cell;
     padding: 10px;
     text-align: center;
-    min-width: 142.506px;
-    max-width: 142.506px;
+    width: 112.8px;
     overflow: hidden;
     text-overflow: ellipsis;
     word-wrap: break-word;
@@ -121,10 +123,12 @@
 
 .header-volume {
     display: flex;
-    align-items: center;
     background-color: #1780e2;
+    padding-left: 10px;
     padding-top: 10px;
     padding-bottom: 10px;
+    padding-right: 40px;
+
     list-style-type: none;
     color: white;
     border-radius: 5px;
@@ -133,8 +137,11 @@
 }
 
 .header-volume div {
-    display: table-row;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: bold;
+    min-height: 46px;
     background-color: #1780e2;
     color: white;
     border-right: 1px solid #ddd;
@@ -143,10 +150,6 @@
 .header-volume div:first-child {
     border-left: 1px solid #ddd;
 
-}
-
-.header-volume #list-vol:first-child {
-    margin-left: 12px;
 }
 
 .li-listagem-volume {
@@ -243,7 +246,7 @@
     cursor: default;
     display: flex;
     justify-content: center;
-    margin-top: 10px;
+    border-top: none;
 }
 
 .lista-subvolume-overlay {
@@ -252,6 +255,17 @@
     border-radius: 5px;
     border: 1px solid #ddd;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+}
+
+#title-subvolumes-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 5px;
+    width: 100%;
+    margin-bottom: 10px;
 }
 
 .ul-lista-subvolume {
@@ -267,7 +281,7 @@
 
 .ul-lista-subvolume #grid-lista {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     text-align: center;
     border-left: 1px solid #ddd;
 }
@@ -323,7 +337,8 @@
 }
 
 #nao-existe-volume,
-#nao-existe-subvolume {
+#nao-existe-subvolume,
+#nao-existe-subvolume-ovl{
     color: #6c757d;
     text-align: center;
 
@@ -333,7 +348,7 @@
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     background-color: #dddddd8a;
-    width: 1020px;
+    width: 377px;
     padding-top: 10px;
     padding-bottom: 10px;
     text-align: center;
@@ -342,6 +357,25 @@
 }
 
 #container-nao-existe-subvolume {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+}
+
+#nao-existe-subvolume-ovl li {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    background-color: #dddddd8a;
+    width: 557px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+#container-nao-existe-subvolume-ovl {
     display: flex;
     justify-content: center;
     width: 100%;
@@ -506,7 +540,40 @@
     transition: 0.5ms ease-in;
 }
 
+#listagem-subvolume-ovl {
+    cursor: default;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
 
+.ul-lista-subvolume-ovl {
+    display: table-cell;
+    unicode-bidi: isolate;
+    width: 100%;
+    padding: 5px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+}
+
+.ul-lista-subvolume-ovl #grid-lista {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    text-align: center;
+    border-left: 1px solid #ddd;
+}
+
+.ul-lista-subvolume-ovl ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ul-lista-subvolume-ovl ul #lista-1 {
+    width: 180px;
+}
 
 .input-group-subvolume {
     display: flex;
@@ -582,6 +649,10 @@
 }
 
 #title-lista-subvolume {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
     text-align: center;
     width: 100%;
     margin-top: 40px;

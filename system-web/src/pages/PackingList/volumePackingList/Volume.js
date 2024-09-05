@@ -348,7 +348,7 @@ function Volume() {
                 setTimeout(() => setSucessMessage(null), 5000);
 
                 fetchVolumes();
- 
+
             })
             .catch(error => {
                 const errorMessage = error.response?.data || "Erro desconhecido ao atualizar Volume";
@@ -422,16 +422,16 @@ function Volume() {
             .then(() => {
 
                 setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
-                
+
                 setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
-                
+
                 setTimeout(() => {
                     setSucessMessage(null)
                 }, 5000);
-                
+
                 fetchVolumes();
 
-                
+
                 axios.delete(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`)
                     .then(() => {
 
@@ -1080,6 +1080,10 @@ function Volume() {
                                                 <div className="lista-subvolume-overlay">
                                                     <div className="ul-lista-subvolume">
                                                         <ul>
+                                                            <div id="title-subvolumes-overlay">
+                                                                <h3>Subvolumes</h3>
+                                                                <Icon icon="fa6-solid:box-open" style={{fontSize: '1.5em'}}/>
+                                                            </div>
                                                             <li className="header-produto-subvolume" id="grid-lista">
                                                                 <div id="lista-1">Descrição</div>
                                                                 <div id="lista-1">Quantidade</div>
@@ -1272,7 +1276,7 @@ function Volume() {
                                     <form>
                                         <div className="input-group-volume">
                                             <div>
-                                                <label>Tipo de volume:</label>
+                                                <label>Tipo de volume: *</label>
                                                 <Autocomplete
                                                     data={getTipoDeVolumeArray()}
                                                     onSelect={handleAutocompleteChangeTipoVolumeEdicao}
@@ -1282,7 +1286,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Quantidade de itens:</label>
+                                                <label>Quantidade de itens: *</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'quantidadeItens'}
@@ -1294,7 +1298,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Descrição:</label>
+                                                <label>Descrição: *</label>
                                                 <Input
                                                     type={'text'}
                                                     name={'descricao'}
@@ -1341,7 +1345,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Peso Líquido:</label>
+                                                <label>Peso Líquido: *</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'pesoLiquido'}
@@ -1353,7 +1357,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Peso Bruto:</label>
+                                                <label>Peso Bruto: *</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'pesoBruto'}
@@ -1477,14 +1481,15 @@ function Volume() {
                             <div id="title-lista-subvolume">
                                 <Text
                                     text={'Lista de Subvolumes'}
-                                    color={'#1780e2'}
                                     fontSize={17}
                                 />
+                                <Icon icon="fa6-solid:box-open" style={{fontSize: '1.5em'}}/>
+
                             </div>
 
                             {estadoSubVolumeOverlay === 'adicionar' ? <div></div> :
                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <div style={{ width: '779.31px' }}>
+                                    <div style={{ width: '557px' }}>
                                         <Button
                                             className={'button-adicionar-subvolume'}
                                             text={'Adicionar Subvolume'}
@@ -1497,12 +1502,13 @@ function Volume() {
                                     </div>
                                 </div>
                             }
-                            <div id="listagem-subvolume">
+                            <div id="listagem-subvolume-ovl">
 
-                                <div className="lista-subvolume-overlay">
-                                    <div className="ul-lista-subvolume">
+                                <div className="lista-subvolume-overlay-ovl">
+                                    <div className="ul-lista-subvolume-ovl">
                                         <ul>
                                             <li className="header-produto-subvolume-overlay" id="grid-lista">
+                                                <div id="lista-1">ID Volume</div>
                                                 <div id="lista-1">Descrição</div>
                                                 <div id="lista-1">Quantidade</div>
                                             </li>
@@ -1512,13 +1518,14 @@ function Volume() {
                                                         onContextMenu={(e) => handleRightClickSubVolume(
                                                             e, subVolume.id.idVolume, subVolume.id.idSubVolume, subVolume.descricao, subVolume.quantidade
                                                         )}>
+                                                        <div>{subVolume.id.idVolume}</div>
                                                         <div>{subVolume.descricao}</div>
                                                         <div>{subVolume.quantidade}</div>
                                                     </li>
                                                 ))
                                             ) : (
-                                                <div id="container-nao-existe-subvolume">
-                                                    <div id="nao-existe-subvolume">
+                                                <div id="container-nao-existe-subvolume-ovl">
+                                                    <div id="nao-existe-subvolume-ovl">
                                                         <li>Não há nada para exibir, adicione um subvolume...</li>
                                                     </div>
                                                 </div>
@@ -1537,7 +1544,7 @@ function Volume() {
             {
                 contextMenu.visible && (
                     <div className='context-menu' style={{
-                        top: `${contextMenu.y}px`, left: `${contextMenu.x}px`, width: '230px'
+                        top: `${contextMenu.y}px`, left: `${contextMenu.x}px`, width: '190px'
                     }} ref={contextMenuRef}>
                         <div id='container-icon-menu' onClick={handleEdit}>
                             <Icon icon="mdi:edit" id='icone-menu' />
