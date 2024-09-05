@@ -296,7 +296,7 @@ const ExibirQRCodes = () => {
 
 
     const handlePrint = () => {
-        window.print(); 
+        window.print();
     }
 
     return (
@@ -315,16 +315,20 @@ const ExibirQRCodes = () => {
                     text={modoDaPagina === 1 || modoDaPagina === 3 ? `Lista de QR Codes para Impressão` : `QRCode Selecionado para Impressão`}
                 />
 
-                <div id='texto-qrcode'>
-                    <Text
-                        text={modoDaPagina === 1 ? `Está é a lista dos QRCodes de todos os Volumes do Produto: ${nomeProduto}` : `Este é o QRCode do Volume '${informacoesQrCodeUnico?.volume}' `}
-                    />
+                <div className='info-qrcode'>
+                    <div id='texto-qrcode'>
+                        <Text
+                            text={modoDaPagina === 1 ? `Está é a lista dos QRCodes de todos os Volumes do Produto: ${nomeProduto}` : `Este é o QRCode do Volume '${informacoesQrCodeUnico?.volume}' `}
+                        />
+                    </div>
 
-                    <Button 
-                    className={'botao-imprimir-qrcode'}
-                    text={'Imprimir'}
-                    onClick={handlePrint}
-                    />
+                    <div id='div-botao-imprimir-qrcode'>
+                        <Button
+                            className={'botao-imprimir-qrcode'}
+                            text={'Imprimir'}
+                            onClick={handlePrint}
+                        />
+                    </div>
                 </div>
 
                 {/* SE FOR GERADO TODOS OS QRCODES DE UM PRODUTO */}

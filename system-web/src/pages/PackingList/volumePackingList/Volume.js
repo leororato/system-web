@@ -796,32 +796,6 @@ function Volume() {
         }
     }
 
-    // const gerarQrCode = async (e) => {
-    //     e.preventDefault();
-    //     const idVolume = salvarIdVolume.idVolume;
-
-    //     try {
-    //         const response = await axios.get(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolume}`);
-
-    //         // acessa o primeiro item do array e pega o idVolumeProduto
-    //         const primeiroItem = response.data[0];
-    //         const idVolumeProduto = primeiroItem?.idVolumeProduto;
-
-    //         if (idVolumeProduto) {
-    //             setIdVolumeProdutoState(idVolumeProduto);
-
-    //             navigate(`/exibir-qrcodes/${idVolumeProduto}/${salvarIdsVolume.idPackinglist}/${salvarIdsVolume.idProduto}/${salvarIdsVolume.seq}/${salvarIdsVolume.idVolume}`);
-    //         } else {
-    //             console.error('idVolumeProduto não encontrado na resposta');
-    //         }
-
-    //     } catch (error) {
-    //         const errorMessage = error.response?.data || "Erro desconhecido ao procurar Volume Produto";
-    //         setErrorMessage(errorMessage);
-    //         setTimeout(() => setErrorMessage(null), 5000);
-    //     }
-    // };
-
 
 
 
@@ -1107,8 +1081,6 @@ function Volume() {
                                                     <div className="ul-lista-subvolume">
                                                         <ul>
                                                             <li className="header-produto-subvolume" id="grid-lista">
-                                                                <div id="lista-1">Id Volume</div>
-                                                                <div id="lista-1">Id SubVolume</div>
                                                                 <div id="lista-1">Descrição</div>
                                                                 <div id="lista-1">Quantidade</div>
                                                             </li>
@@ -1118,8 +1090,6 @@ function Volume() {
                                                                         onContextMenu={(e) => handleRightClickSubVolume(
                                                                             e, subVolume.id.idVolume, subVolume.id.idSubVolume, subVolume.descricao, subVolume.quantidade
                                                                         )}>
-                                                                        <div>{subVolume.id.idVolume}</div>
-                                                                        <div>{subVolume.id.idSubVolume}</div>
                                                                         <div>{subVolume.descricao}</div>
                                                                         <div>{subVolume.quantidade}</div>
                                                                     </li>
@@ -1533,8 +1503,6 @@ function Volume() {
                                     <div className="ul-lista-subvolume">
                                         <ul>
                                             <li className="header-produto-subvolume-overlay" id="grid-lista">
-                                                <div id="lista-1">Id Volume</div>
-                                                <div id="lista-1">Id Subvolume</div>
                                                 <div id="lista-1">Descrição</div>
                                                 <div id="lista-1">Quantidade</div>
                                             </li>
@@ -1544,8 +1512,6 @@ function Volume() {
                                                         onContextMenu={(e) => handleRightClickSubVolume(
                                                             e, subVolume.id.idVolume, subVolume.id.idSubVolume, subVolume.descricao, subVolume.quantidade
                                                         )}>
-                                                        <div>{subVolume.id.idVolume}</div>
-                                                        <div>{subVolume.id.idSubVolume}</div>
                                                         <div>{subVolume.descricao}</div>
                                                         <div>{subVolume.quantidade}</div>
                                                     </li>

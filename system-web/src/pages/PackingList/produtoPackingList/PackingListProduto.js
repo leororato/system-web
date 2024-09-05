@@ -405,7 +405,7 @@ function PackingListProduto() {
                                 className={'button-adicionar-produto'}
                                 text={'Adicionar Produto'}
                                 padding={10}
-                                fontSize={15}
+                                fontSize={12}
                                 borderRadius={5}
                                 onClick={handleAddProduto}
                             />
@@ -417,6 +417,7 @@ function PackingListProduto() {
                             <Title
                                 classname={'title-adicionar-produtos'}
                                 text={'Adicionar um novo produto ao PackingList:'}
+                                color={'#1780e2'}
                             />
                             <div className="container-autocomplete">
                                 <div id="div-desc-prod">

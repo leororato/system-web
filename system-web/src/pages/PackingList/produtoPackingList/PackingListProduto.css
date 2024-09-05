@@ -129,8 +129,9 @@
 }
 
 .sub-container-listagem-prod {
-    width: 90%;
+    width: 80%;
     margin-top: 50px;
+    font-size: 12px;
     border-collapse: collapse;
 }
 
@@ -210,6 +211,7 @@
 
 .ul-lista-produtos {
     cursor: pointer;
+    font-size: 12px;
     margin-bottom: 200px;
 }
 

@@ -15,6 +15,18 @@
     color: #1780e2;
 }
 
+.info-qrcode {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#div-botao-imprimir-qrcode {
+    margin-top: 20px;
+}
+
 .botao-imprimir-qrcode {
     background-color: #1780e2;
     padding: 5px;
@@ -79,7 +91,7 @@
     }
 
     .header-qrcode,
-    #texto-qrcode,
+    .info-qrcode,
     .input-baixar-qrcode,
     .container-exibir-qrcodes h1 {
         display: none;
