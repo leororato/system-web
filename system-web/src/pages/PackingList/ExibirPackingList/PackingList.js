@@ -13,6 +13,7 @@ import Input from '../../../components/Input';
 import ErrorNotification from '../../../components/ErrorNotification/ErrorNotification';
 import SucessNotification from '../../../components/SucessNotification/SucessNotification';
 import { Icon } from '@iconify/react/dist/iconify.js';
+import { Box, CircularProgress } from '@mui/material';
 
 function PackingList() {
 
@@ -21,6 +22,8 @@ function PackingList() {
     const location = useLocation();
     const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
     const [errorMessage, setErrorMessage] = useState(null);
+
+    const [loading, setLoading] = useState(false);
 
     const [packingLists, setPackingLists] = useState([]);
     const [atualizarEstadoLista, setAtualizarEstadoLista] = useState(0);
@@ -58,19 +61,19 @@ function PackingList() {
     useEffect(() => {
         const fetchPackingLists = async () => {
             try {
-
+                setLoading(true);
                 const response = await axios.get('http://localhost:8080/api/packinglist');
                 setPackingLists(response.data);
                 console.log(response.data);
             } catch (error) {
-
                 const errorMessage = error.response?.data || "Erro desconhecido ao buscar os PackingLists";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000);
-
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -304,34 +307,62 @@ function PackingList() {
                             <div>Idioma</div>
                         </li>
 
-                        {filteredPackinglist && filteredPackinglist.length > 0 ? (
-                            filteredPackinglist.map((p) => (
-                                <li key={p.idPackingList} onContextMenu={(event) =>
-                                    handleRightClick(event, p.idPackingList)} className='li-listagem'>
-                                    <div>{p.idPackingList}</div>
-                                    <div>{formatarData(p.dtCriacao)}</div>
-                                    <div>{clientes[p.idImportador] || p.idImportador}</div>
-                                    <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
-                                    <div>{clientes[p.idNotificado] || p.idNotificado}</div>
-                                    <div>{p.paisOrigem}</div>
-                                    <div>{p.fronteira}</div>
-                                    <div>{p.localEmbarque}</div>
-                                    <div>{p.localDestino}</div>
-                                    <div>{p.termosPagamento}</div>
-                                    <div>{p.dadosBancarios}</div>
-                                    <div>{p.incoterm}</div>
-                                    <div>{p.invoice}</div>
-                                    <div>{p.tipoTransporte}</div>
-                                    <div>{p.pesoLiquidoTotal}</div>
-                                    <div>{p.pesoBrutoTotal}</div>
-                                    <div>{p.idioma}</div>
-                                </li>
-                            ))
+                        {loading ? (
+                            <Box sx={{
+                                display: 'flex',
+                                gap: '10px',
+                                justifyContent: 'center',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                backgroundColor: '#f5f5f5',
+                                padding: '20px',
+                                borderEndEndRadius: '10px',
+                                borderEndStartRadius: '10px',
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1);',
+                                animation: 'fadeIn 0.5s ease-in-out',
+                                width: '100%',
+                                textAlign: 'center'
+                            }}>
 
+                                <Text
+                                    text={'Buscando Packinglists...'}
+                                />
+                                <CircularProgress />
+                            </Box>
                         ) : (
-                            <div id="nao-existe-packinglist">
-                                <li>Não há nada para exibir, adicione uma PackingList...</li>
-                            </div>
+                            <>
+
+                                {filteredPackinglist && filteredPackinglist.length > 0 ? (
+                                    filteredPackinglist.map((p) => (
+                                        <li key={p.idPackingList} onContextMenu={(event) =>
+                                            handleRightClick(event, p.idPackingList)} className='li-listagem'>
+                                            <div>{p.idPackingList}</div>
+                                            <div>{formatarData(p.dtCriacao)}</div>
+                                            <div>{clientes[p.idImportador] || p.idImportador}</div>
+                                            <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
+                                            <div>{clientes[p.idNotificado] || p.idNotificado}</div>
+                                            <div>{p.paisOrigem}</div>
+                                            <div>{p.fronteira}</div>
+                                            <div>{p.localEmbarque}</div>
+                                            <div>{p.localDestino}</div>
+                                            <div>{p.termosPagamento}</div>
+                                            <div>{p.dadosBancarios}</div>
+                                            <div>{p.incoterm}</div>
+                                            <div>{p.invoice}</div>
+                                            <div>{p.tipoTransporte}</div>
+                                            <div>{p.pesoLiquidoTotal}</div>
+                                            <div>{p.pesoBrutoTotal}</div>
+                                            <div>{p.idioma}</div>
+                                        </li>
+                                    ))
+
+                                ) : (
+                                    <div id="nao-existe-packinglist">
+                                        <li>Não há nada para exibir, adicione uma PackingList...</li>
+                                    </div>
+                                )}
+
+                            </>
                         )}
                     </ul>
                 </div>

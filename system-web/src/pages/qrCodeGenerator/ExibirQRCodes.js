@@ -9,6 +9,8 @@ import ErrorNotification from '../../components/ErrorNotification/ErrorNotificat
 import SucessNotification from '../../components/SucessNotification/SucessNotification';
 import Title from '../../components/Title';
 import Button from '../../components/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 const ExibirQRCodes = () => {
     const { idVolumeProduto, idPackinglist, idProduto, seq, idVolume } = useParams();
@@ -17,6 +19,8 @@ const ExibirQRCodes = () => {
 
     const [errorMessage, setErrorMessage] = useState('');
     const [sucessMessage, setSucessMessage] = useState('');
+
+    const [loading, setLoading] = useState(false);
 
     //---------------------------- QR CODES UNICO VOLUME ----------------------------//
     const [infoQrCodeUnico, setInfoQrCodeUnico] = useState('');
@@ -78,15 +82,20 @@ const ExibirQRCodes = () => {
 
     useEffect(() => {
         if (modoDaPagina === 3) {
-
             const fetchTodosOsQrCodesDeUmaPackinglist = async () => {
+                setLoading(true);
                 await axios.get(`http://localhost:8080/api/volume-produto/qrcode-packinglist/${idPackinglist}`)
                     .then(response => {
                         setTodosVolumesDaPackinglist(response.data);
                         console.log('response: ', response.data)
                     })
+                    .catch(error => {
+                        const errorMessage = error.response?.data || "Erro desconhecido ao buscar os QRCodes da packinglist";
+                        setErrorMessage(errorMessage)
+                        setTodosVolumesDaPackinglist([]);
+                    })
+                    .finally(() => setLoading(false));
             }
-
             fetchTodosOsQrCodesDeUmaPackinglist();
         }
     }, [idPackinglist, modoDaPagina])
@@ -100,19 +109,22 @@ const ExibirQRCodes = () => {
     //---------------------------- QR CODES GERADO DE CADA PRODUTO ----------------------------//
 
     useEffect(() => {
-
-
         // buscar todos os qrcodes quando o usuario gera os qrcodes pelo produto
         const buscarTodosOsQRCodesDeUmProduto = async () => {
             try {
                 if (modoDaPagina === 1) {
+                    setLoading(true);
                     const response = await axios.get(`http://localhost:8080/api/volume-produto/${idPackinglist}/${idProduto}/${seq}`);
                     const qrCodesData = response.data || [];
                     setInfoQrCodes(qrCodesData);
-                } else return
+                } else return;
             } catch (error) {
-                console.error('Erro ao buscar QR Codes:', error);
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar os QRCodes do produto";
+                setErrorMessage(errorMessage);
+                setTimeout(() => setErrorMessage(null), 5000);
                 setInfoQrCodes([]);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -153,11 +165,15 @@ const ExibirQRCodes = () => {
                                 });
                         })
                         .catch((error) => {
-                            console.error('erro:', error)
+                            const errorMessage = error.response?.data || "Erro desconhecido ao buscar nome do cliente";
+                            setErrorMessage(errorMessage);
+                            setTimeout(() => setErrorMessage(null), 5000);
                         })
                 }
             } catch (error) {
-                console.error('Erro ao buscar nome do Invoice', error);
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar nome do Invoice";
+                setErrorMessage(errorMessage);
+                setTimeout(() => setErrorMessage(null), 5000);
             }
         }
 
@@ -171,7 +187,9 @@ const ExibirQRCodes = () => {
                 } else return
             }
             catch (error) {
-                console.error('Erro ao buscar nome do Produto:', error);
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar nome do Produto";
+                setErrorMessage(errorMessage);
+                setTimeout(() => setErrorMessage(null), 5000);
             }
         }
 
@@ -194,6 +212,7 @@ const ExibirQRCodes = () => {
         if (modoDaPagina === 2) {
             const fetchQrCodeDeUmVolume = async () => {
                 try {
+                    setLoading(true);
                     const response = await axios.get(`http://localhost:8080/api/volume-produto/qrcode-unico/${idVolume}`);
                     const item = response.data[0];
 
@@ -210,6 +229,8 @@ const ExibirQRCodes = () => {
                     const errorMessage = error.response?.data || "Erro desconhecido ao ir para a página 'Gerar QR Code'";
                     setErrorMessage(errorMessage);
                     setTimeout(() => setErrorMessage(null), 5000);
+                } finally {
+                    setLoading(false);
                 }
             }
 
@@ -331,66 +352,93 @@ const ExibirQRCodes = () => {
                     </div>
                 </div>
 
-                {/* SE FOR GERADO TODOS OS QRCODES DE UM PRODUTO */}
-                {modoDaPagina === 1 && (
-                    <div className='qr-code-lista'>
-                        {infoQrCodes.length > 0 ? (
-                            infoQrCodes.map((item, index) => (
-                                <div key={index} className='qr-code-item'>
-                                    <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
-                                    <div className='texto-etiqueta'>
-                                        <p><strong>Descrição: {nomeProduto} </strong></p>
-                                        <p><strong>Invoice: {invoice} </strong></p>
-                                        <p><strong>Cliente: {consignatario} </strong></p>
-                                        <p><strong>Volume: {pesquisaNosVolumes[index]?.descricao}</strong></p>
-                                        <p><strong>Quantidade Itens: {pesquisaNosVolumes[index]?.quantidadeItens}</strong></p>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p>Nenhum QR Code encontrado. Provavelmente não há volumes criados para este produto ainda...</p>
-                        )}
-                    </div>
-                )}
 
-                {/* SE FOR GERADO APENAS O QRCODE DE UM VOLUME */}
-                {modoDaPagina === 2 && (
-                    <div className='qr-code-lista'>
-                        <div className='qr-code-item'>
-                            <QRCode value={infoQrCodeUnico} size={100} className='qr-code-img' />
-                            <div className='texto-etiqueta'>
-                                <p><strong>Descrição: {informacoesQrCodeUnico?.descricaoProduto} </strong></p>
-                                <p><strong>Invoice: {informacoesQrCodeUnico?.invoice} </strong></p>
-                                <p><strong>Cliente: {informacoesQrCodeUnico?.consignatario} </strong></p>
-                                <p><strong>Volume: {informacoesQrCodeUnico?.volume}</strong></p>
-                                <p><strong>Quantidade Itens: {informacoesQrCodeUnico?.quantidadeItens}</strong></p>
+                {loading ? (
+                    <Box sx={{
+                        display: 'flex',
+                        gap: '10px',
+                        justifyContent: 'center',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        marginTop: 2,
+                        backgroundColor: '#f4f4f4',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                        animation: 'fadeIn 0.5s ease-in-out',
+                        maxWidth: '400px',
+                        textAlign: 'center'
+                    }}>
+
+                        <Text
+                            text={'Gerando QRCodes...'}
+                        />
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <>
+
+                        {/* SE FOR GERADO TODOS OS QRCODES DE UM PRODUTO */}
+                        {modoDaPagina === 1 && (
+                            <div className='qr-code-lista'>
+                                {infoQrCodes.length > 0 ? (
+                                    infoQrCodes.map((item, index) => (
+                                        <div key={index} className='qr-code-item'>
+                                            <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
+                                            <div className='texto-etiqueta'>
+                                                <p><strong>Descrição: {nomeProduto} </strong></p>
+                                                <p><strong>Invoice: {invoice} </strong></p>
+                                                <p><strong>Cliente: {consignatario} </strong></p>
+                                                <p><strong>Volume: {pesquisaNosVolumes[index]?.descricao}</strong></p>
+                                                <p><strong>Quantidade Itens: {pesquisaNosVolumes[index]?.quantidadeItens}</strong></p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>Nenhum QR Code encontrado. Provavelmente não há volumes criados para este produto ainda...</p>
+                                )}
                             </div>
-                        </div>
-                    </div>
-                )}
+                        )}
 
-                {/* SE FOR GERADO TODOS OS QRCODES DE UM PRODUTO */}
-                {modoDaPagina === 3 && (
-                    <div className='qr-code-lista'>
-                        {todosVolumesDaPackinglist.length > 0 ? (
-                            todosVolumesDaPackinglist.map((item, index) => (
-                                <div key={index} className='qr-code-item'>
-                                    <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
+                        {/* SE FOR GERADO APENAS O QRCODE DE UM VOLUME */}
+                        {modoDaPagina === 2 && (
+                            <div className='qr-code-lista'>
+                                <div className='qr-code-item'>
+                                    <QRCode value={infoQrCodeUnico} size={100} className='qr-code-img' />
                                     <div className='texto-etiqueta'>
-                                        <p><strong>Descrição: {nomeProduto} </strong></p>
-                                        <p><strong>Invoice: {invoice} </strong></p>
-                                        <p><strong>Cliente: {consignatario} </strong></p>
-                                        <p><strong>Volume: {[index]?.descricao}</strong></p>
-                                        <p><strong>Quantidade Itens: {pesquisaNosVolumes[index]?.quantidadeItens}</strong></p>
+                                        <p><strong>Descrição: {informacoesQrCodeUnico?.descricaoProduto} </strong></p>
+                                        <p><strong>Invoice: {informacoesQrCodeUnico?.invoice} </strong></p>
+                                        <p><strong>Cliente: {informacoesQrCodeUnico?.consignatario} </strong></p>
+                                        <p><strong>Volume: {informacoesQrCodeUnico?.volume}</strong></p>
+                                        <p><strong>Quantidade Itens: {informacoesQrCodeUnico?.quantidadeItens}</strong></p>
                                     </div>
                                 </div>
-                            ))
-                        ) : (
-                            <p>Nenhum QR Code encontrado. Provavelmente não há volumes criados para este produto ainda...</p>
+                            </div>
                         )}
-                    </div>
-                )}
 
+                        {/* SE FOR GERADO TODOS OS QRCODES DE UM PRODUTO */}
+                        {modoDaPagina === 3 && (
+                            <div className='qr-code-lista'>
+                                {todosVolumesDaPackinglist.length > 0 ? (
+                                    todosVolumesDaPackinglist.map((item, index) => (
+                                        <div key={index} className='qr-code-item'>
+                                            <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
+                                            <div className='texto-etiqueta'>
+                                                <p><strong>Descrição: {nomeProduto} </strong></p>
+                                                <p><strong>Invoice: {invoice} </strong></p>
+                                                <p><strong>Cliente: {consignatario} </strong></p>
+                                                <p><strong>Volume: {[index]?.descricao}</strong></p>
+                                                <p><strong>Quantidade Itens: {pesquisaNosVolumes[index]?.quantidadeItens}</strong></p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>Nenhum QR Code encontrado. Provavelmente não há volumes criados para este produto ainda...</p>
+                                )}
+                            </div>
+                        )}
+                    </>
+                )}
             </div>
         </div>
     );

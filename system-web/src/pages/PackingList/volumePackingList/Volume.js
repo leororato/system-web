@@ -12,6 +12,7 @@ import ErrorNotification from "../../../components/ErrorNotification/ErrorNotifi
 import Text from "../../../components/Text";
 import { format } from "date-fns";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { Box, CircularProgress } from "@mui/material";
 
 function Volume() {
 
@@ -21,6 +22,8 @@ function Volume() {
     const { id, idProduto, seq } = useParams();
 
     const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(false);
 
     // CARREGA OS DADOS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const [produtoSelecionado, setProdutoSelecionado] = useState(null);
@@ -152,8 +155,6 @@ function Volume() {
 
     // ------------------------------------- QR CODE ------------------------------------- //   
 
-    const [idVolumeProdutoState, setIdVolumeProdutoState] = useState('');
-
     // CARREGA O VALOR DOS IDS DO VOLUME PARA GERAR QRCODES
     const [salvarIdsVolume, setSalvarIdsVolume] = useState({
         idVolumeProduto: '',
@@ -175,10 +176,13 @@ function Volume() {
         const fetchProdutoSelecionado = async () => {
 
             try {
+                setLoading(true);
                 const response = await axios.get(`http://localhost:8080/api/pl-produto/${id}/${idProduto}/${seq}`);
                 setProdutoSelecionado(response.data);
             } catch (error) {
                 console.error("Erro ao carregar o produto selecionado: ", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -187,28 +191,34 @@ function Volume() {
     }, [id, idProduto, seq]);
 
 
+    // CARREGA OS VOLUMES EXISTENTES AO ENTRAR NA PAGINA
     useEffect(() => {
         const fetchVolumes = async () => {
 
             try {
+                setLoading(true);
                 const response = await axios.get(`http://localhost:8080/api/volume/produto/${id}/${idProduto}/${seq}`);
                 setVolumes(response.data);
             } catch (error) {
                 console.error("Erro ao carregar os volumes: ", error);
+            } finally {
+                setLoading(false);
             }
         }
 
         fetchVolumes();
     }, [])
 
-
+    // ATUALIZA A LISTA DOS VOLUMES EXISTENTES NA TELA, QUANDO É CHAMADO
     const fetchVolumes = async () => {
-
         try {
+            setLoading(true);
             const response = await axios.get(`http://localhost:8080/api/volume/produto/${id}/${idProduto}/${seq}`);
             setVolumes(response.data);
         } catch (error) {
             console.error("Erro ao carregar os volumes: ", error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -578,6 +588,7 @@ function Volume() {
     // BUSCANDO OS SUBVOLUMES EXISTENTES PELO IDVOLUME
     const fetchSubVolumes = async (idVolume) => {
         try {
+            setLoading(true);
             const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${idVolume}`);
             setSubVolumesPorVolume(prevState => ({
                 ...prevState,
@@ -585,6 +596,8 @@ function Volume() {
             }));
         } catch (error) {
             console.error("Erro ao buscar subvolumes: ", error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -1005,14 +1018,41 @@ function Volume() {
                                 <div>Descrição</div>
                                 <div>Ordem de Produção</div>
                             </li>
-                            {produtoSelecionado && (
-                                <li key={id} className='li-listagem-produto-volume'>
-                                    <div>{id}</div>
-                                    <div>{produtoSelecionado.id.idProduto}</div>
-                                    <div>{produtoSelecionado.id.seq}</div>
-                                    <div>{produtoSelecionado.descricaoProduto}</div>
-                                    <div>{produtoSelecionado.ordemProducao}</div>
-                                </li>
+
+                            {loading ? (
+                                <Box sx={{
+                                    display: 'flex',
+                                    gap: '10px',
+                                    justifyContent: 'center',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    backgroundColor: '#f5f5f5',
+                                    padding: '20px',
+                                    borderEndEndRadius: '10px',
+                                    borderEndStartRadius: '10px',
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1);',
+                                    animation: 'fadeIn 0.5s ease-in-out',
+                                    width: '100%',
+                                    textAlign: 'center'
+                                }}>
+
+                                    <Text
+                                        text={'Buscando o produto...'}
+                                    />
+                                    <CircularProgress />
+                                </Box>
+                            ) : (
+                                <>
+                                    {produtoSelecionado && (
+                                        <li key={id} className='li-listagem-produto-volume'>
+                                            <div>{id}</div>
+                                            <div>{produtoSelecionado.id.idProduto}</div>
+                                            <div>{produtoSelecionado.id.seq}</div>
+                                            <div>{produtoSelecionado.descricaoProduto}</div>
+                                            <div>{produtoSelecionado.ordemProducao}</div>
+                                        </li>
+                                    )}
+                                </>
                             )}
                         </ul>
                     </div>
@@ -1049,73 +1089,126 @@ function Volume() {
                                 <div id="list-vol">Observação</div>
                             </li>
 
-                            {volumes.length > 0 ? (
-                                volumes.map((v) => (
-                                    <li key={v.idVolume} className='li-listagem-volume'>
-                                        <div id="container-list-vol">
-                                            <div id="list-vol-divs" onContextMenu={(e) => handleRightClick(e, v.idVolume, v.idTipoVolumeId,
-                                                v.quantidadeItens, v.descricao, v.altura, v.largura, v.comprimento, v.pesoLiquido, v.pesoBruto, v.observacao)}>
-                                                <div id="list-vol">{v.idVolume}</div>
-                                                <div id="list-vol">{tiposDeVolume[v.idTipoVolumeId]}</div>
-                                                <div id="list-vol">{v.quantidadeItens}</div>
-                                                <div id="list-vol">{v.descricao}</div>
-                                                <div id="list-vol">{v.altura}</div>
-                                                <div id="list-vol">{v.largura}</div>
-                                                <div id="list-vol">{v.comprimento}</div>
-                                                <div id="list-vol">{v.pesoLiquido}</div>
-                                                <div id="list-vol">{v.pesoBruto}</div>
-                                                <div id="list-vol">{v.observacao}</div>
-                                            </div>
-                                            <div id="container-icon-plus" title='Exibir/Esconder subvolumes'>
-                                                {definirBotaoMostrarMais[v.idVolume] === 'diminuir' ? (
-                                                    <Icon icon="ic:baseline-minus" id="ic-outline-plus" onClick={(e) => hideSubVolumeList(e, v.idVolume)} />
-                                                ) : (
-                                                    <Icon icon="ic:outline-plus" id="ic-outline-plus" onClick={(e) => handleSubVolumeList(e, v.idVolume)} />
-                                                )}
-                                            </div>
-                                        </div>
+                            {loading ? (
+                                <Box sx={{
+                                    display: 'flex',
+                                    gap: '10px',
+                                    justifyContent: 'center',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    padding: '20px',
+                                    backgroundColor: '#f5f5f5',
+                                    borderEndEndRadius: '10px',
+                                    borderEndStartRadius: '10px',
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1);',
+                                    animation: 'fadeIn 0.5s ease-in-out',
+                                    width: '100%',
+                                    textAlign: 'center'
+                                }}>
 
-                                        {contextSubVolumeLista[v.idVolume] && (
-                                            <div id="listagem-subvolume">
-                                                <div className="lista-subvolume-overlay">
-                                                    <div className="ul-lista-subvolume">
-                                                        <ul>
-                                                            <div id="title-subvolumes-overlay">
-                                                                <h3>Subvolumes</h3>
-                                                                <Icon icon="fa6-solid:box-open" style={{fontSize: '1.5em'}}/>
-                                                            </div>
-                                                            <li className="header-produto-subvolume" id="grid-lista">
-                                                                <div id="lista-1">Descrição</div>
-                                                                <div id="lista-1">Quantidade</div>
-                                                            </li>
-                                                            {subVolumesPorVolume[v.idVolume] && subVolumesPorVolume[v.idVolume].length > 0 ? (
-                                                                subVolumesPorVolume[v.idVolume].map((subVolume) => (
-                                                                    <li key={subVolume.id.idSubVolume} className='li-listagem-produto-subvolume' id="grid-lista"
-                                                                        onContextMenu={(e) => handleRightClickSubVolume(
-                                                                            e, subVolume.id.idVolume, subVolume.id.idSubVolume, subVolume.descricao, subVolume.quantidade
-                                                                        )}>
-                                                                        <div>{subVolume.descricao}</div>
-                                                                        <div>{subVolume.quantidade}</div>
-                                                                    </li>
-                                                                ))
-                                                            ) : (
-                                                                <div id="container-nao-existe-subvolume">
-                                                                    <div id="nao-existe-subvolume">
-                                                                        <li>Não há nada para exibir, adicione um subvolume...</li>
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                        </ul>
+                                    <Text
+                                        text={'Buscando os volumes...'}
+                                    />
+                                    <CircularProgress />
+                                </Box>
+                            ) : (
+                                <>
+                                    {volumes.length > 0 ? (
+                                        volumes.map((v) => (
+                                            <li key={v.idVolume} className='li-listagem-volume'>
+                                                <div id="container-list-vol">
+                                                    <div id="list-vol-divs" onContextMenu={(e) => handleRightClick(e, v.idVolume, v.idTipoVolumeId,
+                                                        v.quantidadeItens, v.descricao, v.altura, v.largura, v.comprimento, v.pesoLiquido, v.pesoBruto, v.observacao)}>
+                                                        <div id="list-vol">{v.idVolume}</div>
+                                                        <div id="list-vol">{tiposDeVolume[v.idTipoVolumeId]}</div>
+                                                        <div id="list-vol">{v.quantidadeItens}</div>
+                                                        <div id="list-vol">{v.descricao}</div>
+                                                        <div id="list-vol">{v.altura}</div>
+                                                        <div id="list-vol">{v.largura}</div>
+                                                        <div id="list-vol">{v.comprimento}</div>
+                                                        <div id="list-vol">{v.pesoLiquido}</div>
+                                                        <div id="list-vol">{v.pesoBruto}</div>
+                                                        <div id="list-vol">{v.observacao}</div>
+                                                    </div>
+                                                    <div id="container-icon-plus" title='Exibir/Esconder subvolumes'>
+                                                        {definirBotaoMostrarMais[v.idVolume] === 'diminuir' ? (
+                                                            <Icon icon="ic:baseline-minus" id="ic-outline-plus" onClick={(e) => hideSubVolumeList(e, v.idVolume)} />
+                                                        ) : (
+                                                            <Icon icon="ic:outline-plus" id="ic-outline-plus" onClick={(e) => handleSubVolumeList(e, v.idVolume)} />
+                                                        )}
                                                     </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                    </li>
-                                ))
-                            ) : (
-                                <div id="nao-existe-volume">
-                                    <li>Não há nada para exibir, adicione um novo volume...</li>
-                                </div>
+
+                                                {contextSubVolumeLista[v.idVolume] && (
+                                                    <div id="listagem-subvolume">
+                                                        <div className="lista-subvolume-overlay">
+                                                            <div className="ul-lista-subvolume">
+                                                                <ul>
+                                                                    <div id="title-subvolumes-overlay">
+                                                                        <h3>Subvolumes</h3>
+                                                                        <Icon icon="fa6-solid:box-open" style={{ fontSize: '1.5em' }} />
+                                                                    </div>
+                                                                    <li className="header-produto-subvolume" id="grid-lista">
+                                                                        <div id="lista-1">Descrição</div>
+                                                                        <div id="lista-1">Quantidade</div>
+                                                                    </li>
+
+                                                                    {loading ? (
+                                                                        <Box sx={{
+                                                                            display: 'flex',
+                                                                            gap: '10px',
+                                                                            justifyContent: 'center',
+                                                                            flexDirection: 'column',
+                                                                            alignItems: 'center',
+                                                                            padding: '20px',
+                                                                            backgroundColor: '#f5f5f5',
+                                                                            borderEndEndRadius: '10px',
+                                                                            borderEndStartRadius: '10px',
+                                                                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1);',
+                                                                            animation: 'fadeIn 0.5s ease-in-out',
+                                                                            width: '100%',
+                                                                            textAlign: 'center'
+                                                                        }}>
+
+                                                                            <Text
+                                                                                text={'Buscando os volumes...'}
+                                                                            />
+                                                                            <CircularProgress />
+                                                                        </Box>
+                                                                    ) : (
+                                                                        <>
+                                                                            {subVolumesPorVolume[v.idVolume] && subVolumesPorVolume[v.idVolume].length > 0 ? (
+                                                                                subVolumesPorVolume[v.idVolume].map((subVolume) => (
+                                                                                    <li key={subVolume.id.idSubVolume} className='li-listagem-produto-subvolume' id="grid-lista"
+                                                                                        onContextMenu={(e) => handleRightClickSubVolume(
+                                                                                            e, subVolume.id.idVolume, subVolume.id.idSubVolume, subVolume.descricao, subVolume.quantidade
+                                                                                        )}>
+                                                                                        <div>{subVolume.descricao}</div>
+                                                                                        <div>{subVolume.quantidade}</div>
+                                                                                    </li>
+                                                                                ))
+                                                                            ) : (
+                                                                                <div id="container-nao-existe-subvolume">
+                                                                                    <div id="nao-existe-subvolume">
+                                                                                        <li>Não há nada para exibir, adicione um subvolume...</li>
+                                                                                    </div>
+                                                                                </div>
+                                                                            )}
+                                                                        </>
+                                                                    )}
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <div id="nao-existe-volume">
+                                            <li>Não há nada para exibir, adicione um novo volume...</li>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </ul>
                     </div>
@@ -1483,7 +1576,7 @@ function Volume() {
                                     text={'Lista de Subvolumes'}
                                     fontSize={17}
                                 />
-                                <Icon icon="fa6-solid:box-open" style={{fontSize: '1.5em'}}/>
+                                <Icon icon="fa6-solid:box-open" style={{ fontSize: '1.5em' }} />
 
                             </div>
 
