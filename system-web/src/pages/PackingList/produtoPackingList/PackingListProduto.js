@@ -416,7 +416,7 @@ function PackingListProduto() {
                         <div className="container-adicionar-produtos">
                             <Title
                                 classname={'title-adicionar-produtos'}
-                                text={'Adicionar um novo produto ao PackingList:'}
+                                text={'Adicionar um novo produto ao Packinglist:'}
                                 color={'#1780e2'}
                             />
                             <div className="container-autocomplete">

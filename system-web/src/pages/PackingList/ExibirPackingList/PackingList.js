@@ -245,6 +245,28 @@ function PackingList() {
     }
 
 
+    const handleGerarPdf = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/packinglist/pdf/${contextMenu.selectedId}`, {
+                responseType: 'blob', // Define o tipo de resposta para receber um arquivo
+            });
+
+            // Criar um URL para o blob e forçar o download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `packinglist_${contextMenu.selectedId}.pdf`); // Nome do arquivo
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao gerar o PDF";
+            setErrorMessage(errorMessage);
+            setTimeout(() => setErrorMessage(null), 5000);
+        }
+    };
+
+
     return (
         <div>
             <Header />
@@ -382,6 +404,10 @@ function PackingList() {
                         <div id='container-icon-menu' onClick={gerarQrCode}>
                             <Icon icon="vaadin:qrcode" id='icone-menu' />
                             <p>Gerar QR Code</p>
+                        </div>
+                        <div id='container-icon-menu' onClick={handleGerarPdf}>
+                        <Icon icon="tdesign:file-pdf" id='icone-menu'/>
+                            <p>Gerar PDF</p>
                         </div>
                         <div id='container-icon-menu-excluir' onClick={handleDelete} >
                             <Icon icon="material-symbols:delete-outline" id='icone-menu' />
