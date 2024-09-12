@@ -1262,6 +1262,28 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
+                                                <label>Peso Líquido: *</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'pesoLiquido'}
+                                                    min={'0'}
+                                                    placeholder={'Peso líquido...'}
+                                                    value={formDataVolume.pesoLiquido}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label>Peso Bruto: *</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'pesoBruto'}
+                                                    min={'0'}
+                                                    placeholder={'Peso bruto...'}
+                                                    value={formDataVolume.pesoBruto}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                            <div>
                                                 <label>Altura:</label>
                                                 <Input
                                                     type={'number'}
@@ -1291,28 +1313,6 @@ function Volume() {
                                                     min={'0'}
                                                     placeholder={'Comprimento...'}
                                                     value={formDataVolume.comprimento}
-                                                    onChange={handleChange}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label>Peso Líquido: *</label>
-                                                <Input
-                                                    type={'number'}
-                                                    name={'pesoLiquido'}
-                                                    min={'0'}
-                                                    placeholder={'Peso líquido...'}
-                                                    value={formDataVolume.pesoLiquido}
-                                                    onChange={handleChange}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label>Peso Bruto: *</label>
-                                                <Input
-                                                    type={'number'}
-                                                    name={'pesoBruto'}
-                                                    min={'0'}
-                                                    placeholder={'Peso bruto...'}
-                                                    value={formDataVolume.pesoBruto}
                                                     onChange={handleChange}
                                                 />
                                             </div>
@@ -1402,6 +1402,30 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
+                                                <label>Peso Líquido: *</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'pesoLiquido'}
+                                                    min={'0'}
+                                                    placeholder={'Peso líquido...'}
+                                                    title={'Digite o peso líquido do volume...'}
+                                                    value={volumeEdicao.pesoLiquido}
+                                                    onChange={handleChangeEdicao}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label>Peso Bruto: *</label>
+                                                <Input
+                                                    type={'number'}
+                                                    name={'pesoBruto'}
+                                                    min={'0'}
+                                                    placeholder={'Peso bruto...'}
+                                                    title={'Digite o peso bruto do volume...'}
+                                                    value={volumeEdicao.pesoBruto}
+                                                    onChange={handleChangeEdicao}
+                                                />
+                                            </div>
+                                            <div>
                                                 <label>Altura:</label>
                                                 <Input
                                                     type={'number'}
@@ -1434,30 +1458,6 @@ function Volume() {
                                                     placeholder={'Comprimento...'}
                                                     title={'Digite o comprimento do volume...'}
                                                     value={volumeEdicao.comprimento}
-                                                    onChange={handleChangeEdicao}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label>Peso Líquido: *</label>
-                                                <Input
-                                                    type={'number'}
-                                                    name={'pesoLiquido'}
-                                                    min={'0'}
-                                                    placeholder={'Peso líquido...'}
-                                                    title={'Digite o peso líquido do volume...'}
-                                                    value={volumeEdicao.pesoLiquido}
-                                                    onChange={handleChangeEdicao}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label>Peso Bruto: *</label>
-                                                <Input
-                                                    type={'number'}
-                                                    name={'pesoBruto'}
-                                                    min={'0'}
-                                                    placeholder={'Peso bruto...'}
-                                                    title={'Digite o peso bruto do volume...'}
-                                                    value={volumeEdicao.pesoBruto}
                                                     onChange={handleChangeEdicao}
                                                 />
                                             </div>

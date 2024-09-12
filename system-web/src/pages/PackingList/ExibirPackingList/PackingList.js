@@ -81,6 +81,7 @@ function PackingList() {
 
         const fetchClientes = async () => {
             try {
+                setLoading(true);
                 const response = await axios.get('http://localhost:8080/api/clienteNomus');
                 const clientesData = response.data.reduce((acc, cliente) => {
                     acc[cliente.id] = cliente.nome;
@@ -96,7 +97,8 @@ function PackingList() {
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000)
-
+            } finally {
+                setLoading(false);
             }
         };
 
