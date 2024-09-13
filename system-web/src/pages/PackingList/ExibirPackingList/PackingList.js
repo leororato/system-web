@@ -180,6 +180,7 @@ function PackingList() {
                     packingList.id !== contextDelete.selectedId));
                 setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
                 setSucessMessage(`PackingList ${itemDeletado} deletado com sucesso`);
+                setTimeout(() => setSucessMessage(null), 5000);
 
                 setAtualizarEstadoLista(atualizarEstadoLista + 1);
             })
@@ -267,7 +268,6 @@ function PackingList() {
             setTimeout(() => setErrorMessage(null), 5000);
         }
     };
-
 
     return (
         <div>
@@ -357,29 +357,41 @@ function PackingList() {
                             <>
 
                                 {filteredPackinglist && filteredPackinglist.length > 0 ? (
-                                    filteredPackinglist.map((p) => (
-                                        <li key={p.idPackingList} onContextMenu={(event) =>
-                                            handleRightClick(event, p.idPackingList)} className='li-listagem'>
-                                            <div>{p.idPackingList}</div>
-                                            <div>{formatarData(p.dtCriacao)}</div>
-                                            <div>{clientes[p.idImportador] || p.idImportador}</div>
-                                            <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
-                                            <div>{clientes[p.idNotificado] || p.idNotificado}</div>
-                                            <div>{p.paisOrigem}</div>
-                                            <div>{p.fronteira}</div>
-                                            <div>{p.localEmbarque}</div>
-                                            <div>{p.localDestino}</div>
-                                            <div>{p.termosPagamento}</div>
-                                            <div>{p.dadosBancarios}</div>
-                                            <div>{p.incoterm}</div>
-                                            <div>{p.invoice}</div>
-                                            <div>{p.tipoTransporte}</div>
-                                            <div>{p.pesoLiquidoTotal}</div>
-                                            <div>{p.pesoBrutoTotal}</div>
-                                            <div>{p.idioma}</div>
-                                        </li>
-                                    ))
+                                    filteredPackinglist.map((p) => {
+                                        // Aqui você separa os dados bancários fora do JSX
+                                        const dadosSeparados = p.dadosBancarios.split('$');
 
+                                        return (
+                                            <li key={p.idPackingList} onContextMenu={(event) => handleRightClick(event, p.idPackingList)} className='li-listagem'>
+                                                <div>{p.idPackingList}</div>
+                                                <div>{formatarData(p.dtCriacao)}</div>
+                                                <div>{clientes[p.idImportador] || p.idImportador}</div>
+                                                <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
+                                                <div>{clientes[p.idNotificado] || p.idNotificado}</div>
+                                                <div>{p.paisOrigem}</div>
+                                                <div>{p.fronteira}</div>
+                                                <div>{p.localEmbarque}</div>
+                                                <div>{p.localDestino}</div>
+                                                <div>{p.termosPagamento}</div>
+
+                                                {/* Exibindo os itens separados */}
+                                                <div>
+                                                    { dadosSeparados[0] + '\n'
+                                                     + 'Agência: ' + dadosSeparados[1] + '\n'
+                                                     + 'Conta: ' + dadosSeparados[2] + '\n'
+                                                     + 'Swift: ' + dadosSeparados[3] + '\n'
+                                                     + 'Iban: ' + dadosSeparados[4] + '\n' }
+                                                </div>
+
+                                                <div>{p.incoterm}</div>
+                                                <div>{p.invoice}</div>
+                                                <div>{p.tipoTransporte}</div>
+                                                <div>{p.pesoLiquidoTotal}</div>
+                                                <div>{p.pesoBrutoTotal}</div>
+                                                <div>{p.idioma}</div>
+                                            </li>
+                                        );
+                                    })
                                 ) : (
                                     <div id="nao-existe-packinglist">
                                         <li>Não há nada para exibir, adicione uma PackingList...</li>
@@ -408,7 +420,7 @@ function PackingList() {
                             <p>Gerar QR Code</p>
                         </div>
                         <div id='container-icon-menu' onClick={handleGerarPdf}>
-                        <Icon icon="tdesign:file-pdf" id='icone-menu'/>
+                            <Icon icon="tdesign:file-pdf" id='icone-menu' />
                             <p>Gerar PDF</p>
                         </div>
                         <div id='container-icon-menu-excluir' onClick={handleDelete} >

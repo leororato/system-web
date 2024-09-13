@@ -21,6 +21,12 @@ function EditarPL() {
     const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
     const [errorMessage, setErrorMessage] = useState(null);
 
+    const [bancoResponse, setBancoResponse] = useState("");
+    const [agenciaResponse, setAgenciaResponse] = useState("");
+    const [contaResponse, setContaResponse] = useState("");
+    const [swiftResponse, setSwiftResponse] = useState("");
+    const [ibanResponse, setIbanResponse] = useState("");
+
     const [clientesNomus, setClientesNomus] = useState([]);
 
     const [guardarNomes, setGuardarNomes] = useState({
@@ -52,6 +58,15 @@ function EditarPL() {
             try {
                 const response = await axios.get(`http://localhost:8080/api/packinglist/${id}`);
                 setFormData(response.data);
+
+                let dadosBancarios = response.data.dadosBancarios;
+                let dadosBancariosSeparados = dadosBancarios.split('$')
+                
+                setBancoResponse(dadosBancariosSeparados[0]);
+                setAgenciaResponse(dadosBancariosSeparados[1]);
+                setContaResponse(dadosBancariosSeparados[2]);
+                setSwiftResponse(dadosBancariosSeparados[3]);
+                setIbanResponse(dadosBancariosSeparados[4]);
             } catch (error) {
 
                 const errorMessage = error.response?.data || "Erro desconhecido ao buscar PackingList";
@@ -172,6 +187,35 @@ function EditarPL() {
     };
 
 
+    const handleChangeBanco = (e) => {
+        const value = e.target.value;
+        setBancoResponse(value);
+    };
+
+    const handleChangeAgencia = (e) => {
+        const value = e.target.value;
+        setAgenciaResponse(value);
+    };
+
+    const handleChangeConta = (e) => {
+        const value = e.target.value;
+        setContaResponse(value);
+    };
+
+    const handleChangeSwift = (e) => {
+        const value = e.target.value;
+        setSwiftResponse(value);
+    };
+
+    const handleChangeIban = (e) => {
+        const value = e.target.value;
+        setIbanResponse(value);
+    };
+
+    useEffect(() => {
+        setFormData({ ...formData, dadosBancarios: bancoResponse + '$' + agenciaResponse + '$' + contaResponse + '$' + swiftResponse + '$' + ibanResponse })
+    }, [bancoResponse, agenciaResponse, contaResponse, swiftResponse, ibanResponse]);
+
 
     const handleCancel = (e) => {
         e.preventDefault();
@@ -272,26 +316,90 @@ function EditarPL() {
                             />
                         </div>
 
-                        <div>
-                            <label>Termos de Pagamento:</label>
-                            <Input
-                                type="text"
-                                name="termosPagamento"
-                                placeholder={'Digite os termos de pagamento...'}
-                                value={formData.termosPagamento}
-                                onChange={handleChange}
-                            />
-                        </div>
+                        
 
-                        <div>
+
+
+
+
+
+
+                        <div id="container-total-dados-bancarios">
                             <label>Dados Bancários:</label>
-                            <Input
-                                type="text"
-                                name="dadosBancarios"
-                                placeholder={'Digite os dados bancários...'}
-                                value={formData.dadosBancarios}
-                                onChange={handleChange}
-                            />
+                            <div id="dados-bancarios">
+                                <div className="container-dadosbancarios">
+                                    <div id="div-dados-bancarios">
+                                        <label>Banco:</label>
+                                        <Input
+                                            type={"text"}
+                                            id="input-dados-bancarios"
+                                            title={"Digite os dados bancários do cliente..."}
+                                            placeholder={"Ex: Banco Bradesco S/A..."}
+                                            name="dadosBancarios"
+                                            padding={7}
+                                            required
+                                            value={bancoResponse}
+                                            onChange={handleChangeBanco}
+                                        /></div>
+                                    <div id="div-dados-bancarios">
+                                        <label>Agência:</label>
+                                        <Input
+                                            type={"text"}
+                                            id="input-dados-bancarios"
+                                            title={"Digite os dados bancários do cliente..."}
+                                            placeholder={"Ex: 5815-7..."}
+                                            name="dadosBancarios"
+                                            padding={7}
+                                            required
+                                            value={agenciaResponse}
+                                            onChange={handleChangeAgencia}
+                                        /></div>
+                                    <div id="div-dados-bancarios">
+                                        <label>Swift:</label>
+                                        <Input
+                                            type={"text"}
+                                            id="input-dados-bancarios"
+                                            title={"Digite os dados bancários do cliente..."}
+                                            placeholder={"Ex: BBDEBRSPSPO..."}
+                                            name="dadosBancarios"
+                                            padding={7}
+                                            required
+                                            value={swiftResponse}
+                                            onChange={handleChangeSwift}
+                                        /></div>
+
+                                    <div id="div-dados-bancarios">
+                                        <label>Iban:</label>
+                                        <Input
+                                            type={"text"}
+                                            id="input-dados-bancarios"
+                                            title={"Digite os dados bancários do cliente..."}
+                                            placeholder={"Ex: BR86 6074 6948 0581 5000 0631 612C1..."}
+                                            name="dadosBancarios"
+                                            padding={7}
+                                            required
+                                            value={ibanResponse}
+                                            onChange={handleChangeIban}
+                                        /></div>
+
+                                </div>
+
+                                <div id="conta-container">
+                                    <div id="div-dados-bancarios">
+                                        <label>Conta:</label>
+                                        <Input
+                                            type={"text"}
+                                            id="input-dados-bancarios"
+                                            title={"Digite os dados bancários do cliente..."}
+                                            placeholder={"Ex: 63161-2..."}
+                                            name="dadosBancarios"
+                                            padding={7}
+                                            required
+                                            value={contaResponse}
+                                            onChange={handleChangeConta}
+                                        /></div>
+                                </div>
+                            </div>
                         </div>
 
                         <div>

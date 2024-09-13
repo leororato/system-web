@@ -87,3 +87,37 @@
 .button-cancelar-edicao:hover {
     background-color: #b30e0e;
 }
+
+#div-dados-bancarios {
+    width: 200px;
+}
+
+#container-total-dados-bancarios {
+    display: flex;
+    flex-direction: column;
+    background-color: #dddddd3d;
+    padding: 20px;
+    border-radius: 7px;
+    border: 1px solid #ccc;
+
+
+}
+
+.container-dadosbancarios {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+    gap: 10px;
+    }
+
+#dados-bancarios {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}   
+
+#conta-container {
+    height: 100%;
+}
