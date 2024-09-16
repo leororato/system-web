@@ -28,6 +28,8 @@ function Volume() {
     // CARREGA OS DADOS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const [produtoSelecionado, setProdutoSelecionado] = useState(null);
 
+    const atualizarProduto = 0;
+
 
 
     // ------------------------------------- ^PRODUTOS^ ------------------------------------- //              
@@ -188,7 +190,7 @@ function Volume() {
 
         fetchProdutoSelecionado();
 
-    }, [id, idProduto, seq]);
+    }, [id, idProduto, seq, atualizarProduto]);
 
 
     // CARREGA OS VOLUMES EXISTENTES AO ENTRAR NA PAGINA
@@ -292,6 +294,7 @@ function Volume() {
             setSucessMessage('Volume adicionado com sucesso!');
             setTimeout(() => setSucessMessage(null), 5000);
             setVolumeCriado(true);
+            atualizarProduto++;
 
             navigate(0);
 
@@ -321,6 +324,7 @@ function Volume() {
                     });
 
                     setVolumeCriado(false); // Reseta o estado após sucesso
+                    atualizarProduto++;
 
                 } catch (error) {
                     const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume Produto";
@@ -357,6 +361,7 @@ function Volume() {
                 setSucessMessage('Volume atualizado com sucesso!');
                 setTimeout(() => setSucessMessage(null), 5000);
 
+                atualizarProduto++;
                 fetchVolumes();
 
             })
@@ -439,6 +444,7 @@ function Volume() {
                     setSucessMessage(null)
                 }, 5000);
 
+                atualizarProduto++;
                 fetchVolumes();
 
 
@@ -450,6 +456,7 @@ function Volume() {
                             setSucessMessage(null)
                         }, 5000);
 
+                        atualizarProduto++;
                         fetchVolumes();
                     })
                     .catch((error) => {
@@ -1017,6 +1024,8 @@ function Volume() {
                                 <div>Seq</div>
                                 <div>Descrição</div>
                                 <div>Ordem de Produção</div>
+                                <div>Total Peso Líquido</div>
+                                <div>Total Peso Bruto</div>
                             </li>
 
                             {loading ? (
@@ -1050,6 +1059,8 @@ function Volume() {
                                             <div>{produtoSelecionado.id.seq}</div>
                                             <div>{produtoSelecionado.descricaoProduto}</div>
                                             <div>{produtoSelecionado.ordemProducao}</div>
+                                            <div>{produtoSelecionado.totalPesoLiquido}</div>
+                                            <div>{produtoSelecionado.totalPesoBruto}</div>
                                         </li>
                                     )}
                                 </>

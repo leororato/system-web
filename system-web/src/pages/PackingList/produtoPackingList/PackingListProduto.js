@@ -248,7 +248,9 @@ function PackingListProduto() {
             },
             produto: formDataProduto.codigoMaquina,
             descricaoProduto: formDataProduto.nomeMaquina,
-            ordemProducao: formDataProduto.codigoOrdem
+            ordemProducao: formDataProduto.codigoOrdem,
+            totalPesoLiquido: 0,
+            totalPesoBruto: 0
         };
 
         axios.post('http://localhost:8080/api/pl-produto', payload)
