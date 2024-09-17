@@ -28,7 +28,6 @@ function Volume() {
     // CARREGA OS DADOS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const [produtoSelecionado, setProdutoSelecionado] = useState(null);
 
-    const atualizarProduto = 0;
 
 
 
@@ -50,6 +49,8 @@ function Volume() {
 
     // CARREGA A DESCRICAO DO TIPO DE VOLUME DO ITEM QUANDO CLICA EM CIMA
     const [salvarTipoDeVolumeAtual, setSalvarTipoDeVolumeAtual] = useState({ descricao: '' });
+    const [salvarTipoDeVolumePadrao, setSalvarTipoDeVolumePadrao] = useState({ descricao: '' });
+
 
     // CONTAINER QUE POSSUI TODOS OS VOLUMES
     const [volumes, setVolumes] = useState([]);
@@ -75,8 +76,8 @@ function Volume() {
 
     // FORM DATA DO POST VOLUME
     const [formDataVolume, setFormDataVolume] = useState({
-        idTipoVolumeId: '',
-        quantidadeItens: '',
+        idTipoVolumeId: '16',
+        quantidadeItens: '1',
         descricao: '',
         altura: '',
         largura: '',
@@ -170,44 +171,34 @@ function Volume() {
 
     // ------------------------------------- EXIBIR PRODUTO ------------------------------------- //
 
-
-
-    // BUSCAR O PRODUTO QUE FOI SELECIONADO E OS SEUS VOLUMES
+    // CARREGA OS PRODUTOS EXISTENTES AO ENTRAR NA PAGINA
     useEffect(() => {
-
-        const fetchProdutoSelecionado = async () => {
-
-            try {
-                setLoading(true);
-                const response = await axios.get(`http://localhost:8080/api/pl-produto/${id}/${idProduto}/${seq}`);
-                setProdutoSelecionado(response.data);
-            } catch (error) {
-                console.error("Erro ao carregar o produto selecionado: ", error);
-            } finally {
-                setLoading(false);
-            }
-        };
 
         fetchProdutoSelecionado();
 
-    }, [id, idProduto, seq, atualizarProduto]);
+    }, [])
+
+
+
+    // BUSCAR O PRODUTO QUE FOI SELECIONADO E OS SEUS VOLUMES
+    const fetchProdutoSelecionado = async () => {
+
+        try {
+            setLoading(true);
+            const response = await axios.get(`http://localhost:8080/api/pl-produto/${id}/${idProduto}/${seq}`);
+            setProdutoSelecionado(response.data);
+        } catch (error) {
+            console.error("Erro ao carregar o produto selecionado: ", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
 
 
     // CARREGA OS VOLUMES EXISTENTES AO ENTRAR NA PAGINA
     useEffect(() => {
-        const fetchVolumes = async () => {
-
-            try {
-                setLoading(true);
-                const response = await axios.get(`http://localhost:8080/api/volume/produto/${id}/${idProduto}/${seq}`);
-                setVolumes(response.data);
-            } catch (error) {
-                console.error("Erro ao carregar os volumes: ", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-
         fetchVolumes();
     }, [])
 
@@ -223,8 +214,6 @@ function Volume() {
             setLoading(false);
         }
     }
-
-
 
 
 
@@ -279,8 +268,8 @@ function Volume() {
             setIdVolumeSave(response.data.idVolume);
 
             setFormDataVolume({
-                idTipoVolumeId: '',
-                quantidadeItens: '',
+                idTipoVolumeId: '16',
+                quantidadeItens: '1',
                 descricao: '',
                 altura: '',
                 largura: '',
@@ -290,13 +279,11 @@ function Volume() {
                 observacao: ''
             });
 
+
             setOverlayVisible(false);
             setSucessMessage('Volume adicionado com sucesso!');
             setTimeout(() => setSucessMessage(null), 5000);
             setVolumeCriado(true);
-            atualizarProduto++;
-
-            navigate(0);
 
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume";
@@ -304,6 +291,8 @@ function Volume() {
             setTimeout(() => setErrorMessage(null), 5000);
             console.error('Erro ao adicionar o volume: ', error);
         }
+
+
     };
 
 
@@ -323,15 +312,20 @@ function Volume() {
 
                     });
 
-                    setVolumeCriado(false); // Reseta o estado após sucesso
-                    atualizarProduto++;
+                    fetchVolumes();
+                    fetchProdutoSelecionado();
+
+                    setVolumeCriado(false);
 
                 } catch (error) {
+                    const statusCode = error.response?.status;
+                    console.error('Status do erro:', statusCode);
                     const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume Produto";
                     setErrorMessage(errorMessage);
                     setTimeout(() => setErrorMessage(null), 5000);
                     console.error('Erro ao adicionar o VolumeProduto: ', error);
                 }
+
             };
 
             salvarVolumeProduto();
@@ -346,8 +340,8 @@ function Volume() {
             .then(() => {
 
                 setFormDataVolume({
-                    idTipoVolumeId: '',
-                    quantidadeItens: '',
+                    idTipoVolumeId: '16',
+                    quantidadeItens: '1',
                     descricao: '',
                     altura: '',
                     largura: '',
@@ -361,8 +355,8 @@ function Volume() {
                 setSucessMessage('Volume atualizado com sucesso!');
                 setTimeout(() => setSucessMessage(null), 5000);
 
-                atualizarProduto++;
                 fetchVolumes();
+                fetchProdutoSelecionado();
 
             })
             .catch(error => {
@@ -386,8 +380,8 @@ function Volume() {
         setContextEditar({ visible: false, selectedIdVolume: '' });
 
         setFormDataVolume({
-            idTipoVolumeId: '',
-            quantidadeItens: '',
+            idTipoVolumeId: '16',
+            quantidadeItens: '1',
             descricao: '',
             altura: '',
             largura: '',
@@ -444,8 +438,8 @@ function Volume() {
                     setSucessMessage(null)
                 }, 5000);
 
-                atualizarProduto++;
                 fetchVolumes();
+                fetchProdutoSelecionado();
 
 
                 axios.delete(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`)
@@ -456,8 +450,6 @@ function Volume() {
                             setSucessMessage(null)
                         }, 5000);
 
-                        atualizarProduto++;
-                        fetchVolumes();
                     })
                     .catch((error) => {
 
@@ -481,7 +473,15 @@ function Volume() {
             });
     }
 
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        handleSalvarVolume();
+    };
 
+    const handleSubmitSubvolume = (event) => {
+        event.preventDefault();
+        handleSalvarSubVolume(); 
+    };
 
     // ------------------------------------- ^VOLUMES^ ------------------------------------- //              
 
@@ -933,8 +933,8 @@ function Volume() {
             setOverlayVisible(false);
 
             setFormDataVolume({
-                idTipoVolumeId: '',
-                quantidadeItens: '',
+                idTipoVolumeId: '16',
+                quantidadeItens: '1',
                 descricao: '',
                 altura: '',
                 largura: '',
@@ -997,7 +997,26 @@ function Volume() {
     };
 
 
+    useEffect(() => {
+        // Função para lidar com o pressionamento da tecla Enter
 
+        if (overlayVisible === false) {
+        const handleKeyDown = (event) => {
+            if (event.key === 'ArrowUp') {
+                event.preventDefault(); // Impede o comportamento padrão do Enter
+                setOverlayVisible(true); // Abre o overlay
+            }
+        };
+
+        // Adiciona o manipulador de eventos para o pressionamento da tecla
+        document.addEventListener('keydown', handleKeyDown);
+
+        // Remove o manipulador de eventos quando o componente for desmontado
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+        }
+    }, []);
 
 
 
@@ -1232,15 +1251,15 @@ function Volume() {
 
                     <div className="overlay">
                         <div className="overlay-content" ref={overlayRef}>
+                            <form onSubmit={handleSubmit}>
+                                <div className="subcontainer-volume">
+                                    <div className="container-input-adicionar-volume">
+                                        <Title
+                                            classname={'title-adicionar-volume'}
+                                            text={'Adicionar um volume:'}
+                                            color={'#1780e2'}
+                                        />
 
-                            <div className="subcontainer-volume">
-                                <div className="container-input-adicionar-volume">
-                                    <Title
-                                        classname={'title-adicionar-volume'}
-                                        text={'Adicionar um volume:'}
-                                        color={'#1780e2'}
-                                    />
-                                    <form>
                                         <div className="input-group-volume">
                                             <div>
                                                 <label>Tipo de volume: *</label>
@@ -1338,27 +1357,29 @@ function Volume() {
                                                 />
                                             </div>
                                         </div>
-                                    </form>
+
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="buttons-adicionar-volume">
-                                <Button
-                                    className={'button-salvar-add-volume'}
-                                    text={'SALVAR'}
-                                    fontSize={15}
-                                    padding={10}
-                                    borderRadius={5}
-                                    onClick={handleSalvarVolume}
-                                />
-                                <Button
-                                    className={'button-cancelar-add-volume'}
-                                    text={'CANCELAR'}
-                                    fontSize={15}
-                                    padding={10}
-                                    borderRadius={5}
-                                    onClick={handleCancelAddVolume}
-                                />
-                            </div>
+                                <div className="buttons-adicionar-volume">
+                                    <Button
+                                        className={'button-salvar-add-volume'}
+                                        text={'SALVAR'}
+                                        fontSize={15}
+                                        padding={10}
+                                        borderRadius={5}
+                                        type={"submit"}
+                                        onClick={handleSalvarVolume}
+                                    />
+                                    <Button
+                                        className={'button-cancelar-add-volume'}
+                                        text={'CANCELAR'}
+                                        fontSize={15}
+                                        padding={10}
+                                        borderRadius={5}
+                                        onClick={handleCancelAddVolume}
+                                    />
+                                </div>
+                            </form>
                         </div>
                     </div>
                 )
@@ -1515,6 +1536,7 @@ function Volume() {
                 contextSubVolumes.visible && (estadoSubVolumeOverlay === 'adicionar' || estadoSubVolumeOverlay === 'editar') && (
                     <div className="overlay">
                         <div className="overlay-content-subvolume" ref={contextSubVolumesRef}>
+                          <form onSubmit={handleSubmitSubvolume}>
                             <div className="title-subvolume-lista">
                                 <Title
                                     text={estadoSubVolumeOverlay === 'adicionar' ? 'Adicionar Subvolumes' : 'Editar Subvolume'}
@@ -1564,6 +1586,7 @@ function Volume() {
                                 <Button
                                     className={'button-salvar-add-subvolume'}
                                     text={'SALVAR'}
+                                    type={"submit"}
                                     fontSize={15}
                                     padding={10}
                                     borderRadius={5}
@@ -1580,7 +1603,7 @@ function Volume() {
                                     onClick={handleCancelAddSubvolume}
                                 />
                             </div>
-
+                        </form>
 
                             <div id="title-lista-subvolume">
                                 <Text

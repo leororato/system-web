@@ -38,7 +38,7 @@ function PackingListProduto() {
     const [contextAdicionar, setContextAdicionar] = useState({ visible: false });
 
     const [formDataProduto, setFormDataProduto] = useState({
-        idPackingList: id,
+        idPackinglist: id,
         idProduto: '',
         codigoMaquina: '',
         nomeMaquina: '',
@@ -47,48 +47,50 @@ function PackingListProduto() {
 
 
 
+
+
+    const fetchPackingList = async () => {
+        try {
+
+            const response = await axios.get(`http://localhost:8080/api/packinglist/${id}`);
+            setPackingList(response.data);
+
+        } catch (error) {
+
+            const errorMessage = error.response?.data || "Erro desconhecido ao buscar Packing List";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 5000);
+
+        }
+    };
+
     useEffect(() => {
-
-        const fetchPackingList = async () => {
-            try {
-
-                const response = await axios.get(`http://localhost:8080/api/packinglist/${id}`);
-                setPackingList(response.data);
-
-            } catch (error) {
-
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar Packing List";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null)
-                }, 5000);
-
-            }
-        };
-
-        const fetchProdutos = async () => {
-            try {
-
-                const response = await axios.get(`http://localhost:8080/api/pl-produto/packinglist/${id}`);
-                setProdutos(response.data);
-
-            } catch (error) {
-
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar produtos";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null)
-                }, 5000);
-
-            }
-        };
-
         fetchPackingList();
-        fetchProdutos();
-    }, [id, atualizadorDeEstados]);
+    }, []);
 
+    const fetchProdutos = async () => {
+        try {
+
+            const response = await axios.get(`http://localhost:8080/api/pl-produto/packinglist/${id}`);
+            setProdutos(response.data);
+
+        } catch (error) {
+
+            const errorMessage = error.response?.data || "Erro desconhecido ao buscar produtos";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 5000);
+        }
+    };
+
+    useEffect(() => {
+        fetchProdutos();
+    }, []);
 
 
     useEffect(() => {
@@ -169,7 +171,7 @@ function PackingListProduto() {
             y: 0,
             selectedId: null
         });
-        navigate(`/volumes/${packingList.idPackingList}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
+        navigate(`/volumes/${packingList.idPackinglist}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
     };
 
 
@@ -195,15 +197,11 @@ function PackingListProduto() {
 
     const handleDeleteConfirm = () => {
 
-        axios.delete(`http://localhost:8080/api/volume-produto/${packingList.idPackingList}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`)
+        axios.delete(`http://localhost:8080/api/volume-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`)
             .then(() => {
 
-
-
-                axios.delete(`http://localhost:8080/api/pl-produto/${packingList.idPackingList}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`)
+                axios.delete(`http://localhost:8080/api/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`)
                     .then(() => {
-
-                        setAtualizadorDeEstados(atualizadorDeEstados + 1);
 
                         setSucessMessage(`Produto ${contextDelete.selectedId} excluído com sucesso!`);
                         setTimeout(() => {
@@ -212,13 +210,18 @@ function PackingListProduto() {
 
                         setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
 
+                        fetchProdutos();
+                        fetchPackingList();
                     })
                     .catch((error) => {
 
-                        setErrorMessage('Erro ao excluir o produto...');
+                        const errorMessage = error.response?.data || "Erro desconhecido ao excluir Produto";
+                        setErrorMessage(errorMessage);
+        
                         setTimeout(() => {
-                            setErrorMessage(null)
+                            setErrorMessage(null);
                         }, 5000);
+
                     })
 
             })
@@ -243,14 +246,14 @@ function PackingListProduto() {
 
         const payload = {
             id: {
-                idPackinglist: parseInt(formDataProduto.idPackingList, 10),
+                idPackinglist: parseInt(formDataProduto.idPackinglist, 10),
                 idProduto: parseInt(formDataProduto.idProduto, 10)
             },
             produto: formDataProduto.codigoMaquina,
             descricaoProduto: formDataProduto.nomeMaquina,
             ordemProducao: formDataProduto.codigoOrdem,
-            totalPesoLiquido: 0,
-            totalPesoBruto: 0
+            totalPesoLiquido: '0',
+            totalPesoBruto: '0'
         };
 
         axios.post('http://localhost:8080/api/pl-produto', payload)
@@ -265,10 +268,10 @@ function PackingListProduto() {
                         setSucessMessage(null);
                     }, 5000);
 
-                    setAtualizadorDeEstados(atualizadorDeEstados + 1);
                     setContextAdicionar({ visible: false });
-
                     setBotaoAdicionar({ visible: true });
+
+                    fetchProdutos();
                 }
 
             })
@@ -316,7 +319,7 @@ function PackingListProduto() {
         // Redireciona para a página de exibir QR codes para todos os volumes do produto
         navigate(`/exibir-qrcodes/${id}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
     };
-    
+
 
 
     return (
@@ -348,8 +351,8 @@ function PackingListProduto() {
                         </li>
 
                         {packingList && (
-                            <li key={packingList.idPackingList} className='li-listagem-produto'>
-                                <div>{packingList.idPackingList}</div>
+                            <li key={packingList.idPackinglist} className='li-listagem-produto'>
+                                <div>{packingList.idPackinglist}</div>
                                 <div>{formatarData(packingList.dtCriacao)}</div>
                                 <div>{packingList.paisOrigem}</div>
                                 <div>{packingList.fronteira}</div>
@@ -465,15 +468,19 @@ function PackingListProduto() {
                                 <div>Seq</div>
                                 <div>Descrição</div>
                                 <div>Ordem de Produção</div>
+                                <div>Total Peso Líquido</div>
+                                <div>Total Peso Bruto</div>
                             </li>
                             {filteredProdutos.length > 0 ? (
                                 filteredProdutos.map((p) => (
                                     <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.id.idProduto, p.id.seq)} id="lista-prod-1">
-                                        <div>{packingList.idPackingList}</div>
+                                        <div>{packingList.idPackinglist}</div>
                                         <div>{p.id.idProduto}</div>
                                         <div>{p.id.seq}</div>
                                         <div>{p.descricaoProduto}</div>
                                         <div>{p.ordemProducao}</div>
+                                        <div>{p.totalPesoLiquido}</div>
+                                        <div>{p.totalPesoBruto}</div>
                                     </li>
                                 ))
                             ) : (

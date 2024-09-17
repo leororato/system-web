@@ -440,9 +440,10 @@ function EditarPL() {
                             <Input
                                 type="text"
                                 name="pesoLiquidoTotal"
-                                placeholder={'Digite o peso LÍQUIDO total...'}
+                                title={'Não é possível editar o peso líquido total...'}
+                                backgroundColor={"#ccc"}
                                 value={formData.pesoLiquidoTotal}
-                                onChange={handleChange}
+                                readOnly
                             />
                         </div>
 
@@ -451,9 +452,10 @@ function EditarPL() {
                             <Input
                                 type="text"
                                 name="pesoBrutoTotal"
-                                placeholder={'Digite o preso BRUTO total...'}
+                                title={'Não é possível editar o peso bruto total...'}
+                                backgroundColor={"#ccc"}
                                 value={formData.pesoBrutoTotal}
-                                onChange={handleChange}
+                                readOnly
                             />
                         </div>
 

@@ -346,30 +346,28 @@ function CadastroPackingList() {
                                 required
                                 onChange={handleChange}
                             /></div>
-                        <div>
+                        {/* <div>
                             <label>Peso Líquido Total</label>
                             <Input
                                 type={"number"}
                                 id="input-peso-liquido"
-                                title={"Digite o peso LÍQUIDO total..."}
-                                placeholder={"Ex: 24366,275..."}
+                                title={"O peso líquido total será definido automaticamente..."}
                                 name="pesoLiquidoTotal"
                                 padding={7}
-                                required
-                                onChange={handleChange}
+                                backgroundColor={"#ccc"}
+                                readOnly
                             /></div>
                         <div>
                             <label>Peso Bruto Total</label>
                             <Input
                                 type={"number"}
                                 id="input-peso-bruto"
-                                title={"Digite o peso BRUTO total..."}
-                                placeholder={"Ex: 24921,710..."}
+                                title={"O peso bruto total será definido automaticamente..."}
                                 name="pesoBrutoTotal"
                                 padding={7}
-                                required
-                                onChange={handleChange}
-                            /></div>
+                                backgroundColor={"#ccc"}
+                                readOnly
+                            /></div> */}
 
                         <div className="form-idioma">
                             <Select

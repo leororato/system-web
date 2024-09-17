@@ -64,7 +64,7 @@ function PackingList() {
                 setLoading(true);
                 const response = await axios.get('http://localhost:8080/api/packinglist');
                 setPackingLists(response.data);
-                console.log(response.data);
+                
             } catch (error) {
                 const errorMessage = error.response?.data || "Erro desconhecido ao buscar os PackingLists";
                 setErrorMessage(errorMessage);
@@ -362,8 +362,8 @@ function PackingList() {
                                         const dadosSeparados = p.dadosBancarios.split('$');
 
                                         return (
-                                            <li key={p.idPackingList} onContextMenu={(event) => handleRightClick(event, p.idPackingList)} className='li-listagem'>
-                                                <div>{p.idPackingList}</div>
+                                            <li key={p.idPackinglist} onContextMenu={(event) => handleRightClick(event, p.idPackinglist)} className='li-listagem'>
+                                                <div>{p.idPackinglist}</div>
                                                 <div>{formatarData(p.dtCriacao)}</div>
                                                 <div>{clientes[p.idImportador] || p.idImportador}</div>
                                                 <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
