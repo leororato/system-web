@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import QrCodeGenerator from './pages/qrCodeGenerator/ExibirQRCodes';
 import Login from './pages/Login/loginPage/Login';
 import CadastroItem from './pages/PackingList/cadastroPackingList/CadastroPackingList';
 import Clientes from './pages/Clientes/clientesPage/Clientes';

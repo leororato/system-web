@@ -124,10 +124,6 @@ const Header = () => {
           <div id="encontrar-clientes-header">
             <Text text={'Encontrar Clientes'} onClick={() => navigate('/clientes')} />
           </div>
-
-          <div id="gerar-qr-codes-header">
-            <Text text={'Gerar QR Codes'} onClick={() => navigate('/gerar-qr-code')} />
-          </div>
         </div>
       )}
 

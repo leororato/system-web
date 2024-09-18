@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import Header from "../../../components/Header/Header";
 import { useNavigate, useParams } from "react-router-dom";
 import './Volume.css';
-import axios from "axios";
 import Button from "../../../components/Button";
 import Title from "../../../components/Title";
 import Autocomplete from "../../../components/Autocomplete/Autocomplete";
@@ -13,8 +12,21 @@ import Text from "../../../components/Text";
 import { format } from "date-fns";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Box, CircularProgress } from "@mui/material";
+import Cookies from 'js-cookie';
+import api from '../../../axiosConfig';
+
 
 function Volume() {
+
+    // Obtenha o token JWT do cookie
+    const token = Cookies.get('jwt');
+
+    // Configure o header da requisição
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
 
     // ------------------------------------- PRODUTOS ------------------------------------- //
 
@@ -185,16 +197,20 @@ function Volume() {
 
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:8080/api/pl-produto/${id}/${idProduto}/${seq}`);
+            const response = await api.get(`/pl-produto/${id}/${idProduto}/${seq}`, config);
             setProdutoSelecionado(response.data);
         } catch (error) {
-            console.error("Erro ao carregar o produto selecionado: ", error);
+            const errorMessage = error.response?.data?.message.message || "Erro desconhecido ao carregar o produto selecionado";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+
         } finally {
             setLoading(false);
         }
     };
-
-
 
 
     // CARREGA OS VOLUMES EXISTENTES AO ENTRAR NA PAGINA
@@ -206,15 +222,19 @@ function Volume() {
     const fetchVolumes = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:8080/api/volume/produto/${id}/${idProduto}/${seq}`);
-            setVolumes(response.data);
+            const response = await api.get(`/volume/produto/${id}/${idProduto}/${seq}`, config);
+            setVolumes(response.data?.message);
         } catch (error) {
-            console.error("Erro ao carregar os volumes: ", error);
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao carregar volumes";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
         } finally {
             setLoading(false);
         }
     }
-
 
 
 
@@ -227,7 +247,7 @@ function Volume() {
     useEffect(() => {
         const fetchTipoDeVolume = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/tipo-de-volume`);
+                const response = await api.get(`/tipo-de-volume`, config);
                 const tipoVolumeMap = response.data.reduce((acc, tipo) => {
                     acc[tipo.idTipoVolume] = tipo.descricao;
                     return acc;
@@ -235,7 +255,12 @@ function Volume() {
                 setTiposDeVolume(tipoVolumeMap);
                 setTiposDeVolumeArray(response.data); // Armazena o array original
             } catch (error) {
-                console.error("Erro ao buscar tipo de volume: ", error);
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar tipo de volume";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
             }
         }
         fetchTipoDeVolume();
@@ -248,10 +273,15 @@ function Volume() {
             if (!volumeEdicao.idTipoVolumeId) return;
 
             try {
-                const response = await axios.get(`http://localhost:8080/api/tipo-de-volume/${volumeEdicao.idTipoVolumeId}`);
+                const response = await api.get(`/tipo-de-volume/${volumeEdicao.idTipoVolumeId}`, config);
                 setSalvarTipoDeVolumeAtual({ descricao: response.data.descricao });
             } catch (error) {
-                console.error("Erro ao buscar tipo de volume: ", error);
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar tipo de volume";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
             }
         };
 
@@ -264,7 +294,7 @@ function Volume() {
         e.preventDefault();
 
         try {
-            const response = await axios.post(`http://localhost:8080/api/volume`, formDataVolume);
+            const response = await api.post(`/volume`, formDataVolume, config);
             setIdVolumeSave(response.data.idVolume);
 
             setFormDataVolume({
@@ -286,10 +316,9 @@ function Volume() {
             setVolumeCriado(true);
 
         } catch (error) {
-            const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume";
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Volume";
             setErrorMessage(errorMessage);
             setTimeout(() => setErrorMessage(null), 5000);
-            console.error('Erro ao adicionar o volume: ', error);
         }
 
 
@@ -301,7 +330,7 @@ function Volume() {
         if (volumeCriado && idVolumeSave) {
             const salvarVolumeProduto = async () => {
                 try {
-                    await axios.post(`http://localhost:8080/api/volume-produto`, {
+                    await api.post(`/volume-produto`, {
                         id: {
                             idPackinglist: id,
                             idProduto: idProduto,
@@ -310,7 +339,7 @@ function Volume() {
                         },
                         qrCodeVolumeProduto: `${id}-${idProduto}-${seq}-${idVolumeSave}`
 
-                    });
+                    }, config);
 
                     fetchVolumes();
                     fetchProdutoSelecionado();
@@ -318,12 +347,9 @@ function Volume() {
                     setVolumeCriado(false);
 
                 } catch (error) {
-                    const statusCode = error.response?.status;
-                    console.error('Status do erro:', statusCode);
-                    const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume Produto";
+                    const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Volume Produto";
                     setErrorMessage(errorMessage);
                     setTimeout(() => setErrorMessage(null), 5000);
-                    console.error('Erro ao adicionar o VolumeProduto: ', error);
                 }
 
             };
@@ -336,7 +362,7 @@ function Volume() {
     //ATUALIZANDO O VOLUME
     const handleAtualizarVolume = (e) => {
         e.preventDefault();
-        axios.put(`http://localhost:8080/api/volume/${salvarIdVolume.idVolume}`, volumeEdicao)
+        api.put(`/volume/${salvarIdVolume.idVolume}`, volumeEdicao, config)
             .then(() => {
 
                 setFormDataVolume({
@@ -360,10 +386,9 @@ function Volume() {
 
             })
             .catch(error => {
-                const errorMessage = error.response?.data || "Erro desconhecido ao atualizar Volume";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao atualizar Volume";
                 setErrorMessage(errorMessage);
                 setTimeout(() => setErrorMessage(null), 5000);
-                console.error('Erro ao atualizar o volume: ', error);
             });
     }
 
@@ -427,7 +452,7 @@ function Volume() {
     // AÇAO PARA CONFIRMAR A EXCLUSAO DO VOLUME
     const handleDeleteConfirm = () => {
         const idVolumeSelecionado = contextDelete.selectedIdVolume;
-        axios.delete(`http://localhost:8080/api/volume/${idVolumeSelecionado}`)
+        api.delete(`/volume/${idVolumeSelecionado}`, config)
             .then(() => {
 
                 setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
@@ -442,7 +467,7 @@ function Volume() {
                 fetchProdutoSelecionado();
 
 
-                axios.delete(`http://localhost:8080/api/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`)
+                api.delete(`/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`, config)
                     .then(() => {
 
                         setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
@@ -463,7 +488,7 @@ function Volume() {
             })
             .catch((error) => {
 
-                const errorMessage = error.response?.data || "Erro desconhecido ao deletar Volume...";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao deletar Volume...";
                 setErrorMessage('ERRO AO DELETAR O VOLUME: ', errorMessage);
 
                 setTimeout(() => {
@@ -480,7 +505,7 @@ function Volume() {
 
     const handleSubmitSubvolume = (event) => {
         event.preventDefault();
-        handleSalvarSubVolume(); 
+        handleSalvarSubVolume();
     };
 
     // ------------------------------------- ^VOLUMES^ ------------------------------------- //              
@@ -491,7 +516,7 @@ function Volume() {
     const handleSalvarSubVolume = async (e) => {
         e.preventDefault();
 
-        await axios.post(`http://localhost:8080/api/subvolume`, formDataSubVolume)
+        await api.post(`/subvolume`, formDataSubVolume, config)
             .then(() => {
                 setSucessMessage('Subvolume adicionado com sucesso');
 
@@ -510,7 +535,7 @@ function Volume() {
                 );
             })
             .catch(error => {
-                const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Subvolume";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Subvolume";
                 setErrorMessage(errorMessage);
                 setTimeout(() => setErrorMessage(null), 5000);
             })
@@ -530,7 +555,7 @@ function Volume() {
             setErrorMessage('Preencha o campo QUANTIDADE');
             return;
         }
-        await axios.put(`http://localhost:8080/api/subvolume/${idVolume}/${idSubVolume}`, formDataEditarSubVolume)
+        await api.put(`/subvolume/${idVolume}/${idSubVolume}`, formDataEditarSubVolume, config)
             .then(() => {
 
                 setSucessMessage('Subvolume atualizado com sucesso');
@@ -553,7 +578,7 @@ function Volume() {
 
             })
             .catch(error => {
-                const errorMessage = error.response?.data || "Erro desconhecido ao atualizar Subvolume";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao atualizar Subvolume";
                 setErrorMessage(errorMessage);
                 setTimeout(() => setErrorMessage(null), 5000);
             })
@@ -566,7 +591,7 @@ function Volume() {
         const idVolume = subVolumesIds.idVolume;
         const idSubVolume = subVolumesIds.idSubVolume;
         const descricao = subVolumesIds.descricao;
-        axios.delete(`http://localhost:8080/api/subvolume/${idVolume}/${idSubVolume}`)
+        api.delete(`/subvolume/${idVolume}/${idSubVolume}`, config)
             .then(() => {
                 setSucessMessage(`Subvolume '${descricao}' deletado com sucesso!`);
                 setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
@@ -581,7 +606,7 @@ function Volume() {
             })
             .catch((error) => {
 
-                const errorMessage = error.response?.data || "Erro desconhecido ao deletar Subvolume";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao deletar Subvolume";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {
@@ -596,7 +621,7 @@ function Volume() {
     const fetchSubVolumes = async (idVolume) => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${idVolume}`);
+            const response = await api.get(`/subvolume/volume/${idVolume}`, config);
             setSubVolumesPorVolume(prevState => ({
                 ...prevState,
                 [idVolume]: response.data
@@ -612,7 +637,7 @@ function Volume() {
     // BUSCAR OS SUBVOLUMES DO ITEM SELECIONADO PARA EXIBIR A LISTA NO OVERLAY DO CONTEXTO ADICIONAR SUBVOLUME
     const fetchSubVolumesContexto = async (idVolume) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/subvolume/volume/${idVolume}`);
+            const response = await api.get(`/subvolume/volume/${idVolume}`, config);
             setSubVolumeSelecionado(response.data);
         } catch (error) {
             console.error("Erro ao buscar subvolumes: ", error);
@@ -810,7 +835,7 @@ function Volume() {
             navigate(`/exibir-qrcode/${idVolume}`);
         }
         catch (error) {
-            const errorMessage = error.response?.data || "Erro desconhecido ao ir para a página 'Gerar QR Code'";
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao ir para a página 'Gerar QR Code'";
             setErrorMessage(errorMessage);
             setTimeout(() => setErrorMessage(null), 5000);
         }
@@ -1001,20 +1026,20 @@ function Volume() {
         // Função para lidar com o pressionamento da tecla Enter
 
         if (overlayVisible === false) {
-        const handleKeyDown = (event) => {
-            if (event.key === 'ArrowUp') {
-                event.preventDefault(); // Impede o comportamento padrão do Enter
-                setOverlayVisible(true); // Abre o overlay
-            }
-        };
+            const handleKeyDown = (event) => {
+                if (event.key === 'ArrowUp') {
+                    event.preventDefault(); // Impede o comportamento padrão do Enter
+                    setOverlayVisible(true); // Abre o overlay
+                }
+            };
 
-        // Adiciona o manipulador de eventos para o pressionamento da tecla
-        document.addEventListener('keydown', handleKeyDown);
+            // Adiciona o manipulador de eventos para o pressionamento da tecla
+            document.addEventListener('keydown', handleKeyDown);
 
-        // Remove o manipulador de eventos quando o componente for desmontado
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
+            // Remove o manipulador de eventos quando o componente for desmontado
+            return () => {
+                document.removeEventListener('keydown', handleKeyDown);
+            };
         }
     }, []);
 
@@ -1536,74 +1561,74 @@ function Volume() {
                 contextSubVolumes.visible && (estadoSubVolumeOverlay === 'adicionar' || estadoSubVolumeOverlay === 'editar') && (
                     <div className="overlay">
                         <div className="overlay-content-subvolume" ref={contextSubVolumesRef}>
-                          <form onSubmit={handleSubmitSubvolume}>
-                            <div className="title-subvolume-lista">
-                                <Title
-                                    text={estadoSubVolumeOverlay === 'adicionar' ? 'Adicionar Subvolumes' : 'Editar Subvolume'}
-                                    color={'#1780e2'}
-                                />
-                            </div>
+                            <form onSubmit={handleSubmitSubvolume}>
+                                <div className="title-subvolume-lista">
+                                    <Title
+                                        text={estadoSubVolumeOverlay === 'adicionar' ? 'Adicionar Subvolumes' : 'Editar Subvolume'}
+                                        color={'#1780e2'}
+                                    />
+                                </div>
 
-                            <div className="subcontainer-subvolume">
-                                <div className="container-input-adicionar-subvolume">
-                                    <div className="input-group-subvolume">
+                                <div className="subcontainer-subvolume">
+                                    <div className="container-input-adicionar-subvolume">
+                                        <div className="input-group-subvolume">
 
-                                        <div className="container-input-subvolume">
-                                            <div id="div-descricao-subvolume">
-                                                <label>Descrição:</label>
-                                                <Input
-                                                    type={'text'}
-                                                    placeholder={'Digite a descrição...'}
-                                                    name={'descricao'}
-                                                    title={'Digite uma descrição para o subvolume...'}
-                                                    onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
-                                                    value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.descricao : formDataEditarSubVolume.descricao}
-                                                />
+                                            <div className="container-input-subvolume">
+                                                <div id="div-descricao-subvolume">
+                                                    <label>Descrição:</label>
+                                                    <Input
+                                                        type={'text'}
+                                                        placeholder={'Digite a descrição...'}
+                                                        name={'descricao'}
+                                                        title={'Digite uma descrição para o subvolume...'}
+                                                        onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
+                                                        value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.descricao : formDataEditarSubVolume.descricao}
+                                                    />
 
 
+                                                </div>
+
+                                                <div id="div-quantidade-subvolume">
+                                                    <label>Quantidade:</label>
+                                                    <Input
+                                                        placeholder={'Digite a quantidade...'}
+                                                        name={'quantidade'}
+                                                        title={'Digite a quantidade de itens dentro do subvolume...'}
+                                                        type={'number'}
+                                                        min={'1'}
+                                                        onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
+                                                        value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.quantidade : formDataEditarSubVolume.quantidade}
+                                                    />
+
+                                                </div>
                                             </div>
 
-                                            <div id="div-quantidade-subvolume">
-                                                <label>Quantidade:</label>
-                                                <Input
-                                                    placeholder={'Digite a quantidade...'}
-                                                    name={'quantidade'}
-                                                    title={'Digite a quantidade de itens dentro do subvolume...'}
-                                                    type={'number'}
-                                                    min={'1'}
-                                                    onChange={estadoSubVolumeOverlay === 'adicionar' ? handleChangeSubVolume : handleChangeEdicaoSubVolume}
-                                                    value={estadoSubVolumeOverlay === 'adicionar' ? formDataSubVolume.quantidade : formDataEditarSubVolume.quantidade}
-                                                />
-
-                                            </div>
                                         </div>
-
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="container-botoes-add-subvolumes">
-                                <Button
-                                    className={'button-salvar-add-subvolume'}
-                                    text={'SALVAR'}
-                                    type={"submit"}
-                                    fontSize={15}
-                                    padding={10}
-                                    borderRadius={5}
-                                    onClick={estadoSubVolumeOverlay === 'adicionar' ? handleSalvarSubVolume : handleSalvarEdicaoSubVolume}
-                                />
+                                <div className="container-botoes-add-subvolumes">
+                                    <Button
+                                        className={'button-salvar-add-subvolume'}
+                                        text={'SALVAR'}
+                                        type={"submit"}
+                                        fontSize={15}
+                                        padding={10}
+                                        borderRadius={5}
+                                        onClick={estadoSubVolumeOverlay === 'adicionar' ? handleSalvarSubVolume : handleSalvarEdicaoSubVolume}
+                                    />
 
 
-                                <Button
-                                    className={'button-cancelar-add-subvolume'}
-                                    text={'CANCELAR'}
-                                    fontSize={15}
-                                    padding={10}
-                                    borderRadius={5}
-                                    onClick={handleCancelAddSubvolume}
-                                />
-                            </div>
-                        </form>
+                                    <Button
+                                        className={'button-cancelar-add-subvolume'}
+                                        text={'CANCELAR'}
+                                        fontSize={15}
+                                        padding={10}
+                                        borderRadius={5}
+                                        onClick={handleCancelAddSubvolume}
+                                    />
+                                </div>
+                            </form>
 
                             <div id="title-lista-subvolume">
                                 <Text

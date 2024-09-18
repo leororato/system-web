@@ -1,39 +1,32 @@
 import axios from 'axios';
+import { useHistory } from 'react-router-dom'; // ou a biblioteca de roteamento que você estiver usando
+import Cookies from 'js-cookie';
 
-// Configuração da instância do Axios
-const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8080', // Altere para a URL do seu backend
-    timeout: 10000,
+// Obtenha o token JWT do cookie
+const token = Cookies.get('jwt');
+
+// Configure o header da requisição
+const config = {
     headers: {
-        'Content-Type': 'application/json',
-        // Adicione aqui o token JWT, se disponível
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${token}`
     }
+};
+
+const api = axios.create({
+    baseURL: 'http://localhost:8080/api', config
 });
 
-export default axiosInstance;
+// Interceptor para tratamento de erros
+api.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 401) {
+            const errorMessage = encodeURIComponent(error.response.data?.message || "Sua sessão expirou");
+            window.location.href = `/login?error=${errorMessage}`; // Redireciona com a mensagem
+        }
+        return Promise.reject(error);
+    }
+);
 
 
-// import axios from 'axios';
-
-// // Cria uma instância do Axios
-// const axiosInstance = axios.create({
-//     baseURL: 'http://localhost:8080/', // URL base para todas as requisições
-//     headers: {
-//         'Content-Type': 'application/json'
-//     }
-// });
-
-// // Adiciona um interceptor para incluir o token JWT nos cabeçalhos
-// axiosInstance.interceptors.request.use(
-//     (config) => {
-//         const token = localStorage.getItem('jwtToken');
-//         if (token) {
-//             config.headers.Authorization = `Bearer ${token}`;
-//         }
-//         return config;
-//     },
-//     (error) => Promise.reject(error)
-// );
-
-// export default axiosInstance;
+export default api;

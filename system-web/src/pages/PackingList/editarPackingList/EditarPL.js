@@ -1,7 +1,7 @@
 import Header from "../../../components/Header/Header";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import Cookies from 'js-cookie';
 import './EditarPL.css';
 import Button from "../../../components/Button";
 import Autocomplete from "../../../components/Autocomplete/Autocomplete";
@@ -10,8 +10,19 @@ import Input from "../../../components/Input";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import Title from "../../../components/Title";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
+import api from '../../../axiosConfig';
 
 function EditarPL() {
+
+    // Obtenha o token JWT do cookie
+    const token = Cookies.get('jwt');
+
+    // Configure o header da requisição
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
 
     const navigate = useNavigate();
 
@@ -56,7 +67,7 @@ function EditarPL() {
     useEffect(() => {
         const fetchPackingList = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/packinglist/${id}`);
+                const response = await api.get(`/packinglist/${id}`, config);
                 setFormData(response.data);
 
                 let dadosBancarios = response.data.dadosBancarios;
@@ -69,7 +80,7 @@ function EditarPL() {
                 setIbanResponse(dadosBancariosSeparados[4]);
             } catch (error) {
 
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar PackingList";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar PackingList";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {
@@ -83,14 +94,14 @@ function EditarPL() {
     }, [id]);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/clienteNomus')
+        api.get('/clienteNomus', config)
             .then(response =>
 
                 setClientesNomus(response.data))
 
             .catch(error => {
 
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar cliente Nomus";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar cliente Nomus";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {
@@ -107,12 +118,12 @@ function EditarPL() {
         e.preventDefault();
 
         try {
-            await axios.put(`http://localhost:8080/api/packinglist/${id}`, formData);
+            await api.put(`/packinglist/${id}`, formData, config);
 
             navigate('/inicio', { state: { sucessMessage: `PackingList ${id} atualizado com sucesso!` } });
 
         } catch (error) {
-            const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar a PackingList!";
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao tentar atualizar a PackingList!";
             setErrorMessage(errorMessage);
 
             setTimeout(() => {
@@ -127,9 +138,9 @@ function EditarPL() {
     useEffect(() => {
         if (formData.idImportador || formData.idConsignatario || formData.idNotificado) {
             Promise.all([
-                formData.idImportador ? axios.get(`http://localhost:8080/api/clienteNomus/${formData.idImportador}`) : Promise.resolve({ data: { nome: '' } }),
-                formData.idConsignatario ? axios.get(`http://localhost:8080/api/clienteNomus/${formData.idConsignatario}`) : Promise.resolve({ data: { nome: '' } }),
-                formData.idNotificado ? axios.get(`http://localhost:8080/api/clienteNomus/${formData.idNotificado}`) : Promise.resolve({ data: { nome: '' } })
+                formData.idImportador ? api.get(`/clienteNomus/${formData.idImportador}`, config) : Promise.resolve({ data: { nome: '' } }),
+                formData.idConsignatario ? api.get(`/clienteNomus/${formData.idConsignatario}`, config) : Promise.resolve({ data: { nome: '' } }),
+                formData.idNotificado ? api.get(`/clienteNomus/${formData.idNotificado}`, config) : Promise.resolve({ data: { nome: '' } })
             ]).then((responses) => {
                 setGuardarNomes({
                     nomeImportador: responses[0].data.nome,
@@ -139,7 +150,7 @@ function EditarPL() {
             })
                 .catch(error => {
 
-                    const errorMessage = error.response?.data || "Erro desconhecido ao buscar nomes dos clientes atuais";
+                    const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar nomes dos clientes atuais";
                     setErrorMessage(errorMessage);
 
                     setTimeout(() => {

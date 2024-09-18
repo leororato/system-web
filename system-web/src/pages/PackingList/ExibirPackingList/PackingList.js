@@ -6,7 +6,6 @@ import './PackingList.css';
 import Title from '../../../components/Title';
 import Text from '../../../components/Text';
 import Button from '../../../components/Button';
-import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import Input from '../../../components/Input';
@@ -14,8 +13,22 @@ import ErrorNotification from '../../../components/ErrorNotification/ErrorNotifi
 import SucessNotification from '../../../components/SucessNotification/SucessNotification';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { Box, CircularProgress } from '@mui/material';
+import Cookies from 'js-cookie';
+import api from '../../../axiosConfig';
+
 
 function PackingList() {
+
+    // Obtenha o token JWT do cookie
+    const token = Cookies.get('jwt');
+
+    // Configure o header da requisição
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+
 
     const navigate = useNavigate();
 
@@ -62,12 +75,14 @@ function PackingList() {
         const fetchPackingLists = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get('http://localhost:8080/api/packinglist');
+                const response = await api.get('/packinglist', config);
                 setPackingLists(response.data);
-                
+
             } catch (error) {
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar os PackingLists";
+                const errorMessage = error.response?.data?.message;
                 setErrorMessage(errorMessage);
+
+                console.log("Erro: ", errorMessage)
 
                 setTimeout(() => {
                     setErrorMessage(null);
@@ -82,7 +97,7 @@ function PackingList() {
         const fetchClientes = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get('http://localhost:8080/api/clienteNomus');
+                const response = await api.get('/clienteNomus', config);
                 const clientesData = response.data.reduce((acc, cliente) => {
                     acc[cliente.id] = cliente.nome;
                     return acc;
@@ -91,9 +106,9 @@ function PackingList() {
 
             } catch (error) {
 
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar clientes";
+                const errorMessage = error.response?.data?.message;
                 setErrorMessage(errorMessage);
-
+                console.log("erro: " , error)
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000)
@@ -174,7 +189,7 @@ function PackingList() {
         const itemDeletado = contextDelete.selectedId;
 
 
-        axios.delete(`http://localhost:8080/api/packinglist/${itemDeletado}`)
+        api.delete(`/packinglist/${itemDeletado}`, config)
             .then(() => {
                 setPackingLists(packingLists.filter(packingList =>
                     packingList.id !== contextDelete.selectedId));
@@ -186,7 +201,7 @@ function PackingList() {
             })
             .catch(error => {
 
-                const errorMessage = error.response?.data || "Erro desconhecido ao excluir PackingList";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao excluir PackingList";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {
@@ -208,7 +223,7 @@ function PackingList() {
     const handleCreateTipoDeVolume = (e) => {
         e.preventDefault();
 
-        axios.post(`http://localhost:8080/api/tipo-de-volume`, tipoDeVolume)
+        api.post(`/tipo-de-volume`, tipoDeVolume, config)
             .then((response) => {
 
                 setSucessMessage(`Tipo de Volume '${response.data.descricao}' criado com sucesso`);
@@ -220,7 +235,7 @@ function PackingList() {
             })
             .catch(error => {
 
-                const errorMessage = error.response?.data || "Erro desconhecido ao criar o Tipo de Volume";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao criar o Tipo de Volume";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {
@@ -250,8 +265,8 @@ function PackingList() {
 
     const handleGerarPdf = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/packinglist/pdf/${contextMenu.selectedId}`, {
-                responseType: 'blob', // Define o tipo de resposta para receber um arquivo
+            const response = await api.get(`/packinglist/pdf/${contextMenu.selectedId}`, {
+                responseType: 'blob', config // Define o tipo de resposta para receber um arquivo
             });
 
             // Criar um URL para o blob e forçar o download
@@ -263,7 +278,7 @@ function PackingList() {
             link.click();
             link.parentNode.removeChild(link);
         } catch (error) {
-            const errorMessage = error.response?.data || "Erro desconhecido ao gerar o PDF";
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao gerar o PDF";
             setErrorMessage(errorMessage);
             setTimeout(() => setErrorMessage(null), 5000);
         }
@@ -376,11 +391,11 @@ function PackingList() {
 
                                                 {/* Exibindo os itens separados */}
                                                 <div>
-                                                    { dadosSeparados[0] + '\n'
-                                                     + 'Agência: ' + dadosSeparados[1] + '\n'
-                                                     + 'Conta: ' + dadosSeparados[2] + '\n'
-                                                     + 'Swift: ' + dadosSeparados[3] + '\n'
-                                                     + 'Iban: ' + dadosSeparados[4] + '\n' }
+                                                    {dadosSeparados[0] + '\n'
+                                                        + 'Agência: ' + dadosSeparados[1] + '\n'
+                                                        + 'Conta: ' + dadosSeparados[2] + '\n'
+                                                        + 'Swift: ' + dadosSeparados[3] + '\n'
+                                                        + 'Iban: ' + dadosSeparados[4] + '\n'}
                                                 </div>
 
                                                 <div>{p.incoterm}</div>

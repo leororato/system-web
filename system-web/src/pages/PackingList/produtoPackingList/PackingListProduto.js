@@ -13,8 +13,22 @@ import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import Cookies from 'js-cookie';
+import api from '../../../axiosConfig';
+
 
 function PackingListProduto() {
+
+    // Obtenha o token JWT do cookie
+    const token = Cookies.get('jwt');
+
+    // Configure o header da requisição
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -52,12 +66,12 @@ function PackingListProduto() {
     const fetchPackingList = async () => {
         try {
 
-            const response = await axios.get(`http://localhost:8080/api/packinglist/${id}`);
+            const response = await api.get(`/packinglist/${id}`, config);
             setPackingList(response.data);
 
         } catch (error) {
 
-            const errorMessage = error.response?.data || "Erro desconhecido ao buscar Packing List";
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar Packing List";
             setErrorMessage(errorMessage);
 
             setTimeout(() => {
@@ -74,12 +88,12 @@ function PackingListProduto() {
     const fetchProdutos = async () => {
         try {
 
-            const response = await axios.get(`http://localhost:8080/api/pl-produto/packinglist/${id}`);
+            const response = await api.get(`/pl-produto/packinglist/${id}`, config);
             setProdutos(response.data);
 
         } catch (error) {
 
-            const errorMessage = error.response?.data || "Erro desconhecido ao buscar produtos";
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar produtos";
             setErrorMessage(errorMessage);
 
             setTimeout(() => {
@@ -121,14 +135,14 @@ function PackingListProduto() {
 
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/ordens/details`)
+        api.get(`/ordens/details`, config)
             .then(response =>
 
                 setProdutoNomus(response.data))
 
             .catch((error) => {
 
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar ordens";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar ordens";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {
@@ -197,10 +211,10 @@ function PackingListProduto() {
 
     const handleDeleteConfirm = () => {
 
-        axios.delete(`http://localhost:8080/api/volume-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`)
+        api.delete(`/volume-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`, config)
             .then(() => {
 
-                axios.delete(`http://localhost:8080/api/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`)
+                api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`, config)
                     .then(() => {
 
                         setSucessMessage(`Produto ${contextDelete.selectedId} excluído com sucesso!`);
@@ -215,9 +229,9 @@ function PackingListProduto() {
                     })
                     .catch((error) => {
 
-                        const errorMessage = error.response?.data || "Erro desconhecido ao excluir Produto";
+                        const errorMessage = error.response?.data?.message || "Erro desconhecido ao excluir Produto";
                         setErrorMessage(errorMessage);
-        
+
                         setTimeout(() => {
                             setErrorMessage(null);
                         }, 5000);
@@ -256,7 +270,7 @@ function PackingListProduto() {
             totalPesoBruto: '0'
         };
 
-        axios.post('http://localhost:8080/api/pl-produto', payload)
+        api.post('/pl-produto', payload, config)
             .then(response => {
 
                 if (response.status === 201) {
@@ -276,7 +290,7 @@ function PackingListProduto() {
 
             })
             .catch(error => {
-                const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Produto";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Produto";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {

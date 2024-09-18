@@ -8,12 +8,23 @@ import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 
 import './CadastroPackingList.css';
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
+import Cookies from 'js-cookie';
+import api from '../../../axiosConfig';
 
 function CadastroPackingList() {
+
+    // Obtenha o token JWT do cookie
+    const token = Cookies.get('jwt');
+
+    // Configure o header da requisição
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
 
     const navigate = useNavigate();
 
@@ -46,14 +57,14 @@ function CadastroPackingList() {
     });
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/clienteNomus')
+        api.get('/clienteNomus', config)
             .then(response =>
 
                 setClientesNomus(response.data))
 
             .catch(error => {
 
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar clientes";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar clientes";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {
@@ -108,14 +119,14 @@ function CadastroPackingList() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        axios.post('http://localhost:8080/api/packinglist', formData)
+        api.post('/packinglist', formData, config)
             .then(() => {
                 setSucessMessage('PackingList criado com sucesso!');
                 navigate('/inicio', { state: { sucessMessage: 'PackingList criado com sucesso!' } });
             })
             .catch(error => {
 
-                const errorMessage = error.response?.data || "Erro desconhecido ao criar PackingList";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao criar PackingList";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {

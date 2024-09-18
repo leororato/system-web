@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../../components/Header/Header';
 import QRCode from 'react-qr-code';
-import axios from 'axios';
 import './ExibirQRCodes.css';
 import Text from '../../components/Text';
 import ErrorNotification from '../../components/ErrorNotification/ErrorNotification';
@@ -11,8 +10,21 @@ import Title from '../../components/Title';
 import Button from '../../components/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
+import Cookies from 'js-cookie';
+import api from '../../axiosConfig';
 
 const ExibirQRCodes = () => {
+
+    // Obtenha o token JWT do cookie
+    const token = Cookies.get('jwt');
+
+    // Configure o header da requisição
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+
     const { idVolumeProduto, idPackinglist, idProduto, seq, idVolume } = useParams();
 
     const [modoDaPagina, setModoDaPagina] = useState(0);
@@ -84,13 +96,13 @@ const ExibirQRCodes = () => {
         if (modoDaPagina === 3) {
             const fetchTodosOsQrCodesDeUmaPackinglist = async () => {
                 setLoading(true);
-                await axios.get(`http://localhost:8080/api/volume-produto/qrcode-packinglist/${idPackinglist}`)
+                await api.get(`/volume-produto/qrcode-packinglist/${idPackinglist}`, config)
                     .then(response => {
                         setTodosVolumesDaPackinglist(response.data);
                         console.log('response: ', response.data)
                     })
                     .catch(error => {
-                        const errorMessage = error.response?.data || "Erro desconhecido ao buscar os QRCodes da packinglist";
+                        const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar os QRCodes da packinglist";
                         setErrorMessage(errorMessage)
                         setTodosVolumesDaPackinglist([]);
                     })
@@ -114,12 +126,12 @@ const ExibirQRCodes = () => {
             try {
                 if (modoDaPagina === 1) {
                     setLoading(true);
-                    const response = await axios.get(`http://localhost:8080/api/volume-produto/${idPackinglist}/${idProduto}/${seq}`);
+                    const response = await api.get(`/volume-produto/${idPackinglist}/${idProduto}/${seq}`, config);
                     const qrCodesData = response.data || [];
                     setInfoQrCodes(qrCodesData);
                 } else return;
             } catch (error) {
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar os QRCodes do produto";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar os QRCodes do produto";
                 setErrorMessage(errorMessage);
                 setTimeout(() => setErrorMessage(null), 5000);
                 setInfoQrCodes([]);
@@ -131,12 +143,12 @@ const ExibirQRCodes = () => {
         const buscarInformacoesDeTodosOsVolumesDeUmProduto = async () => {
             try {
                 if (modoDaPagina === 1) {
-                    const response = await axios.get(`http://localhost:8080/api/volume/produto/${idPackinglist}/${idProduto}/${seq}`);
+                    const response = await api.get(`/volume/produto/${idPackinglist}/${idProduto}/${seq}`, config);
                     const volumesData = response.data || [];
                     setPesquisaNosVolumes(volumesData);
                 } else return
             } catch (error) {
-                const errorMessage = error.response?.data || "Erro desconhecido ao carregar informações do QRCode";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao carregar informações do QRCode";
                 setErrorMessage(errorMessage);
                 setTimeout(() => setErrorMessage(null), 5000);
             }
@@ -155,23 +167,23 @@ const ExibirQRCodes = () => {
             try {
                 if (modoDaPagina === 1) {
 
-                    await axios.get(`http://localhost:8080/api/packinglist/${idPackinglist}`)
+                    await api.get(`/packinglist/${idPackinglist}`, config)
                         .then(response => {
                             setInvoice(response.data.invoice);
                             const idConsignatario = response.data.idConsignatario;
-                            axios.get(`http://localhost:8080/api/clienteNomus/${idConsignatario}`)
+                            api.get(`/clienteNomus/${idConsignatario}`, config)
                                 .then(response => {
                                     setConsignatario(response.data.nome);
                                 });
                         })
                         .catch((error) => {
-                            const errorMessage = error.response?.data || "Erro desconhecido ao buscar nome do cliente";
+                            const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar nome do cliente";
                             setErrorMessage(errorMessage);
                             setTimeout(() => setErrorMessage(null), 5000);
                         })
                 }
             } catch (error) {
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar nome do Invoice";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar nome do Invoice";
                 setErrorMessage(errorMessage);
                 setTimeout(() => setErrorMessage(null), 5000);
             }
@@ -182,12 +194,12 @@ const ExibirQRCodes = () => {
             try {
                 if (modoDaPagina === 1) {
 
-                    const response = await axios.get(`http://localhost:8080/api/pl-produto/${idPackinglist}/${idProduto}/${seq}`);
+                    const response = await api.get(`/pl-produto/${idPackinglist}/${idProduto}/${seq}`, config);
                     setNomeProduto(response.data.descricaoProduto)
                 } else return
             }
             catch (error) {
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar nome do Produto";
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar nome do Produto";
                 setErrorMessage(errorMessage);
                 setTimeout(() => setErrorMessage(null), 5000);
             }
@@ -213,7 +225,7 @@ const ExibirQRCodes = () => {
             const fetchQrCodeDeUmVolume = async () => {
                 try {
                     setLoading(true);
-                    const response = await axios.get(`http://localhost:8080/api/volume-produto/qrcode-unico/${idVolume}`);
+                    const response = await api.get(`/volume-produto/qrcode-unico/${idVolume}`, config);
                     const item = response.data[0];
 
                     setVolumeProdutoUnicoData(prevState => {
@@ -226,7 +238,7 @@ const ExibirQRCodes = () => {
                     setInfoQrCodeUnico(item.qrCodeVolumeProduto);
                 }
                 catch (error) {
-                    const errorMessage = error.response?.data || "Erro desconhecido ao ir para a página 'Gerar QR Code'";
+                    const errorMessage = error.response?.data?.message || "Erro desconhecido ao ir para a página 'Gerar QR Code'";
                     setErrorMessage(errorMessage);
                     setTimeout(() => setErrorMessage(null), 5000);
                 } finally {
@@ -245,7 +257,7 @@ const ExibirQRCodes = () => {
             const { idPackinglist, idProduto, seq } = volumeProdutoUnicoData.item.id;
 
             const fetchDescricaoProduto = async () => {
-                await axios.get(`http://localhost:8080/api/pl-produto/${idPackinglist}/${idProduto}/${seq}`)
+                await api.get(`/pl-produto/${idPackinglist}/${idProduto}/${seq}`, config)
                     .then(response => {
                         let respostaAtalho = response.data;
                         setInofrmacoesQrCodeUnico(prevState => ({
@@ -254,14 +266,14 @@ const ExibirQRCodes = () => {
                         }));
                     })
                     .catch(error => {
-                        const errorMessage = error.response?.data || "Erro desconhecido ao procurar pela descrição do produto no QRCode";
+                        const errorMessage = error.response?.data?.message || "Erro desconhecido ao procurar pela descrição do produto no QRCode";
                         setErrorMessage(errorMessage);
                         setTimeout(() => setErrorMessage(null), 5000);
                     });
             };
             const fetchInvoiceEConsignatarioDoVolume = async () => {
 
-                await axios.get(`http://localhost:8080/api/packinglist/${idPackinglist}`)
+                await api.get(`/packinglist/${idPackinglist}`, config)
                     .then(response => {
                         let respostaAtalho = response.data;
                         let idConsignatario = respostaAtalho.idConsignatario;
@@ -270,7 +282,7 @@ const ExibirQRCodes = () => {
                             invoice: respostaAtalho.invoice,
                         }))
 
-                        axios.get(`http://localhost:8080/api/clienteNomus/${idConsignatario}`)
+                        api.get(`/clienteNomus/${idConsignatario}`, config)
                             .then(response => {
                                 let respostaAtalho = response.data;
                                 setInofrmacoesQrCodeUnico(prevState => ({
@@ -281,7 +293,7 @@ const ExibirQRCodes = () => {
 
                     })
                     .catch(error => {
-                        const errorMessage = error.response?.data || "Erro desconhecido ao buscar Invoice do QRCode";
+                        const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar Invoice do QRCode";
                         setErrorMessage(errorMessage);
                         setTimeout(() => setErrorMessage(null), 5000);
                     })
@@ -289,7 +301,7 @@ const ExibirQRCodes = () => {
 
             const fetchVolumeDescricaoEQuantidadeDeItens = async () => {
 
-                await axios.get(`http://localhost:8080/api/volume/${idVolume}`)
+                await api.get(`/volume/${idVolume}`, config)
                     .then(response => {
                         let respostaAtalho = response.data;
                         setInofrmacoesQrCodeUnico(prevState => ({
@@ -299,7 +311,7 @@ const ExibirQRCodes = () => {
                         }))
                     })
                     .catch(error => {
-                        const errorMessage = error.response?.data || "Erro desconhecido ao buscar a descrição do volume no QRCode";
+                        const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar a descrição do volume no QRCode";
                         setErrorMessage(errorMessage);
                         setTimeout(() => setErrorMessage(null), 5000);
                     })
