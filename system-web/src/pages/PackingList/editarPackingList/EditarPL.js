@@ -123,7 +123,7 @@ function EditarPL() {
             navigate('/inicio', { state: { sucessMessage: `PackingList ${id} atualizado com sucesso!` } });
 
         } catch (error) {
-            const errorMessage = error.response?.data?.message || "Erro desconhecido ao tentar atualizar a PackingList!";
+            const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar a PackingList!";
             setErrorMessage(errorMessage);
 
             setTimeout(() => {

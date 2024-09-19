@@ -5,11 +5,23 @@ import Button from "../../../components/Button";
 import Header from "../../../components/Header/Header";
 import { useEffect, useState } from "react";
 import './EditarCliente.css'
-import axios from "axios";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
+import Cookies from 'js-cookie';
+import api from '../../../axiosConfig';
 
 function EditarCliente() {
+
+    // Obtenha o token JWT do cookie
+    const token = Cookies.get('jwt');
+
+    // Configure o header da requisição
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+
     const navigate = useNavigate();
     const { id } = useParams();
 
@@ -31,7 +43,7 @@ function EditarCliente() {
     useEffect(() => {
         const fetchContainers = async () => {
             // Buscando o cliente no banco Nomus e salvando todas as informações dele no ContainerNomus
-            axios.get(`http://localhost:8080/api/clienteNomus/${id}`)
+            api.get(`/clienteNomus/${id}`, config)
                 .then(response => {
                     setContainerNomus(response.data);
                 })
@@ -40,7 +52,7 @@ function EditarCliente() {
                 });
 
             // Buscando o cliente no banco App e salvando todas as informações dele no ContainerApp
-            axios.get(`http://localhost:8080/api/clienteApp/${id}`)
+            api.get(`/clienteApp/${id}`, config)
                 .then(response => {
                     // Verifica que o cliente já existe no banco App e vai para o PUT
                     setClienteExiste(true);
@@ -98,7 +110,7 @@ function EditarCliente() {
             // Se o cliente já existe no banco App é realizado um PUT
             const nome = containerNomus.nome;
             try {
-                await axios.put(`http://localhost:8080/api/clienteApp/${id}`, formData);
+                await api.put(`/clienteApp/${id}`, formData, config);
 
                 navigate('/clientes', { state: { sucessMessage: `O cliente '${nome}' foi atualizado com sucesso!` } });
 
@@ -117,9 +129,9 @@ function EditarCliente() {
             // Se o cliente não existe no banco App é realizado um POST
             const nome = containerNomus.nome;
             try {
-                await axios.post(`http://localhost:8080/api/clienteApp`, formData);
+                await api.post(`/clienteApp`, formData, config);
                 navigate('/clientes', { state: { sucessMessage: `O cliente '${nome}' foi atualizado com sucesso!` } });
-                
+
             } catch (error) {
                 const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar o Cliente!";
                 setErrorMessage(errorMessage);

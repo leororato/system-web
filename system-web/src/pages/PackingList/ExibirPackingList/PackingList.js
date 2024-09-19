@@ -108,7 +108,7 @@ function PackingList() {
 
                 const errorMessage = error.response?.data?.message;
                 setErrorMessage(errorMessage);
-                console.log("erro: " , error)
+                console.log("erro: ", error)
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000)
@@ -265,15 +265,22 @@ function PackingList() {
 
     const handleGerarPdf = async () => {
         try {
-            const response = await api.get(`/packinglist/pdf/${contextMenu.selectedId}`, {
-                responseType: 'blob', config // Define o tipo de resposta para receber um arquivo
-            });
+
+            const configHeaderPdf = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                responseType: 'arraybuffer',  // Inclua o responseType dentro do config
+            };
+
+            const response = await axios.get(`http://localhost:8080/api/packinglist/pdf/${contextMenu.selectedId}`, configHeaderPdf);
 
             // Criar um URL para o blob e forçar o download
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const blob = new Blob([response.data], { type: 'application/pdf' }); // Defina o tipo explicitamente
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `packinglist_${contextMenu.selectedId}.pdf`); // Nome do arquivo
+            link.setAttribute('download', `packinglist_${contextMenu.selectedId}.pdf`);
             document.body.appendChild(link);
             link.click();
             link.parentNode.removeChild(link);
@@ -459,13 +466,13 @@ function PackingList() {
                             <div className='buttons-delete'>
                                 <Button
                                     className={'button-cancelar'}
-                                    text={'CANCELAR'}
+                                    text={'Cancelar'}
                                     fontSize={20}
                                     onClick={(e) => { setContextDelete({ visible: false }); }}
                                 />
                                 <Button
                                     className={'button-excluir'}
-                                    text={'EXCLUIR'}
+                                    text={'Excluir'}
                                     fontSize={20}
                                     onClick={handleDeleteConfirm}
                                 />

@@ -223,7 +223,7 @@ function Volume() {
         try {
             setLoading(true);
             const response = await api.get(`/volume/produto/${id}/${idProduto}/${seq}`, config);
-            setVolumes(response.data?.message);
+            setVolumes(response.data);
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao carregar volumes";
             setErrorMessage(errorMessage);

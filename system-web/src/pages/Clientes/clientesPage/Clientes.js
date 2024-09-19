@@ -1,13 +1,25 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
 import './Clientes.css';
 import Input from '../../../components/Input';
 import Header from '../../../components/Header/Header';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ErrorNotification from '../../../components/ErrorNotification/ErrorNotification';
 import SucessNotification from '../../../components/SucessNotification/SucessNotification';
+import Cookies from 'js-cookie';
+import api from '../../../axiosConfig';
 
 function Clientes() {
+
+    // Obtenha o token JWT do cookie
+    const token = Cookies.get('jwt');
+
+    // Configure o header da requisição
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+
     const navigate = useNavigate();
 
     // Variáveis de notificações
@@ -70,11 +82,11 @@ function Clientes() {
         const fetchData = async () => {
             try {
                 // Buscando todos os clientes do banco Nomus
-                const clientesResponse = await axios.get('http://localhost:8080/api/clienteNomus');
+                const clientesResponse = await api.get('/clienteNomus', config);
                 setClientes(clientesResponse.data);
 
                 // Buscando todos os clientes do banco App
-                const clientesAppResponse = await axios.get('http://localhost:8080/api/clienteApp');
+                const clientesAppResponse = await api.get('/clienteApp', config);
                 setClientesApp(clientesAppResponse.data);
 
             } catch (error) {

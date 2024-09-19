@@ -13,6 +13,8 @@ import ErrorNotification from "../../../components/ErrorNotification/ErrorNotifi
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import Cookies from 'js-cookie';
 import api from '../../../axiosConfig';
+import Loading from "../../../components/Loading/Loading";
+import axios from "axios";
 
 function CadastroPackingList() {
 
@@ -30,6 +32,8 @@ function CadastroPackingList() {
 
     const [sucessMessage, setSucessMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
+
+    const [contextLoading, setContextLoading] = useState({ visible: true });
 
     const [bancoResponse, setBancoResponse] = useState("");
     const [agenciaResponse, setAgenciaResponse] = useState("");
@@ -57,20 +61,22 @@ function CadastroPackingList() {
     });
 
     useEffect(() => {
-        api.get('/clienteNomus', config)
-            .then(response =>
+        const fetchClienteNomus = async () => {
+            try {
+                const response = await api.get('/clienteNomus', config);
+                setClientesNomus(response.data);
 
-                setClientesNomus(response.data))
-
-            .catch(error => {
-
+            } catch (error) {
                 const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar clientes";
                 setErrorMessage(errorMessage);
 
                 setTimeout(() => {
                     setErrorMessage(null)
                 }, 5000);
-            })
+            }
+        }
+
+        fetchClienteNomus();
 
     }, []);
 
@@ -116,24 +122,25 @@ function CadastroPackingList() {
         setFormData({ ...formData, idioma: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+    
+        try {
+            const response = await api.post('/packinglist', formData, config);
+            setSucessMessage('PackingList criado com sucesso!');
+            navigate('/inicio', { state: { sucessMessage: 'PackingList criado com sucesso!' } });
+            setContextLoading({ visible: true })
+        } catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao criar PackingList";
+            setErrorMessage(errorMessage);
+            console.log('erro> ', error.reponse)
 
-        api.post('/packinglist', formData, config)
-            .then(() => {
-                setSucessMessage('PackingList criado com sucesso!');
-                navigate('/inicio', { state: { sucessMessage: 'PackingList criado com sucesso!' } });
-            })
-            .catch(error => {
-
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao criar PackingList";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000)
-
-            });
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000)
+        } finally {
+            setContextLoading({ visible: false });
+        }
     };
 
     const handleErrorClose = () => {
@@ -153,7 +160,7 @@ function CadastroPackingList() {
             <SucessNotification message={sucessMessage} onClose={() => { setSucessMessage(null) }} />
 
             <div className="title-container">
-                <Title text={"Cadastro de Packing List"} className={"title"} />
+                <Title text={"Cadastro de Packinglist"} className={"title"} />
             </div>
             <div className="form-container">
                 <form onSubmit={handleSubmit} className="form-cadastro-pl">
@@ -201,7 +208,7 @@ function CadastroPackingList() {
                                 onChange={handleSelectChangePaisOrigem}
                             /></div>
                         <div>
-                            <label>Fronteira:</label>
+                            <label>Fronteira ou Porto de Expedição:</label>
                             <Input
                                 type={"text"}
                                 id="input-fronteira"
@@ -422,6 +429,7 @@ function CadastroPackingList() {
                     </div>
                 </form>
             </div>
+
         </div>
     );
 }
