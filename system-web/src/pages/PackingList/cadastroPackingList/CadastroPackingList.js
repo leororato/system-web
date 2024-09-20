@@ -33,7 +33,8 @@ function CadastroPackingList() {
     const [sucessMessage, setSucessMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
 
-    const [contextLoading, setContextLoading] = useState({ visible: true });
+    const [contextLoading, setContextLoading] = useState({ visible: false });
+    const [estadoDaPagina, setEstadoDaPagina] = useState('');
 
     const [bancoResponse, setBancoResponse] = useState("");
     const [agenciaResponse, setAgenciaResponse] = useState("");
@@ -62,10 +63,12 @@ function CadastroPackingList() {
 
     useEffect(() => {
         const fetchClienteNomus = async () => {
+            
+            setEstadoDaPagina('Carregando');
             try {
                 const response = await api.get('/clienteNomus', config);
                 setClientesNomus(response.data);
-
+                setContextLoading({ visible: true })
             } catch (error) {
                 const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar clientes";
                 setErrorMessage(errorMessage);
@@ -73,6 +76,8 @@ function CadastroPackingList() {
                 setTimeout(() => {
                     setErrorMessage(null)
                 }, 5000);
+            } finally {
+                setContextLoading({ visible: false })
             }
         }
 
@@ -124,20 +129,22 @@ function CadastroPackingList() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+        setEstadoDaPagina('Salvando');
+
         try {
             const response = await api.post('/packinglist', formData, config);
             setSucessMessage('PackingList criado com sucesso!');
-            navigate('/inicio', { state: { sucessMessage: 'PackingList criado com sucesso!' } });
-            setContextLoading({ visible: true })
-        } catch (error) {
-            const errorMessage = error.response?.data || "Erro desconhecido ao criar PackingList";
-            setErrorMessage(errorMessage);
-            console.log('erro> ', error.reponse)
+            
+            navigate('/inicio', { state: { sucessMessage: 'Packinglist criado com sucesso!' }});
 
+            setContextLoading({ visible: true });
+        } catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao criar Packinglist";
+            setErrorMessage(errorMessage);
             setTimeout(() => {
                 setErrorMessage(null);
-            }, 5000)
+            }, 5000);
+
         } finally {
             setContextLoading({ visible: false });
         }
@@ -398,7 +405,6 @@ function CadastroPackingList() {
                                 placeholder={'Selecione'}
                                 required
                                 options={[
-                                    { value: 'Português', label: 'Português' },
                                     { value: 'Espanhol', label: 'Espanhol' },
                                     { value: 'Inglês', label: 'Inglês' },
                                 ]}
@@ -429,7 +435,14 @@ function CadastroPackingList() {
                     </div>
                 </form>
             </div>
-
+                            
+            {contextLoading.visible ? (
+                <div className="loading">
+                    <Loading message={estadoDaPagina === 'Salvando' ? 'Salvando...' : 'Carregando...'}/>
+                </div>
+            ) : (
+                <div></div>
+            )}
         </div>
     );
 }

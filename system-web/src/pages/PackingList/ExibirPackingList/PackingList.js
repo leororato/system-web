@@ -12,9 +12,9 @@ import Input from '../../../components/Input';
 import ErrorNotification from '../../../components/ErrorNotification/ErrorNotification';
 import SucessNotification from '../../../components/SucessNotification/SucessNotification';
 import { Icon } from '@iconify/react/dist/iconify.js';
-import { Box, CircularProgress } from '@mui/material';
 import Cookies from 'js-cookie';
 import api from '../../../axiosConfig';
+import Loading from '../../../components/Loading/Loading';
 
 
 function PackingList() {
@@ -36,19 +36,14 @@ function PackingList() {
     const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
     const [errorMessage, setErrorMessage] = useState(null);
 
-    const [loading, setLoading] = useState(false);
-
+    const [estadoDaPagina, setEstadoDaPagina] = useState('Carregando');
+    const [contextLoading, setContextLoading] = useState({ visible: false });
     const [packingLists, setPackingLists] = useState([]);
-    const [atualizarEstadoLista, setAtualizarEstadoLista] = useState(0);
 
     const [clientes, setClientes] = useState({});
 
     const [buscaInvoice, setBuscaInvoice] = useState('');
     const [filteredPackinglist, setFilteredPackinglist] = useState([]);
-
-    const [tipoDeVolume, setTipoDeVolume] = useState({
-        descricao: ''
-    });
 
     const [contextMenu, setContextMenu] = useState({
         visible: false, x: 0, y: 0, selectedId: null
@@ -57,11 +52,6 @@ function PackingList() {
     const [contextDelete, setContextDelete] = useState({
         visible: false, x: 0, y: 0, selectedId: null
     });
-
-    const [contextVolume, setContextVolume] = useState({
-        visible: false, x: 0, y: 0
-    });
-
 
     useEffect(() => {
         const filterPackinglist = packingLists.filter(p =>
@@ -72,12 +62,18 @@ function PackingList() {
 
 
     useEffect(() => {
+        fetchPackingListContainer();
+    }, []);
+
+
+    const fetchPackingListContainer = () => {
+
         const fetchPackingLists = async () => {
+            setEstadoDaPagina('Carregando')
             try {
-                setLoading(true);
                 const response = await api.get('/packinglist', config);
                 setPackingLists(response.data);
-
+                setContextLoading({ visible: true })
             } catch (error) {
                 const errorMessage = error.response?.data?.message;
                 setErrorMessage(errorMessage);
@@ -88,21 +84,21 @@ function PackingList() {
                     setErrorMessage(null);
                 }, 5000);
             } finally {
-                setLoading(false);
+                setContextLoading({ visible: false })
             }
-        };
-
+        }
 
 
         const fetchClientes = async () => {
+            setEstadoDaPagina('Carregando')
             try {
-                setLoading(true);
                 const response = await api.get('/clienteNomus', config);
                 const clientesData = response.data.reduce((acc, cliente) => {
                     acc[cliente.id] = cliente.nome;
                     return acc;
                 }, {});
                 setClientes(clientesData);
+                setContextLoading({ visible: true });
 
             } catch (error) {
 
@@ -113,14 +109,13 @@ function PackingList() {
                     setErrorMessage(null);
                 }, 5000)
             } finally {
-                setLoading(false);
+                setContextLoading({ visible: false })
             }
         };
 
         fetchPackingLists();
         fetchClientes();
-    }, [atualizarEstadoLista]);
-
+    }
 
 
     useEffect(() => {
@@ -135,20 +130,18 @@ function PackingList() {
         if (sucessMessage) {
             const timer = setTimeout(() => {
                 setSucessMessage(null);
-                // Limpa o estado de navegação para evitar que a mensagem apareça ao recarregar a página
-                navigate('/inicio', { replace: true, state: {} });
+                navigate(location.state, { replace: true, state: {} });
             }, 5000);
-
-            // Limpar o timeout caso o componente seja desmontado antes dos 5 segundos
             return () => clearTimeout(timer);
         }
     }, [sucessMessage, navigate]);
 
 
+
+
     const formatarData = (dtCriacao) => {
         return format(new Date(dtCriacao), 'dd/MM/yyyy - HH:mm');
     };
-
 
 
     const handleRightClick = (event, id) => {
@@ -187,28 +180,33 @@ function PackingList() {
 
     const handleDeleteConfirm = () => {
         const itemDeletado = contextDelete.selectedId;
+        setEstadoDaPagina('Excluindo')
+
+        try {
+            api.delete(`/packinglist/${itemDeletado}`, config);
+
+            fetchPackingListContainer();
+
+            setPackingLists(packingLists.filter(packingList =>
+                packingList.id !== contextDelete.selectedId));
+            setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
+            setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
+            setTimeout(() => setSucessMessage(null), 5000);
+
+            setContextLoading({ visible: true });
 
 
-        api.delete(`/packinglist/${itemDeletado}`, config)
-            .then(() => {
-                setPackingLists(packingLists.filter(packingList =>
-                    packingList.id !== contextDelete.selectedId));
-                setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
-                setSucessMessage(`PackingList ${itemDeletado} deletado com sucesso`);
-                setTimeout(() => setSucessMessage(null), 5000);
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao excluir Packinglist";
+            setErrorMessage(errorMessage);
 
-                setAtualizarEstadoLista(atualizarEstadoLista + 1);
-            })
-            .catch(error => {
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000)
 
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao excluir PackingList";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000)
-
-            });
+        } finally {
+            setContextLoading({ visible: false });
+        }
     };
 
 
@@ -218,32 +216,6 @@ function PackingList() {
         navigate(`/packing-list-produto/${contextMenu.selectedId}`);
     };
 
-
-
-    const handleCreateTipoDeVolume = (e) => {
-        e.preventDefault();
-
-        api.post(`/tipo-de-volume`, tipoDeVolume, config)
-            .then((response) => {
-
-                setSucessMessage(`Tipo de Volume '${response.data.descricao}' criado com sucesso`);
-
-                setTimeout(() => {
-                    navigate(0);
-                }, 2000);
-
-            })
-            .catch(error => {
-
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao criar o Tipo de Volume";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
-
-            });
-    }
 
     const handleErrorClose = () => {
         setErrorMessage(null);
@@ -295,7 +267,11 @@ function PackingList() {
         <div>
             <Header />
             <ErrorNotification message={errorMessage} onClose={handleErrorClose} />
-            {sucessMessage && <SucessNotification message={sucessMessage} onClose={() => setSucessMessage(null)} />}
+            {sucessMessage ? (
+                <SucessNotification message={sucessMessage} onClose={() => setSucessMessage(null)} />
+            ) : (
+                <></>
+            )}
 
             <div className='title-container'>
                 <Title
@@ -353,75 +329,49 @@ function PackingList() {
                             <div>Idioma</div>
                         </li>
 
-                        {loading ? (
-                            <Box sx={{
-                                display: 'flex',
-                                gap: '10px',
-                                justifyContent: 'center',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                backgroundColor: '#f5f5f5',
-                                padding: '20px',
-                                borderEndEndRadius: '10px',
-                                borderEndStartRadius: '10px',
-                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1);',
-                                animation: 'fadeIn 0.5s ease-in-out',
-                                width: '100%',
-                                textAlign: 'center'
-                            }}>
+                        <>
+                            {filteredPackinglist && filteredPackinglist.length > 0 ? (
+                                filteredPackinglist.map((p) => {
 
-                                <Text
-                                    text={'Buscando Packinglists...'}
-                                />
-                                <CircularProgress />
-                            </Box>
-                        ) : (
-                            <>
+                                    const dadosSeparados = p.dadosBancarios.split('$');
 
-                                {filteredPackinglist && filteredPackinglist.length > 0 ? (
-                                    filteredPackinglist.map((p) => {
-                                        // Aqui você separa os dados bancários fora do JSX
-                                        const dadosSeparados = p.dadosBancarios.split('$');
+                                    return (
+                                        <li key={p.idPackinglist} onContextMenu={(event) => handleRightClick(event, p.idPackinglist)} className='li-listagem'>
+                                            <div>{p.idPackinglist}</div>
+                                            <div>{formatarData(p.dtCriacao)}</div>
+                                            <div>{clientes[p.idImportador] || p.idImportador}</div>
+                                            <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
+                                            <div>{clientes[p.idNotificado] || p.idNotificado}</div>
+                                            <div>{p.paisOrigem}</div>
+                                            <div>{p.fronteira}</div>
+                                            <div>{p.localEmbarque}</div>
+                                            <div>{p.localDestino}</div>
+                                            <div>{p.termosPagamento}</div>
 
-                                        return (
-                                            <li key={p.idPackinglist} onContextMenu={(event) => handleRightClick(event, p.idPackinglist)} className='li-listagem'>
-                                                <div>{p.idPackinglist}</div>
-                                                <div>{formatarData(p.dtCriacao)}</div>
-                                                <div>{clientes[p.idImportador] || p.idImportador}</div>
-                                                <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
-                                                <div>{clientes[p.idNotificado] || p.idNotificado}</div>
-                                                <div>{p.paisOrigem}</div>
-                                                <div>{p.fronteira}</div>
-                                                <div>{p.localEmbarque}</div>
-                                                <div>{p.localDestino}</div>
-                                                <div>{p.termosPagamento}</div>
+                                            <div>
+                                                {dadosSeparados[0] + '\n'
+                                                    + 'Agência: ' + dadosSeparados[1] + '\n'
+                                                    + 'Conta: ' + dadosSeparados[2] + '\n'
+                                                    + 'Swift: ' + dadosSeparados[3] + '\n'
+                                                    + 'Iban: ' + dadosSeparados[4] + '\n'}
+                                            </div>
 
-                                                {/* Exibindo os itens separados */}
-                                                <div>
-                                                    {dadosSeparados[0] + '\n'
-                                                        + 'Agência: ' + dadosSeparados[1] + '\n'
-                                                        + 'Conta: ' + dadosSeparados[2] + '\n'
-                                                        + 'Swift: ' + dadosSeparados[3] + '\n'
-                                                        + 'Iban: ' + dadosSeparados[4] + '\n'}
-                                                </div>
+                                            <div>{p.incoterm}</div>
+                                            <div>{p.invoice}</div>
+                                            <div>{p.tipoTransporte}</div>
+                                            <div>{p.pesoLiquidoTotal}</div>
+                                            <div>{p.pesoBrutoTotal}</div>
+                                            <div>{p.idioma}</div>
+                                        </li>
+                                    );
+                                })
+                            ) : (
+                                <div id="nao-existe-packinglist">
+                                    <li>Não há nada para exibir, adicione uma PackingList...</li>
+                                </div>
+                            )}
+                        </>
 
-                                                <div>{p.incoterm}</div>
-                                                <div>{p.invoice}</div>
-                                                <div>{p.tipoTransporte}</div>
-                                                <div>{p.pesoLiquidoTotal}</div>
-                                                <div>{p.pesoBrutoTotal}</div>
-                                                <div>{p.idioma}</div>
-                                            </li>
-                                        );
-                                    })
-                                ) : (
-                                    <div id="nao-existe-packinglist">
-                                        <li>Não há nada para exibir, adicione uma PackingList...</li>
-                                    </div>
-                                )}
-
-                            </>
-                        )}
                     </ul>
                 </div>
                 {contextMenu.visible && (
@@ -480,47 +430,16 @@ function PackingList() {
                         </div>
                     </>
                 )}
-
-                {contextVolume.visible && (
-                    <>
-                        <div className='overlay'></div>
-                        <div className='context-volume'>
-                            <div className='container-text-input'>
-                                <div className='container-text-cv'>
-                                    <Text
-                                        text={'Criar tipo de volume:'}
-                                        fontSize={15}
-                                    /></div>
-                                <div className='container-input-criar-volume'>
-                                    <Input
-                                        className={"input-tipo-volume"}
-                                        placeholder={'Ex: Pallet...'}
-                                        padding={7}
-                                        title={'Digite o tipo de volume...'}
-                                        onChange={(e) => setTipoDeVolume({ descricao: e.target.value })}
-                                    /></div>
-                            </div>
-
-                            <div className='buttons-create'>
-                                <Button
-                                    className={'button-cancelar-volume'}
-                                    text={'CANCELAR'}
-                                    fontSize={15}
-                                    onClick={() => setContextVolume({ visible: false })}
-                                />
-                                <Button
-                                    className={'button-criar-volume'}
-                                    text={'CRIAR'}
-                                    fontSize={15}
-                                    onClick={handleCreateTipoDeVolume}
-                                />
-                            </div>
-                        </div>
-                    </>
-                )}
-
-
             </div>
+
+            {contextLoading.visible ? (
+                <div className="loading">
+                    <Loading message={estadoDaPagina === 'Carregando' ? 'Carregando...' : 'Excluindo...'} />
+                </div>
+            ) : (
+                <div></div>
+            )}
+
         </div>
     );
 }

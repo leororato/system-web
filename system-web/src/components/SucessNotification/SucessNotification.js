@@ -4,7 +4,7 @@ import './SucessNotification.css';
 const SucessNotification = ({ message, onClose }) => {
     if (!message) return null;
 
-    // Se message for um objeto, converta para uma string
+    // Se message for um objeto converte ela para uma string
     const displayMessage = typeof message === 'object' ? JSON.stringify(message) : message;
 
     return (

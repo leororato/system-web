@@ -11,6 +11,7 @@ import ErrorNotification from "../../../components/ErrorNotification/ErrorNotifi
 import Title from "../../../components/Title";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import api from '../../../axiosConfig';
+import Loading from "../../../components/Loading/Loading";
 
 function EditarPL() {
 
@@ -31,6 +32,9 @@ function EditarPL() {
     const location = useLocation();
     const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
     const [errorMessage, setErrorMessage] = useState(null);
+
+    const [contextLoading, setContextLoading] = useState({ visible: true });
+    const [estadoDaPagina, setEstadoDaPagina] = useState("Carregando");
 
     const [bancoResponse, setBancoResponse] = useState("");
     const [agenciaResponse, setAgenciaResponse] = useState("");
@@ -64,63 +68,75 @@ function EditarPL() {
         idNotificado: ''
     });
 
+
     useEffect(() => {
-        const fetchPackingList = async () => {
-            try {
-                const response = await api.get(`/packinglist/${id}`, config);
-                setFormData(response.data);
-
-                let dadosBancarios = response.data.dadosBancarios;
-                let dadosBancariosSeparados = dadosBancarios.split('$')
-                
-                setBancoResponse(dadosBancariosSeparados[0]);
-                setAgenciaResponse(dadosBancariosSeparados[1]);
-                setContaResponse(dadosBancariosSeparados[2]);
-                setSwiftResponse(dadosBancariosSeparados[3]);
-                setIbanResponse(dadosBancariosSeparados[4]);
-            } catch (error) {
-
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar PackingList";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
-
-            }
-        };
-
         fetchPackingList();
     }, [id]);
 
+    const fetchPackingList = async () => {
+        setEstadoDaPagina("Carregando");
+
+        try {
+            const response = await api.get(`/packinglist/${id}`, config);
+            setFormData(response.data);
+
+            setContextLoading({ visible: true });
+
+            let dadosBancarios = response.data.dadosBancarios;
+            let dadosBancariosSeparados = dadosBancarios.split('$')
+
+            setBancoResponse(dadosBancariosSeparados[0]);
+            setAgenciaResponse(dadosBancariosSeparados[1]);
+            setContaResponse(dadosBancariosSeparados[2]);
+            setSwiftResponse(dadosBancariosSeparados[3]);
+            setIbanResponse(dadosBancariosSeparados[4]);
+
+        } catch (error) {
+
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar PackingList";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+
+        } finally {
+            setContextLoading({ visible: false });
+        }
+    };
+
     useEffect(() => {
-        api.get('/clienteNomus', config)
-            .then(response =>
-
-                setClientesNomus(response.data))
-
-            .catch(error => {
-
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar cliente Nomus";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000)
-
-            })
-
+        fetchClienteNomus();
     }, []);
 
+    const fetchClienteNomus = async () => {
+        setEstadoDaPagina("Carregando");
+        try {
+            const response = await api.get('/clienteNomus', config);
+            setClientesNomus(response.data);
+            setContextLoading({ visible: true });
+
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar cliente Nomus";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+        } finally {
+            setContextLoading({ visible: false });
+        }
+    }
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setEstadoDaPagina("Salvando...")
         try {
             await api.put(`/packinglist/${id}`, formData, config);
 
-            navigate('/inicio', { state: { sucessMessage: `PackingList ${id} atualizado com sucesso!` } });
+            navigate('/inicio', { state: { sucessMessage: `PackingList ${id} atualizado com sucesso!` } }, setTimeout(() => setSucessMessage(null), 5000));
+            setContextLoading({ visible: true});
 
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar a PackingList!";
@@ -130,57 +146,55 @@ function EditarPL() {
                 setErrorMessage(null);
             }, 5000);
 
+        } finally {
+            setContextLoading({ visible: false });
         }
     };
 
 
-
     useEffect(() => {
-        if (formData.idImportador || formData.idConsignatario || formData.idNotificado) {
-            Promise.all([
-                formData.idImportador ? api.get(`/clienteNomus/${formData.idImportador}`, config) : Promise.resolve({ data: { nome: '' } }),
-                formData.idConsignatario ? api.get(`/clienteNomus/${formData.idConsignatario}`, config) : Promise.resolve({ data: { nome: '' } }),
-                formData.idNotificado ? api.get(`/clienteNomus/${formData.idNotificado}`, config) : Promise.resolve({ data: { nome: '' } })
-            ]).then((responses) => {
-                setGuardarNomes({
-                    nomeImportador: responses[0].data.nome,
-                    nomeConsignatario: responses[1].data.nome,
-                    nomeNotificado: responses[2].data.nome
-                });
-            })
-                .catch(error => {
+        const fetchClientes = async () => {
+            setEstadoDaPagina("Carregando");
+    
+            try {
+                if (formData.idImportador || formData.idConsignatario || formData.idNotificado) {
+                    setContextLoading({ visible: true });
+    
+                    const responses = await Promise.all([
+                        formData.idImportador ? api.get(`/clienteNomus/${formData.idImportador}`, config) : Promise.resolve({ data: { nome: '' } }),
+                        formData.idConsignatario ? api.get(`/clienteNomus/${formData.idConsignatario}`, config) : Promise.resolve({ data: { nome: '' } }),
+                        formData.idNotificado ? api.get(`/clienteNomus/${formData.idNotificado}`, config) : Promise.resolve({ data: { nome: '' } })
+                    ]);
+    
+                    console.log('response:', responses[0].data.nome);
 
-                    const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar nomes dos clientes atuais";
-                    setErrorMessage(errorMessage);
-
-                    setTimeout(() => {
-                        setErrorMessage(null);
-                    }, 5000);
-                });
-
-        }
+                    setGuardarNomes({
+                        nomeImportador: responses[0].data.nome,
+                        nomeConsignatario: responses[1].data.nome,
+                        nomeNotificado: responses[2].data.nome
+                    });
+                }
+            } catch (error) {
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar nomes dos clientes atuais";
+                setErrorMessage(errorMessage);
+    
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+            } finally {
+                setContextLoading({ visible: false });
+            }
+        };
+    
+        fetchClientes();
+    
     }, [formData.idImportador, formData.idConsignatario, formData.idNotificado]);
-
+    
 
 
     const handleErrorClose = () => {
         setErrorMessage(null);
     }
-
-
-    useEffect(() => {
-        if (sucessMessage) {
-            const timer = setTimeout(() => {
-                setSucessMessage(null);
-                // Limpa o estado de navegação para evitar que a mensagem apareça ao recarregar a página
-                navigate('/inicio', { replace: true, state: {} });
-            }, 5000);
-
-            // Limpar o timeout caso o componente seja desmontado antes dos 5 segundos
-            return () => clearTimeout(timer);
-        }
-    }, [sucessMessage, navigate]);
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -232,8 +246,6 @@ function EditarPL() {
         e.preventDefault();
         navigate(-1);
     };
-
-
 
 
     return (
@@ -327,7 +339,7 @@ function EditarPL() {
                             />
                         </div>
 
-                        
+
 
 
 
@@ -498,6 +510,14 @@ function EditarPL() {
                     </div>
                 </form>
             </div>
+
+            {contextLoading.visible ? (
+                <Loading message={estadoDaPagina == "Carregando" ? "Carregando..." : "Salvando..."} />
+            ) : (
+                <> </>
+            )}
+
+
         </div>
     );
 }

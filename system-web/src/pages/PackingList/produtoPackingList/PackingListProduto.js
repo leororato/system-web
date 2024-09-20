@@ -1,8 +1,7 @@
 
 import { useEffect, useState } from "react";
 import Header from "../../../components/Header/Header";
-import { BrowserRouter, unstable_HistoryRouter, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import './PackingListProduto.css';
 import Input from "../../../components/Input";
@@ -15,6 +14,7 @@ import SucessNotification from "../../../components/SucessNotification/SucessNot
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Cookies from 'js-cookie';
 import api from '../../../axiosConfig';
+import Loading from "../../../components/Loading/Loading";
 
 
 function PackingListProduto() {
@@ -34,7 +34,8 @@ function PackingListProduto() {
 
     const [errorMessage, setErrorMessage] = useState(null);
     const [sucessMessage, setSucessMessage] = useState(null);
-    const [atualizadorDeEstados, setAtualizadorDeEstados] = useState(0);
+    const [estadoDaPagina, setEstadoDaPagina] = useState("Carregando");
+    const [contextLoading, setContextLoading] = useState({ visible: false});
 
     const [packingList, setPackingList] = useState([]);
     const [produtos, setProdutos] = useState([]);
@@ -60,17 +61,14 @@ function PackingListProduto() {
     });
 
 
-
-
-
     const fetchPackingList = async () => {
+        setEstadoDaPagina("Carregando");
         try {
-
             const response = await api.get(`/packinglist/${id}`, config);
+            setContextLoading({ visible: true });
             setPackingList(response.data);
 
         } catch (error) {
-
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar Packing List";
             setErrorMessage(errorMessage);
 
@@ -78,6 +76,8 @@ function PackingListProduto() {
                 setErrorMessage(null)
             }, 5000);
 
+        } finally {
+            setContextLoading({ visible: false });
         }
     };
 
@@ -86,20 +86,24 @@ function PackingListProduto() {
     }, []);
 
     const fetchProdutos = async () => {
+        setEstadoDaPagina("Carregando");
         try {
-
             const response = await api.get(`/pl-produto/packinglist/${id}`, config);
             setProdutos(response.data);
+            setContextLoading({ visible: true });
 
         } catch (error) {
-
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar produtos";
             setErrorMessage(errorMessage);
 
             setTimeout(() => {
                 setErrorMessage(null)
             }, 5000);
+        
+        } finally {
+            setContextLoading({ visible: false });
         }
+
     };
 
     useEffect(() => {
@@ -135,23 +139,28 @@ function PackingListProduto() {
 
 
     useEffect(() => {
-        api.get(`/ordens/details`, config)
-            .then(response =>
-
-                setProdutoNomus(response.data))
-
-            .catch((error) => {
-
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar ordens";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null)
-                }, 5000);
-            })
-
+        fetchProdutoNomus();
     }, []);
 
+    const fetchProdutoNomus = async () => {
+        setEstadoDaPagina("Carregando");
+        try {
+            const response = await api.get(`/ordens/details`, config)
+            setProdutoNomus(response.data);
+            setContextLoading({ visible: true });
+
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar ordens";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 5000);
+        
+        } finally {
+            setContextLoading({ visible: false });
+        }
+    }
 
 
     const handleClickOutside = () => {
@@ -162,7 +171,6 @@ function PackingListProduto() {
             selectedId: null
         });
     };
-
 
 
     const handleRightClick = (e, idProduto, seq) => {
@@ -177,7 +185,6 @@ function PackingListProduto() {
     };
 
 
-
     const handleEdit = () => {
         setContextMenu({
             visible: false,
@@ -187,8 +194,6 @@ function PackingListProduto() {
         });
         navigate(`/volumes/${packingList.idPackinglist}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
     };
-
-
 
 
     const handleDelete = (e) => {
@@ -208,44 +213,37 @@ function PackingListProduto() {
     };
 
 
+    const handleDeleteConfirm = async () => {
+        setEstadoDaPagina("Excluindo");
 
-    const handleDeleteConfirm = () => {
+        try {
+            await api.delete(`/volume-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`, config);
 
-        api.delete(`/volume-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`, config)
-            .then(() => {
-
-                api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`, config)
-                    .then(() => {
-
-                        setSucessMessage(`Produto ${contextDelete.selectedId} excluído com sucesso!`);
+            try {
+                await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`, config);
+                setSucessMessage(`Produto ${contextDelete.selectedId} excluído com sucesso!`);
                         setTimeout(() => {
                             setSucessMessage(null)
                         }, 5000);
 
                         setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
 
-                        fetchProdutos();
-                        fetchPackingList();
-                    })
-                    .catch((error) => {
+                        await fetchProdutos();
 
-                        const errorMessage = error.response?.data?.message || "Erro desconhecido ao excluir Produto";
+            } catch (error) {
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao excluir Produto";
                         setErrorMessage(errorMessage);
 
                         setTimeout(() => {
                             setErrorMessage(null);
                         }, 5000);
-
-                    })
-
-            })
-            .catch((error) => {
-
-                setErrorMessage('Erro ao excluir o Produto (ERRO NA EXCLUSÃO DO VOLUME PRODUTO)')
-
-            });
+            }
+        } catch (error) {
+            setErrorMessage('Erro ao excluir o Produto (ERRO NA EXCLUSÃO DO VOLUME PRODUTO)');
+        } finally {
+            setContextLoading({ visible: false });
+        }
     };
-
 
 
     const handleAddProduto = () => {
@@ -254,9 +252,9 @@ function PackingListProduto() {
     };
 
 
-
-    const handleSalvarProduto = (e) => {
+    const handleSalvarProduto = async (e) => {
         e.preventDefault();
+        setEstadoDaPagina("Salvando");
 
         const payload = {
             id: {
@@ -270,34 +268,31 @@ function PackingListProduto() {
             totalPesoBruto: '0'
         };
 
-        api.post('/pl-produto', payload, config)
-            .then(response => {
-
-                if (response.status === 201) {
-
-
-                    setSucessMessage('Produto adicionado com sucesso!');
-
-                    setTimeout(() => {
-                        setSucessMessage(null);
-                    }, 5000);
-
-                    setContextAdicionar({ visible: false });
-                    setBotaoAdicionar({ visible: true });
-
-                    fetchProdutos();
-                }
-
-            })
-            .catch(error => {
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Produto";
-                setErrorMessage(errorMessage);
-
+        try {
+                await api.post('/pl-produto', payload, config);
+            
+                setSucessMessage('Produto adicionado com sucesso!');
                 setTimeout(() => {
-                    setErrorMessage(null);
+                    setSucessMessage(null);
                 }, 5000);
 
-            });
+                setContextAdicionar({ visible: false });
+                setBotaoAdicionar({ visible: true });
+                setContextLoading({ visible: true });
+
+                await fetchProdutos();
+
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Produto";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+
+        } finally {
+            setContextLoading({ visible: false });
+        }
     };
 
 
@@ -498,7 +493,14 @@ function PackingListProduto() {
                                     </li>
                                 ))
                             ) : (
-                                <li>Nenhum produto encontrado</li>
+                            <div id="nao-existe-produto">
+                                <li>
+                                    <Text 
+                                    text={"Nenhum produto encontrado"}
+                                    fontSize={'14px'}
+                                    />
+                                    </li>
+                            </div>
                             )}
                         </ul>
                     </div>
@@ -554,6 +556,12 @@ function PackingListProduto() {
                     </>
                 )}
             </div>
+
+            { contextLoading.visible ? (
+                <Loading message={estadoDaPagina === "Carregando" ? "Carregando..." : estadoDaPagina === "Salvando" ? "Salvando..." : "Excluindo..."}/>
+            ) : (
+                <></>
+            )}
         </div>
     );
 }

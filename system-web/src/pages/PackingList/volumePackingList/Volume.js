@@ -14,6 +14,8 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Box, CircularProgress } from "@mui/material";
 import Cookies from 'js-cookie';
 import api from '../../../axiosConfig';
+import Loading from "../../../components/Loading/Loading";
+
 
 
 function Volume() {
@@ -36,6 +38,8 @@ function Volume() {
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
+    const [estadoDaPagina, setEstadoDaPagina] = useState("Carregando");
+    const [contextLoading, setContextLoading] = useState({ visible: false });
 
     // CARREGA OS DADOS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const [produtoSelecionado, setProdutoSelecionado] = useState(null);
@@ -195,10 +199,14 @@ function Volume() {
     // BUSCAR O PRODUTO QUE FOI SELECIONADO E OS SEUS VOLUMES
     const fetchProdutoSelecionado = async () => {
 
+        setEstadoDaPagina("Carregando");
+        setContextLoading({ visible: true });
+        setLoading(true);
+
         try {
-            setLoading(true);
             const response = await api.get(`/pl-produto/${id}/${idProduto}/${seq}`, config);
             setProdutoSelecionado(response.data);
+
         } catch (error) {
             const errorMessage = error.response?.data?.message.message || "Erro desconhecido ao carregar o produto selecionado";
             setErrorMessage(errorMessage);
@@ -208,6 +216,7 @@ function Volume() {
             }, 5000);
 
         } finally {
+            setContextLoading({ visible: false });
             setLoading(false);
         }
     };
@@ -220,10 +229,15 @@ function Volume() {
 
     // ATUALIZA A LISTA DOS VOLUMES EXISTENTES NA TELA, QUANDO É CHAMADO
     const fetchVolumes = async () => {
+
+        setEstadoDaPagina("Carregando");
+        setLoading(true);
+        setContextLoading({ visible: true });
+
         try {
-            setLoading(true);
             const response = await api.get(`/volume/produto/${id}/${idProduto}/${seq}`, config);
             setVolumes(response.data);
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao carregar volumes";
             setErrorMessage(errorMessage);
@@ -232,6 +246,7 @@ function Volume() {
                 setErrorMessage(null);
             }, 5000);
         } finally {
+            setContextLoading({ visible: false });
             setLoading(false);
         }
     }
@@ -245,7 +260,11 @@ function Volume() {
 
     // BUSCANDO TODOS OS TIPOS DE VOLUME E ARMAZENANDO CADA UM EM UM OBJETO E SALVANDO UMA VARIAVEL OBJETO COMUM
     useEffect(() => {
+
         const fetchTipoDeVolume = async () => {
+            setEstadoDaPagina("Carregando");
+            setContextLoading({ visible: true });
+
             try {
                 const response = await api.get(`/tipo-de-volume`, config);
                 const tipoVolumeMap = response.data.reduce((acc, tipo) => {
@@ -261,15 +280,21 @@ function Volume() {
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000);
+            } finally {
+                setContextLoading({ visible: false });
             }
         }
+
         fetchTipoDeVolume();
     }, []);
 
 
     // BUSCANDO O TIPO DE VOLUME DO PRODUTO SELECIONADO
     useEffect(() => {
+
         const fetchTipoDeVolume = async () => {
+            setEstadoDaPagina("Carregando");
+            setContextLoading({ visible: true });
             if (!volumeEdicao.idTipoVolumeId) return;
 
             try {
@@ -292,6 +317,9 @@ function Volume() {
     // SALVANDO O VOLUME 
     const handleSalvarVolume = async (e) => {
         e.preventDefault();
+
+        setEstadoDaPagina("Salvando");
+        setContextLoading({ visible: true });
 
         try {
             const response = await api.post(`/volume`, formDataVolume, config);
@@ -319,6 +347,8 @@ function Volume() {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Volume";
             setErrorMessage(errorMessage);
             setTimeout(() => setErrorMessage(null), 5000);
+        } finally {
+            setContextLoading({ visible: false });
         }
 
 
@@ -328,6 +358,8 @@ function Volume() {
     // SALVANDO ITEM VOLUME CRIADO NO VOLUME PRODUTO
     useEffect(() => {
         if (volumeCriado && idVolumeSave) {
+            setEstadoDaPagina("Salvando");
+            setContextLoading({ visible: true });
             const salvarVolumeProduto = async () => {
                 try {
                     await api.post(`/volume-produto`, {
@@ -350,6 +382,8 @@ function Volume() {
                     const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Volume Produto";
                     setErrorMessage(errorMessage);
                     setTimeout(() => setErrorMessage(null), 5000);
+                } finally {
+                    setContextLoading({ visible: false });
                 }
 
             };
@@ -360,36 +394,41 @@ function Volume() {
 
 
     //ATUALIZANDO O VOLUME
-    const handleAtualizarVolume = (e) => {
+    const handleAtualizarVolume = async (e) => {
         e.preventDefault();
-        api.put(`/volume/${salvarIdVolume.idVolume}`, volumeEdicao, config)
-            .then(() => {
 
-                setFormDataVolume({
-                    idTipoVolumeId: '16',
-                    quantidadeItens: '1',
-                    descricao: '',
-                    altura: '',
-                    largura: '',
-                    comprimento: '',
-                    pesoLiquido: '',
-                    pesoBruto: '',
-                    observacao: ''
-                })
+        setEstadoDaPagina("Atualizando");
+        setContextLoading({ visible: true });
 
-                setContextEditar({ visible: false, selectedIdVolume: '' });
-                setSucessMessage('Volume atualizado com sucesso!');
-                setTimeout(() => setSucessMessage(null), 5000);
+        try {
+            await api.put(`/volume/${salvarIdVolume.idVolume}`, volumeEdicao, config)
 
-                fetchVolumes();
-                fetchProdutoSelecionado();
-
+            setFormDataVolume({
+                idTipoVolumeId: '16',
+                quantidadeItens: '1',
+                descricao: '',
+                altura: '',
+                largura: '',
+                comprimento: '',
+                pesoLiquido: '',
+                pesoBruto: '',
+                observacao: ''
             })
-            .catch(error => {
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao atualizar Volume";
-                setErrorMessage(errorMessage);
-                setTimeout(() => setErrorMessage(null), 5000);
-            });
+
+            setContextEditar({ visible: false, selectedIdVolume: '' });
+            setSucessMessage('Volume atualizado com sucesso!');
+            setTimeout(() => setSucessMessage(null), 5000);
+
+            fetchVolumes();
+            fetchProdutoSelecionado();
+
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao atualizar Volume";
+            setErrorMessage(errorMessage);
+            setTimeout(() => setErrorMessage(null), 5000);
+        } finally {
+            setContextLoading({ visible: false });
+        }
     }
 
 
@@ -450,12 +489,15 @@ function Volume() {
     }
 
     // AÇAO PARA CONFIRMAR A EXCLUSAO DO VOLUME
-    const handleDeleteConfirm = () => {
+    const handleDeleteConfirm = async () => {
         const idVolumeSelecionado = contextDelete.selectedIdVolume;
-        api.delete(`/volume/${idVolumeSelecionado}`, config)
-            .then(() => {
+        setEstadoDaPagina("Excluindo");
+        setContextLoading({ visible: true });
 
-                setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
+        try {
+            await api.delete(`/volume/${idVolumeSelecionado}`, config);
+
+            setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
 
                 setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
 
@@ -466,36 +508,32 @@ function Volume() {
                 fetchVolumes();
                 fetchProdutoSelecionado();
 
-
-                api.delete(`/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`, config)
-                    .then(() => {
-
-                        setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
-                        setTimeout(() => {
-                            setSucessMessage(null)
-                        }, 5000);
-
-                    })
-                    .catch((error) => {
-
-                        setErrorMessage('Erro ao deletar Volume Produto ( VOLUME PRODUTO NÃO FOI SALVO! )');
+                try {
+                    api.delete(`/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`, config)
+                    
+                    setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
+                    setTimeout(() => {
+                        setSucessMessage(null)
+                    }, 5000);
+                } catch (error) {
+                    setErrorMessage('Erro ao deletar Volume Produto ( VOLUME PRODUTO NÃO FOI SALVO! )');
 
                         setTimeout(() => {
                             setErrorMessage(null);
                         }, 5000);
+                }
 
-                    });
-            })
-            .catch((error) => {
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao deletar Volume...";
+            setErrorMessage('ERRO AO DELETAR O VOLUME: ', errorMessage);
 
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao deletar Volume...";
-                setErrorMessage('ERRO AO DELETAR O VOLUME: ', errorMessage);
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
 
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
-
-            });
+        } finally {
+            setContextLoading({ visible: false });
+        }
     }
 
     const handleSubmit = (event) => {
@@ -516,34 +554,44 @@ function Volume() {
     const handleSalvarSubVolume = async (e) => {
         e.preventDefault();
 
-        await api.post(`/subvolume`, formDataSubVolume, config)
-            .then(() => {
-                setSucessMessage('Subvolume adicionado com sucesso');
+        setEstadoDaPagina('Salvando');
+        setContextLoading({ visible: true });
 
-                setTimeout(() => setSucessMessage(null), 5000);
+        try {
+            await api.post(`/subvolume`, formDataSubVolume, config);
 
-                fetchSubVolumes(salvarIdVolume.idVolume);
-                fetchSubVolumesContexto(salvarIdVolume.idVolume);
-                setFormDataSubVolume(
-                    {
-                        id: {
-                            idVolume: salvarIdVolume.idVolume,
-                        },
-                        descricao: "",
-                        quantidade: ""
-                    }
-                );
-            })
-            .catch(error => {
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Subvolume";
-                setErrorMessage(errorMessage);
-                setTimeout(() => setErrorMessage(null), 5000);
-            })
+            setSucessMessage('Subvolume adicionado com sucesso');
+
+            setTimeout(() => setSucessMessage(null), 5000);
+
+            fetchSubVolumes(salvarIdVolume.idVolume);
+            fetchSubVolumesContexto(salvarIdVolume.idVolume);
+            setFormDataSubVolume(
+                {
+                    id: {
+                        idVolume: salvarIdVolume.idVolume,
+                    },
+                    descricao: "",
+                    quantidade: ""
+                }
+            );
+
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Subvolume";
+            setErrorMessage(errorMessage);
+            setTimeout(() => setErrorMessage(null), 5000);
+
+        } finally {
+            setContextLoading({ visible: false });
+        }
     }
 
     // ATUALIZAR SUB VOLUME
     const handleSalvarEdicaoSubVolume = async (e) => {
         e.preventDefault();
+
+        setEstadoDaPagina('Atualizando');
+        setContextLoading({ visible: true });
 
         const idVolume = subVolumesIds.idVolume;
         const idSubVolume = subVolumesIds.idSubVolume;
@@ -555,10 +603,11 @@ function Volume() {
             setErrorMessage('Preencha o campo QUANTIDADE');
             return;
         }
-        await api.put(`/subvolume/${idVolume}/${idSubVolume}`, formDataEditarSubVolume, config)
-            .then(() => {
 
-                setSucessMessage('Subvolume atualizado com sucesso');
+        try {
+            await api.put(`/subvolume/${idVolume}/${idSubVolume}`, formDataEditarSubVolume, config);
+
+            setSucessMessage('Subvolume atualizado com sucesso');
 
                 setTimeout(() => setSucessMessage(null), 5000);
 
@@ -576,59 +625,78 @@ function Volume() {
 
                 fetchSubVolumes(idVolume);
 
-            })
-            .catch(error => {
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao atualizar Subvolume";
-                setErrorMessage(errorMessage);
-                setTimeout(() => setErrorMessage(null), 5000);
-            })
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao atualizar Subvolume";
+            setErrorMessage(errorMessage);
+            setTimeout(() => setErrorMessage(null), 5000);
+
+        } finally {
+            setContextLoading({ visible: false });
+        }
     }
 
 
     // DELETANDO O SUB VOLUME
-    const handleDeleteSubVolumeConfirm = () => {
+    const handleDeleteSubVolumeConfirm = async () => {
+
+        setEstadoDaPagina("Excluindo");
+        setContextLoading({ visible: true });
 
         const idVolume = subVolumesIds.idVolume;
         const idSubVolume = subVolumesIds.idSubVolume;
         const descricao = subVolumesIds.descricao;
-        api.delete(`/subvolume/${idVolume}/${idSubVolume}`, config)
-            .then(() => {
-                setSucessMessage(`Subvolume '${descricao}' deletado com sucesso!`);
-                setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
 
-                if (contextSubVolumes.visible === true) {
-                    fetchSubVolumesContexto(idVolume);
-                } else (fetchSubVolumes(idVolume));
+        try {
+           await api.delete(`/subvolume/${idVolume}/${idSubVolume}`, config);
 
-                setTimeout(() => {
-                    setSucessMessage(null)
-                }, 5000);
-            })
-            .catch((error) => {
+           setSucessMessage(`Subvolume '${descricao}' deletado com sucesso!`);
+           setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
 
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao deletar Subvolume";
-                setErrorMessage(errorMessage);
+           if (contextSubVolumes.visible === true) {
+               fetchSubVolumesContexto(idVolume);
+           } else (fetchSubVolumes(idVolume));
 
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
+           setTimeout(() => {
+               setSucessMessage(null)
+           }, 5000);
 
-            });
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao deletar Subvolume";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+
+        } finally {
+            setContextLoading({ visible: false });
+        }
     }
 
 
     // BUSCANDO OS SUBVOLUMES EXISTENTES PELO IDVOLUME
     const fetchSubVolumes = async (idVolume) => {
-        try {
-            setLoading(true);
+        setEstadoDaPagina("Carregando");
+        setContextLoading({ visible: true });
+        setLoading(true);
+
+        try {    
             const response = await api.get(`/subvolume/volume/${idVolume}`, config);
             setSubVolumesPorVolume(prevState => ({
                 ...prevState,
                 [idVolume]: response.data
             }));
+
         } catch (error) {
-            console.error("Erro ao buscar subvolumes: ", error);
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar Subvolumes";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+
         } finally {
+            setContextLoading({ visible: false });
             setLoading(false);
         }
     }
@@ -636,11 +704,22 @@ function Volume() {
 
     // BUSCAR OS SUBVOLUMES DO ITEM SELECIONADO PARA EXIBIR A LISTA NO OVERLAY DO CONTEXTO ADICIONAR SUBVOLUME
     const fetchSubVolumesContexto = async (idVolume) => {
+        setEstadoDaPagina("Carregando");
+        setContextLoading({ visible: true });
+
         try {
             const response = await api.get(`/subvolume/volume/${idVolume}`, config);
             setSubVolumeSelecionado(response.data);
+
         } catch (error) {
-            console.error("Erro ao buscar subvolumes: ", error);
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar Subvolumes";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+        } finally {
+            setContextLoading({ visible: false });
         }
     }
 
@@ -669,7 +748,6 @@ function Volume() {
                 quantidade: ""
             }
         );
-        console.log('testando: ', salvarIdVolume.idVolume)
         setContextMenuSubVolume({ visible: false });
         fetchSubVolumesContexto(salvarIdVolume.idVolume);
         setContextSubVolumes({
@@ -1773,6 +1851,11 @@ function Volume() {
                 )
             }
 
+            {contextLoading.visible ? (
+                <Loading message={estadoDaPagina === "Carregando" ? "Carregando..." : estadoDaPagina === "Atualizando" ? "Atualizando..." : estadoDaPagina === "Salvando" ? "Salvando..." : "Excluindo..."}/>
+            ) : (
+                <></>
+            )}
 
         </div >
     );
