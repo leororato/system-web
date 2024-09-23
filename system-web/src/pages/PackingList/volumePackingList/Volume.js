@@ -290,28 +290,32 @@ function Volume() {
 
 
     // BUSCANDO O TIPO DE VOLUME DO PRODUTO SELECIONADO
-    useEffect(() => {
+        
+        const fetchTipoDeVolume = async (tipoDeVolume) => {
 
-        const fetchTipoDeVolume = async () => {
-            setEstadoDaPagina("Carregando");
-            setContextLoading({ visible: true });
-            if (!volumeEdicao.idTipoVolumeId) return;
+            await setSalvarTipoDeVolumeAtual(tiposDeVolume[tipoDeVolume]);
 
-            try {
-                const response = await api.get(`/tipo-de-volume/${volumeEdicao.idTipoVolumeId}`, config);
-                setSalvarTipoDeVolumeAtual({ descricao: response.data.descricao });
-            } catch (error) {
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar tipo de volume";
-                setErrorMessage(errorMessage);
+            console.log(salvarTipoDeVolumeAtual);
 
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
-            }
+
+            // setEstadoDaPagina("Carregando");
+            // setContextLoading({ visible: true });
+
+            // if (!volumeEdicao.idTipoVolumeId) return;
+
+            // try {
+            //     const response = await api.get(`/tipo-de-volume/${volumeEdicao.idTipoVolumeId}`, config);
+            //     setSalvarTipoDeVolumeAtual({ descricao: response.data.descricao });
+            // } catch (error) {
+            //     const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar tipo de volume";
+            //     setErrorMessage(errorMessage);
+
+            //     setTimeout(() => {
+            //         setErrorMessage(null);
+            //     }, 5000);
+            // }
         };
 
-        fetchTipoDeVolume();
-    }, [volumeEdicao.idTipoVolumeId]);
 
 
     // SALVANDO O VOLUME 
@@ -1069,7 +1073,7 @@ function Volume() {
 
 
     // AÇAO PARA QUANDO CLICAR COM O BOTAO DIREITO EM CIMA DE ALGUM ITEM
-    const handleRightClick = (e, idVolume, tipoDeVolume, quantidadeItens, descricao, altura, largura, comprimento, pesoLiquido, pesoBruto, observacao) => {
+    const handleRightClick = async (e, idVolume, tipoDeVolume, quantidadeItens, descricao, altura, largura, comprimento, pesoLiquido, pesoBruto, observacao) => {
         e.preventDefault();
         setContextMenu({
             visible: true,
@@ -1096,6 +1100,8 @@ function Volume() {
             pesoBruto: pesoBruto,
             observacao: observacao,
         })
+
+        await fetchTipoDeVolume(tipoDeVolume);
 
     };
 
@@ -1510,7 +1516,7 @@ function Volume() {
                                                     onSelect={handleAutocompleteChangeTipoVolumeEdicao}
                                                     displayField={'descricao'}
                                                     title={'Pesquise por algum tipo de volume...'}
-                                                    value={salvarTipoDeVolumeAtual.descricao}
+                                                    value={salvarTipoDeVolumeAtual}
                                                 />
                                             </div>
                                             <div>

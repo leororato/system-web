@@ -1,5 +1,6 @@
 import React from "react";
 import './ErrorNotification.css';
+import { Icon } from '@iconify/react';
 
 const ErrorNotification = ({ message, onClose }) => {
     if (!message) return null;
@@ -11,7 +12,7 @@ const ErrorNotification = ({ message, onClose }) => {
             <div className="error-message">
                 {displayMessage}
             </div>
-            <button className="error-close" onClick={onClose}>X</button>
+            <button className="error-close" onClick={onClose}><Icon icon="ep:close-bold" id="icone-fechar-message"/></button>
         </div>
     );
 }

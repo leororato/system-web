@@ -1,5 +1,6 @@
 import React from "react";
 import './SucessNotification.css';
+import { Icon } from '@iconify/react';
 
 const SucessNotification = ({ message, onClose }) => {
     if (!message) return null;
@@ -12,7 +13,7 @@ const SucessNotification = ({ message, onClose }) => {
             <div className="sucess-message">
                 {displayMessage}
             </div>
-            <button className="sucess-close" onClick={onClose}>X</button>
+            <button className="sucess-close" onClick={onClose}><Icon icon="ep:close-bold" id="icone-fechar-message"/></button>
         </div>
     );
 }

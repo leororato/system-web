@@ -2,21 +2,36 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import './Header.css';
 import React, { useState, useRef, useEffect } from "react";
 import { Icon } from '@iconify/react';
-import Logo from "../../assets/logo.png"
 import Text from "../Text";
-import axios from "axios";
 import Input from "../Input";
 import Button from "../Button";
 import ErrorNotification from "../ErrorNotification/ErrorNotification";
 import SucessNotification from "../SucessNotification/SucessNotification";
 import logo from '../../assets/logo.png';
+import Cookies from 'js-cookie';
+import api from "../../axiosConfig";
+import Loading from "../Loading/Loading";
 
 const Header = () => {
+
+  // Obtenha o token JWT do cookie
+  const token = Cookies.get('jwt');
+
+  // Configure o header da requisição
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+
   const navigate = useNavigate();
 
   const location = useLocation();
   const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
   const [errorMessage, setErrorMessage] = useState(null);
+
+  const [estadoDaPagina, setEstadoDaPagina] = useState("Salvando");
+  const [contextLoading, setContextLoading] = useState({ visible: false });
 
   const [contextVolume, setContextVolume] = useState({
     visible: false, x: 0, y: 0
@@ -55,27 +70,31 @@ const Header = () => {
     setContextHeaderMenu(false);
   }
 
-  const handleCreateTipoDeVolume = (e) => {
+  const handleCreateTipoDeVolume = async (e) => {
     e.preventDefault();
+    setEstadoDaPagina("Salvando");
+    setContextLoading({ visible: true });
 
-    axios.post(`http://localhost:8080/api/tipo-de-volume`, tipoDeVolume)
-      .then((response) => {
+    try {
+      const response = await api.post(`/tipo-de-volume`, tipoDeVolume, config);
 
-        setSucessMessage(`Tipo de Volume '${response.data.descricao}' criado com sucesso`);
+      setSucessMessage(`Tipo de Volume '${response.data.descricao}' criado com sucesso`);
 
-        setTimeout(() => {
-          navigate(0);
-        }, 3000);
+      setTimeout(() => {
+        navigate(0);
+      }, 3000);
 
-      })
-      .catch(error => {
-        const errorMessage = error.response?.data || "Erro desconhecido ao criar o Tipo de Volume";
-        setErrorMessage(errorMessage);
+    } catch (error) {
+      const errorMessage = error.response?.data || "Erro desconhecido ao criar o Tipo de Volume";
+      setErrorMessage(errorMessage);
 
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
-      });
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+
+    } finally {
+      setContextLoading({ visible: false });
+    }
   }
 
   return (
@@ -99,22 +118,22 @@ const Header = () => {
       </div>
 
       <div className="header-final">
-      <div className="header-conta" title="Configurações da conta">
-        <Link to="/minha-conta">
-          <Icon icon="mdi:account-box" id="icon-conta" />
-        </Link>
-      </div>
+        <div className="header-conta" title="Configurações da conta">
+          <Link to="/minha-conta">
+            <Icon icon="mdi:account-box" id="icon-conta" />
+          </Link>
+        </div>
 
-            <div id="container-logo-header">
-        <img src={logo} id="logo-header"/>
-      </div>
+        <div id="container-logo-header">
+          <img src={logo} id="logo-header" />
+        </div>
       </div>
 
 
       {contextHeaderMenu && (
         <div className="container-header-menu" ref={menuRef}>
           <div id="tipo-de-volume-header">
-            <Text text={'Cadastrar Tipo de Volume'} onClick={handleFuncaoTipoVolume}/>
+            <Text text={'Cadastrar Tipo de Volume'} onClick={handleFuncaoTipoVolume} />
           </div>
 
           <div id="criar-packinglist-header">
@@ -164,6 +183,13 @@ const Header = () => {
           </div>
         </>
       )}
+
+      {contextLoading.visible ? (
+        <Loading message={estadoDaPagina === "Salvando" ? "Salvando..." : "Carregando..."}/>
+      ) : (
+        <></>
+      )}
+
     </div>
   );
 };
