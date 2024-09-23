@@ -65,7 +65,6 @@ function Volume() {
 
     // CARREGA A DESCRICAO DO TIPO DE VOLUME DO ITEM QUANDO CLICA EM CIMA
     const [salvarTipoDeVolumeAtual, setSalvarTipoDeVolumeAtual] = useState({ descricao: '' });
-    const [salvarTipoDeVolumePadrao, setSalvarTipoDeVolumePadrao] = useState({ descricao: '' });
 
 
     // CONTAINER QUE POSSUI TODOS OS VOLUMES
@@ -140,7 +139,6 @@ function Volume() {
         {
             id: {
                 idVolume: '',
-                idSubVolume: ''
             },
             descricao: "",
             quantidade: ""
@@ -290,31 +288,31 @@ function Volume() {
 
 
     // BUSCANDO O TIPO DE VOLUME DO PRODUTO SELECIONADO
-        
-        const fetchTipoDeVolume = async (tipoDeVolume) => {
 
-            await setSalvarTipoDeVolumeAtual(tiposDeVolume[tipoDeVolume]);
+    const fetchTipoDeVolume = async (tipoDeVolume) => {
 
-            console.log(salvarTipoDeVolumeAtual);
+        await setSalvarTipoDeVolumeAtual(tiposDeVolume[tipoDeVolume]);
+
+        console.log(salvarTipoDeVolumeAtual);
 
 
-            // setEstadoDaPagina("Carregando");
-            // setContextLoading({ visible: true });
+        // setEstadoDaPagina("Carregando");
+        // setContextLoading({ visible: true });
 
-            // if (!volumeEdicao.idTipoVolumeId) return;
+        // if (!volumeEdicao.idTipoVolumeId) return;
 
-            // try {
-            //     const response = await api.get(`/tipo-de-volume/${volumeEdicao.idTipoVolumeId}`, config);
-            //     setSalvarTipoDeVolumeAtual({ descricao: response.data.descricao });
-            // } catch (error) {
-            //     const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar tipo de volume";
-            //     setErrorMessage(errorMessage);
+        // try {
+        //     const response = await api.get(`/tipo-de-volume/${volumeEdicao.idTipoVolumeId}`, config);
+        //     setSalvarTipoDeVolumeAtual({ descricao: response.data.descricao });
+        // } catch (error) {
+        //     const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar tipo de volume";
+        //     setErrorMessage(errorMessage);
 
-            //     setTimeout(() => {
-            //         setErrorMessage(null);
-            //     }, 5000);
-            // }
-        };
+        //     setTimeout(() => {
+        //         setErrorMessage(null);
+        //     }, 5000);
+        // }
+    };
 
 
 
@@ -499,45 +497,47 @@ function Volume() {
         setContextLoading({ visible: true });
 
         try {
-            await api.delete(`/volume/${idVolumeSelecionado}`, config);
+            api.delete(`/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`, config);
 
             setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
+            setTimeout(() => {
+                setSucessMessage(null)
+            }, 5000);
+
+            try {
+                await api.delete(`/volume/${idVolumeSelecionado}`, config);
+
+                setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
 
                 setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
 
                 setTimeout(() => {
-                    setSucessMessage(null)
+                    setSucessMessage(null);
                 }, 5000);
 
                 fetchVolumes();
                 fetchProdutoSelecionado();
+            } catch (error) {
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao deletar Volume...";
+                setErrorMessage('ERRO AO DELETAR O VOLUME: ', errorMessage);
 
-                try {
-                    api.delete(`/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`, config)
-                    
-                    setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
-                    setTimeout(() => {
-                        setSucessMessage(null)
-                    }, 5000);
-                } catch (error) {
-                    setErrorMessage('Erro ao deletar Volume Produto ( VOLUME PRODUTO NÃO FOI SALVO! )');
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
 
-                        setTimeout(() => {
-                            setErrorMessage(null);
-                        }, 5000);
-                }
+            }
 
         } catch (error) {
-            const errorMessage = error.response?.data?.message || "Erro desconhecido ao deletar Volume...";
-            setErrorMessage('ERRO AO DELETAR O VOLUME: ', errorMessage);
+            setErrorMessage('Erro ao deletar Volume Produto ( VOLUME PRODUTO NÃO FOI SALVO! )');
 
             setTimeout(() => {
                 setErrorMessage(null);
             }, 5000);
-
         } finally {
             setContextLoading({ visible: false });
+
         }
+
     }
 
     const handleSubmit = (event) => {
@@ -613,21 +613,21 @@ function Volume() {
 
             setSucessMessage('Subvolume atualizado com sucesso');
 
-                setTimeout(() => setSucessMessage(null), 5000);
+            setTimeout(() => setSucessMessage(null), 5000);
 
-                fetchSubVolumesContexto(salvarIdVolume.idVolume);
-                setFormDataEditarSubVolume(
-                    {
-                        id: {
-                            idVolume: '',
-                            idSubVolume: '',
-                        },
-                        descricao: "",
-                        quantidade: ""
-                    }
-                );
+            fetchSubVolumesContexto(salvarIdVolume.idVolume);
+            setFormDataEditarSubVolume(
+                {
+                    id: {
+                        idVolume: '',
+                        idSubVolume: '',
+                    },
+                    descricao: "",
+                    quantidade: ""
+                }
+            );
 
-                fetchSubVolumes(idVolume);
+            fetchSubVolumes(idVolume);
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao atualizar Subvolume";
@@ -651,18 +651,18 @@ function Volume() {
         const descricao = subVolumesIds.descricao;
 
         try {
-           await api.delete(`/subvolume/${idVolume}/${idSubVolume}`, config);
+            await api.delete(`/subvolume/${idVolume}/${idSubVolume}`, config);
 
-           setSucessMessage(`Subvolume '${descricao}' deletado com sucesso!`);
-           setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
+            setSucessMessage(`Subvolume '${descricao}' deletado com sucesso!`);
+            setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
 
-           if (contextSubVolumes.visible === true) {
-               fetchSubVolumesContexto(idVolume);
-           } else (fetchSubVolumes(idVolume));
+            if (contextSubVolumes.visible === true) {
+                fetchSubVolumesContexto(idVolume);
+            } else (fetchSubVolumes(idVolume));
 
-           setTimeout(() => {
-               setSucessMessage(null)
-           }, 5000);
+            setTimeout(() => {
+                setSucessMessage(null)
+            }, 5000);
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao deletar Subvolume";
@@ -684,7 +684,7 @@ function Volume() {
         setContextLoading({ visible: true });
         setLoading(true);
 
-        try {    
+        try {
             const response = await api.get(`/subvolume/volume/${idVolume}`, config);
             setSubVolumesPorVolume(prevState => ({
                 ...prevState,
@@ -1858,7 +1858,7 @@ function Volume() {
             }
 
             {contextLoading.visible ? (
-                <Loading message={estadoDaPagina === "Carregando" ? "Carregando..." : estadoDaPagina === "Atualizando" ? "Atualizando..." : estadoDaPagina === "Salvando" ? "Salvando..." : "Excluindo..."}/>
+                <Loading message={estadoDaPagina === "Carregando" ? "Carregando..." : estadoDaPagina === "Atualizando" ? "Atualizando..." : estadoDaPagina === "Salvando" ? "Salvando..." : "Excluindo..."} />
             ) : (
                 <></>
             )}

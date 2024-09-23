@@ -35,12 +35,12 @@ function PackingListProduto() {
     const [errorMessage, setErrorMessage] = useState(null);
     const [sucessMessage, setSucessMessage] = useState(null);
     const [estadoDaPagina, setEstadoDaPagina] = useState("Carregando");
-    const [contextLoading, setContextLoading] = useState({ visible: false});
+    const [contextLoading, setContextLoading] = useState({ visible: false });
 
     const [packingList, setPackingList] = useState([]);
+    const [dadosSeparados, setDadosSeparados] = useState([])
     const [produtos, setProdutos] = useState([]);
     const [filteredProdutos, setFilteredProdutos] = useState([]);
-
     const [produtoNomus, setProdutoNomus] = useState([]);
 
     const [buscaIdProduto, setBuscaIdProduto] = useState('');
@@ -67,6 +67,7 @@ function PackingListProduto() {
             const response = await api.get(`/packinglist/${id}`, config);
             setContextLoading({ visible: true });
             setPackingList(response.data);
+            setDadosSeparados(response.data.dadosBancarios.split('$'));
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar Packing List";
@@ -99,7 +100,7 @@ function PackingListProduto() {
             setTimeout(() => {
                 setErrorMessage(null)
             }, 5000);
-        
+
         } finally {
             setContextLoading({ visible: false });
         }
@@ -156,7 +157,7 @@ function PackingListProduto() {
             setTimeout(() => {
                 setErrorMessage(null)
             }, 5000);
-        
+
         } finally {
             setContextLoading({ visible: false });
         }
@@ -222,21 +223,21 @@ function PackingListProduto() {
             try {
                 await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}`, config);
                 setSucessMessage(`Produto ${contextDelete.selectedId} excluído com sucesso!`);
-                        setTimeout(() => {
-                            setSucessMessage(null)
-                        }, 5000);
+                setTimeout(() => {
+                    setSucessMessage(null)
+                }, 5000);
 
-                        setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
+                setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
 
-                        await fetchProdutos();
+                await fetchProdutos();
 
             } catch (error) {
                 const errorMessage = error.response?.data?.message || "Erro desconhecido ao excluir Produto";
-                        setErrorMessage(errorMessage);
+                setErrorMessage(errorMessage);
 
-                        setTimeout(() => {
-                            setErrorMessage(null);
-                        }, 5000);
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
             }
         } catch (error) {
             setErrorMessage('Erro ao excluir o Produto (ERRO NA EXCLUSÃO DO VOLUME PRODUTO)');
@@ -269,18 +270,18 @@ function PackingListProduto() {
         };
 
         try {
-                await api.post('/pl-produto', payload, config);
-            
-                setSucessMessage('Produto adicionado com sucesso!');
-                setTimeout(() => {
-                    setSucessMessage(null);
-                }, 5000);
+            await api.post('/pl-produto', payload, config);
 
-                setContextAdicionar({ visible: false });
-                setBotaoAdicionar({ visible: true });
-                setContextLoading({ visible: true });
+            setSucessMessage('Produto adicionado com sucesso!');
+            setTimeout(() => {
+                setSucessMessage(null);
+            }, 5000);
 
-                await fetchProdutos();
+            setContextAdicionar({ visible: false });
+            setBotaoAdicionar({ visible: true });
+            setContextLoading({ visible: true });
+
+            await fetchProdutos();
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Produto";
@@ -368,7 +369,13 @@ function PackingListProduto() {
                                 <div>{packingList.localEmbarque}</div>
                                 <div>{packingList.localDestino}</div>
                                 <div>{packingList.termosPagamento}</div>
-                                <div>{packingList.dadosBancarios}</div>
+                                <div>
+                                    {dadosSeparados[0] + '\n'
+                                        + 'Agência: ' + dadosSeparados[1] + '\n'
+                                        + 'Conta: ' + dadosSeparados[2] + '\n'
+                                        + 'Swift: ' + dadosSeparados[3] + '\n'
+                                        + 'Iban: ' + dadosSeparados[4] + '\n'}
+                                </div>
                                 <div>{packingList.incoterm}</div>
                                 <div>{packingList.invoice}</div>
                                 <div>{packingList.tipoTransporte}</div>
@@ -493,14 +500,14 @@ function PackingListProduto() {
                                     </li>
                                 ))
                             ) : (
-                            <div id="nao-existe-produto">
-                                <li>
-                                    <Text 
-                                    text={"Nenhum produto encontrado"}
-                                    fontSize={'14px'}
-                                    />
+                                <div id="nao-existe-produto">
+                                    <li>
+                                        <Text
+                                            text={"Nenhum produto encontrado"}
+                                            fontSize={'14px'}
+                                        />
                                     </li>
-                            </div>
+                                </div>
                             )}
                         </ul>
                     </div>
@@ -557,8 +564,8 @@ function PackingListProduto() {
                 )}
             </div>
 
-            { contextLoading.visible ? (
-                <Loading message={estadoDaPagina === "Carregando" ? "Carregando..." : estadoDaPagina === "Salvando" ? "Salvando..." : "Excluindo..."}/>
+            {contextLoading.visible ? (
+                <Loading message={estadoDaPagina === "Carregando" ? "Carregando..." : estadoDaPagina === "Salvando" ? "Salvando..." : "Excluindo..."} />
             ) : (
                 <></>
             )}
