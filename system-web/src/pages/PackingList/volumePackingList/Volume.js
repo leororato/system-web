@@ -496,14 +496,6 @@ function Volume() {
         setEstadoDaPagina("Excluindo");
         setContextLoading({ visible: true });
 
-        try {
-            api.delete(`/volume-produto/${id}/${idProduto}/${seq}/${idVolumeSelecionado}`, config);
-
-            setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
-            setTimeout(() => {
-                setSucessMessage(null)
-            }, 5000);
-
             try {
                 await api.delete(`/volume/${idVolumeSelecionado}`, config);
 
@@ -518,25 +510,16 @@ function Volume() {
                 fetchVolumes();
                 fetchProdutoSelecionado();
             } catch (error) {
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao deletar Volume...";
-                setErrorMessage('ERRO AO DELETAR O VOLUME: ', errorMessage);
-
+                const errorMessage = error.response?.data || "Erro desconhecido ao deletar Volume...";
+                setErrorMessage(errorMessage);
+                console.log('erro: ', error.response?.data)
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000);
 
+            } finally {
+                setContextLoading({ visible: false });
             }
-
-        } catch (error) {
-            setErrorMessage('Erro ao deletar Volume Produto ( VOLUME PRODUTO NÃO FOI SALVO! )');
-
-            setTimeout(() => {
-                setErrorMessage(null);
-            }, 5000);
-        } finally {
-            setContextLoading({ visible: false });
-
-        }
 
     }
 

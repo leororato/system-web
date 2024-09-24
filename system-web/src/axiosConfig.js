@@ -17,16 +17,16 @@ const api = axios.create({
 });
 
 // Interceptor para tratamento de erros
-api.interceptors.response.use(
-    response => response,
-    error => {
-        if (error.response && error.response.status === 401) {
-            const errorMessage = encodeURIComponent(error.response.data?.message || "Sua sessão expirou");
-            window.location.href = `/login?error=${errorMessage}`; // Redireciona com a mensagem
-        }
-        return Promise.reject(error);
-    }
-);
+// api.interceptors.response.use(
+//     response => response,
+//     error => {
+//         if (error.response && error.response.status === 401) {
+//             const errorMessage = encodeURIComponent(error.response.data?.message || "Sua sessão expirou");
+//             window.location.href = `/login?error=${errorMessage}`; // Redireciona com a mensagem
+//         }
+//         return Promise.reject(error);
+//     }
+// );
 
 
 export default api;

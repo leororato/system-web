@@ -11,7 +11,7 @@ const Input = ({
     title,
     value,
     readOnly,
-    min
+    min, className
 }) => {
     const [tooltipVisible, setTooltipVisible] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
@@ -38,6 +38,7 @@ const Input = ({
                 min={min}
                 onChange={onChange}
                 readOnly={readOnly}
+                className={className}
                 style={{
                     backgroundColor: backgroundColor,
                     fontSize: fontSize,
