@@ -49,6 +49,8 @@ function PackingList() {
         visible: false, x: 0, y: 0, selectedId: null
     });
 
+    const [inputDeleteSegundoFator, setInputDeleteSegundoFator] = useState("");
+    const [contextDeleteSegundoFator, setContextDeleteSegundoFator] = useState({ visible: false, x: 0, y: 0, selectedId: null })
     const [contextDelete, setContextDelete] = useState({
         visible: false, x: 0, y: 0, selectedId: null
     });
@@ -168,6 +170,10 @@ function PackingList() {
     };
 
 
+    const handleChange = (e) => {
+        setInputDeleteSegundoFator(e.target.value);
+    }
+
 
     const handleDelete = (event) => {
         setContextMenu({ visible: false, x: 0, y: 0, selectedId: null });
@@ -177,27 +183,51 @@ function PackingList() {
     };
 
 
+    const handleDeleteSegundoFator = (e) => {
 
-    const handleDeleteConfirm = () => {
+        setContextDelete({ visible: false });
+        setContextDeleteSegundoFator({
+            visible: true,
+            x: e.pageX,
+            y: e.pageY,
+            selectedId: contextDelete.selectedId
+        })
+
+    }
+
+
+    const handleDeleteConfirm = async (e) => {
         const itemDeletado = contextDelete.selectedId;
         setEstadoDaPagina('Excluindo')
-
+        setContextLoading({ visible: true });
+        const permissaoParaExcluir = "semPermissao";
+        
         try {
-            api.delete(`/packinglist/${itemDeletado}`, config);
+            await api.delete(`/packinglist/${itemDeletado}/${permissaoParaExcluir}`, config);
 
-            fetchPackingListContainer();
+            
+            // setPackingLists(packingLists.filter(packingList =>
+                //     packingList.id !== contextDelete.selectedId));
+                setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
+                setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
+                setTimeout(() => setSucessMessage(null), 5000);
 
-            setPackingLists(packingLists.filter(packingList =>
-                packingList.id !== contextDelete.selectedId));
-            setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
-            setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
-            setTimeout(() => setSucessMessage(null), 5000);
-
-            setContextLoading({ visible: true });
-
+                fetchPackingListContainer();
 
         } catch (error) {
-            const errorMessage = error.response?.data?.message || "Erro desconhecido ao excluir Packinglist";
+
+            if (error.response?.status === 409) {
+                handleDeleteSegundoFator(e);
+
+                const errorMessage = error.response?.data || "Erro desconhecido ao excluir Packinglist";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+            }
+
+            const errorMessage = error.response?.data || "Erro desconhecido ao excluir Packinglist";
             setErrorMessage(errorMessage);
 
             setTimeout(() => {
@@ -209,6 +239,48 @@ function PackingList() {
         }
     };
 
+
+    const handleDeleteConfirmSegundoFator = async (e) => {
+        e.preventDefault();
+
+        const itemDeletado = contextDeleteSegundoFator.selectedId;
+        setEstadoDaPagina('Excluindo');
+        setContextLoading({ visible: true });
+
+        const permissaoParaExcluir = (inputDeleteSegundoFator === "Excluir") ? "comPermissao" : "palavraChaveErrada";
+        
+        try {
+            await api.delete(`/packinglist/${itemDeletado}/${permissaoParaExcluir}`, config);
+            
+            setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
+            setTimeout(() => {
+                setSucessMessage(null);
+            }, 5000);
+
+            setContextDeleteSegundoFator({ visible: false, selectedId: null, x: 0, y: 0 });
+            await fetchPackingListContainer();
+
+        } catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao excluir Packinglist";
+            
+            if (error.response?.status === 406) {
+                setErrorMessage("A palavra de confirmação foi digitada incorretamente");
+            } else {
+                setErrorMessage(errorMessage);
+
+            }
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+
+            setContextDeleteSegundoFator({ visible: false, selectedId: null });
+
+        } finally {
+            setContextLoading({ visible: false });
+
+        }
+    }
 
 
     const handleList = () => {
@@ -430,6 +502,55 @@ function PackingList() {
                         </div>
                     </>
                 )}
+
+
+                {contextDeleteSegundoFator.visible && (
+
+                    <div>
+                        <>
+                            <div className="overlay"></div>
+                            <div className="context-delete-segundo-fator">
+                                <form onSubmit={handleDeleteConfirmSegundoFator}>
+                                    <div>
+                                        <div id="container-text-confirmar-exclusao-produto">
+                                            <Text
+                                                text={'Esta packinglist possui produtos, para confirmar a exclusão da packinglist digite a palavra "Excluir" no campo abaixo:'}
+                                                fontSize={18}
+                                            />
+                                        </div>
+                                        <div id="container-input-confirmar-exclusao-produto">
+                                            <Input
+                                                className="input-confirmar-exclusao-produto"
+                                                type={'text'}
+                                                placeholder={'Digite: Excluir'}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="buttons-delete-segundo-fator">
+                                        <Button
+                                            className={'button-cancelar'}
+                                            text={'Cancelar'}
+                                            fontSize={20}
+                                            onClick={() => { setContextDeleteSegundoFator({ visible: false }); }}
+                                        />
+                                        <Button
+                                            className={'button-excluir'}
+                                            text={'Confirmar'}
+                                            fontSize={20}
+                                            type={"submit"}
+                                            onClick={handleDeleteConfirmSegundoFator}
+                                        />
+                                    </div>
+                                </form>
+
+                            </div>
+                        </>
+                    </div>
+
+                )}
+
             </div>
 
             {contextLoading.visible ? (

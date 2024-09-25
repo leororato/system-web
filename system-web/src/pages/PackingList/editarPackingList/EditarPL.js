@@ -487,10 +487,10 @@ function EditarPL() {
                             <Select
                                 className="form-idioma"
                                 name="idioma"
+                                placeholder={'Selecione'}
                                 options={[
-                                    { value: 'Português', label: 'Português' },
                                     { value: 'Espanhol', label: 'Espanhol' },
-                                    { value: 'Inglês', label: 'Inglês' }
+                                    { value: 'Inglês', label: 'Inglês' },
                                 ]}
                                 value={formData.idioma}
                                 onChange={e => setFormData({ ...formData, idioma: e.target.value })}

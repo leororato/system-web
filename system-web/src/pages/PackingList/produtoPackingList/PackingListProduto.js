@@ -47,10 +47,9 @@ function PackingListProduto() {
     const [buscaDescricaoProduto, setBuscaDescricaoProduto] = useState('');
     const [buscaOrdemDeProducao, setBuscaOrdemDeProducao] = useState('');
 
-    const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null });
-    const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null });
+    const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null, selectedDesc: null });
+    const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null, selectedDesc: null });
     const [contextDeleteSegundoFator, setContextDeleteSegundoFator] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null });
-    const [statusPermissaoParaExcluir, setStatusPermissaoParaExcluir] = useState("semPermissao");
     const [inputDeleteSegundoFator, setInputDeleteSegundoFator] = useState("");
     const [botaoAdicionar, setBotaoAdicionar] = useState({ visible: true });
     const [contextAdicionar, setContextAdicionar] = useState({ visible: false });
@@ -172,19 +171,22 @@ function PackingListProduto() {
             visible: false,
             x: 0,
             y: 0,
-            selectedId: null
+            selectedId: null,
+            selectedSeq: null,
+            selectedDesc: null
         });
     };
 
 
-    const handleRightClick = (e, idProduto, seq) => {
+    const handleRightClick = (e, idProduto, seq, descricaoProduto) => {
         e.preventDefault();
         setContextMenu({
             visible: true,
             x: e.pageX,
             y: e.pageY,
             selectedId: idProduto,
-            selectedSeq: seq
+            selectedSeq: seq,
+            selectedDesc: descricaoProduto
         });
     };
 
@@ -194,7 +196,9 @@ function PackingListProduto() {
             visible: false,
             x: 0,
             y: 0,
-            selectedId: null
+            selectedId: null,
+            selectedSeq: null,
+            selectedDesc: null
         });
         navigate(`/volumes/${packingList.idPackinglist}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
     };
@@ -208,14 +212,17 @@ function PackingListProduto() {
             visible: false,
             x: 0,
             y: 0,
-            selectedId: null
+            selectedId: null,
+            selectedSeq: null,
+            selectedDesc: null
         });
         setContextDelete({
             visible: true,
             x: e.pageX,
             y: e.pageY,
             selectedId: contextMenu.selectedId,
-            selectedSeq: contextMenu.selectedSeq
+            selectedSeq: contextMenu.selectedSeq,
+            selectedDesc: contextMenu.selectedDesc
         });
 
     };
@@ -227,19 +234,20 @@ function PackingListProduto() {
             visible: true,
             x: e.pageX,
             y: e.pageY,
-            selectedId: contextMenu.selectedId,
-            selectedSeq: contextMenu.selectedSeq
+            selectedId: contextDelete.selectedId,
+            selectedSeq: contextDelete.selectedSeq,
+            selectedDesc: contextDelete.selectedDesc
         });
     }
 
     const handleDeleteConfirm = async (e) => {
         setEstadoDaPagina("Excluindo");
         const permissaoParaExcluir = "semPermissao";
-
+        
         try {
-            await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}/${permissaoParaExcluir}`, config);
 
-            setSucessMessage(`Produto ${contextDelete.selectedId} excluído com sucesso!`);
+            await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}/${permissaoParaExcluir}`, config);
+            setSucessMessage(`Produto ${contextDelete.selectedDesc} excluído com sucesso!`);
             setTimeout(() => {
                 setSucessMessage(null)
             }, 5000);
@@ -249,8 +257,16 @@ function PackingListProduto() {
 
         } catch (error) {
             console.error('erro:', error.response)
-            if (error.response?.status == 409) {
+            if (error.response?.status === 409) {
                 handleDeleteSegundoFator(e);
+                console.log(error.response)
+                const errorMessage = error.response?.data || "Erro desconhecido ao excluir Produto";
+                setErrorMessage(errorMessage);
+
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 5000);
+
             } else {
                 const errorMessage = error.response?.data?.message || "Erro desconhecido ao excluir Produto";
                 setErrorMessage(errorMessage);
@@ -268,21 +284,24 @@ function PackingListProduto() {
     };
 
 
-    const handleDeleteConfirmSegundoFator = async () => {
+    const handleDeleteConfirmSegundoFator = async (e) => {
+        e.preventDefault();
         setEstadoDaPagina("Excluindo");
         
         const permissaoParaExcluir = (inputDeleteSegundoFator === "Excluir") ? "comPermissao" : "semPermissao";
-
+        
         try {
-            await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}/${permissaoParaExcluir}`, config);
-            setSucessMessage(`Produto ${contextDelete.selectedId} excluído com sucesso!`);
+            await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDeleteSegundoFator.selectedId}/${contextDeleteSegundoFator.selectedSeq}/${permissaoParaExcluir}`, config);
+            
+            setSucessMessage(`Produto ${contextDeleteSegundoFator.selectedDesc} excluído com sucesso!`);
             setTimeout(() => {
                 setSucessMessage(null)
             }, 5000);
 
-            setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
+            setContextDeleteSegundoFator({ visible: false, x: 0, y: 0, selectedId: null });
 
             await fetchProdutos();
+            await fetchPackingList();
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao excluir Produto";
@@ -542,7 +561,7 @@ function PackingListProduto() {
                             </li>
                             {filteredProdutos.length > 0 ? (
                                 filteredProdutos.map((p) => (
-                                    <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.id.idProduto, p.id.seq)} id="lista-prod-1">
+                                    <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.id.idProduto, p.id.seq, p.descricaoProduto)} id="lista-prod-1">
                                         <div>{packingList.idPackinglist}</div>
                                         <div>{p.id.idProduto}</div>
                                         <div>{p.id.seq}</div>
@@ -653,6 +672,7 @@ function PackingListProduto() {
                                             text={'Confirmar'}
                                             fontSize={20}
                                             type={"submit"}
+                                            onClick={handleDeleteConfirmSegundoFator}
                                         />
                                     </div>
                                 </form>
