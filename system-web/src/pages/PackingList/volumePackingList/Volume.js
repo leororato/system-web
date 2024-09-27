@@ -43,7 +43,7 @@ function Volume() {
 
     // CARREGA OS DADOS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const [produtoSelecionado, setProdutoSelecionado] = useState(null);
-
+    const [tipoPackinglist, setTipoPackinglist] = useState("");
 
 
 
@@ -204,6 +204,16 @@ function Volume() {
         try {
             const response = await api.get(`/pl-produto/${id}/${idProduto}/${seq}`, config);
             setProdutoSelecionado(response.data);
+
+            const comprimento = response.data.comprimento;
+            const largura = response.data.largura;
+            const altura = response.data.altura;
+            
+            if (comprimento != null && largura != null && altura != null) {
+                setTipoPackinglist("reposicao");
+            } else {
+                setTipoPackinglist("maquina");
+            }
 
         } catch (error) {
             const errorMessage = error.response?.data?.message.message || "Erro desconhecido ao carregar o produto selecionado";
@@ -1203,9 +1213,9 @@ function Volume() {
                                 <div id="list-vol">Tipo do Volume</div>
                                 <div id="list-vol">Quantidade Itens</div>
                                 <div id="list-vol">Descrição</div>
-                                <div id="list-vol">Altura</div>
-                                <div id="list-vol">Largura</div>
-                                <div id="list-vol">Comprimento</div>
+                                <div id="list-vol">Altura (cm)</div>
+                                <div id="list-vol">Largura (cm)</div>
+                                <div id="list-vol">Comprimento (cm)</div>
                                 <div id="list-vol">Peso Líquido</div>
                                 <div id="list-vol">Peso Bruto</div>
                                 <div id="list-vol">Observação</div>
@@ -1406,7 +1416,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Altura:</label>
+                                                <label>Altura (cm):</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'altura'}
@@ -1417,7 +1427,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Largura:</label>
+                                                <label>Largura (cm):</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'largura'}
@@ -1428,7 +1438,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div id="div-comprimento">
-                                                <label>Comprimento:</label>
+                                                <label>Comprimento (cm):</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'comprimento'}
@@ -1550,7 +1560,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Altura:</label>
+                                                <label>Altura (cm):</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'altura'}
@@ -1562,7 +1572,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Largura:</label>
+                                                <label>Largura (cm):</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'largura'}
@@ -1574,7 +1584,7 @@ function Volume() {
                                                 />
                                             </div>
                                             <div>
-                                                <label>Comprimento:</label>
+                                                <label>Comprimento (cm):</label>
                                                 <Input
                                                     type={'number'}
                                                     name={'comprimento'}

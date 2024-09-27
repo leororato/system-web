@@ -136,7 +136,7 @@ function EditarPL() {
             await api.put(`/packinglist/${id}`, formData, config);
 
             navigate('/inicio', { state: { sucessMessage: `PackingList ${id} atualizado com sucesso!` } }, setTimeout(() => setSucessMessage(null), 5000));
-            setContextLoading({ visible: true});
+            setContextLoading({ visible: true });
 
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar a PackingList!";
@@ -155,17 +155,17 @@ function EditarPL() {
     useEffect(() => {
         const fetchClientes = async () => {
             setEstadoDaPagina("Carregando");
-    
+
             try {
                 if (formData.idImportador || formData.idConsignatario || formData.idNotificado) {
                     setContextLoading({ visible: true });
-    
+
                     const responses = await Promise.all([
                         formData.idImportador ? api.get(`/clienteNomus/${formData.idImportador}`, config) : Promise.resolve({ data: { nome: '' } }),
                         formData.idConsignatario ? api.get(`/clienteNomus/${formData.idConsignatario}`, config) : Promise.resolve({ data: { nome: '' } }),
                         formData.idNotificado ? api.get(`/clienteNomus/${formData.idNotificado}`, config) : Promise.resolve({ data: { nome: '' } })
                     ]);
-    
+
                     console.log('response:', responses[0].data.nome);
 
                     setGuardarNomes({
@@ -177,7 +177,7 @@ function EditarPL() {
             } catch (error) {
                 const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar nomes dos clientes atuais";
                 setErrorMessage(errorMessage);
-    
+
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000);
@@ -185,11 +185,11 @@ function EditarPL() {
                 setContextLoading({ visible: false });
             }
         };
-    
+
         fetchClientes();
-    
+
     }, [formData.idImportador, formData.idConsignatario, formData.idNotificado]);
-    
+
 
 
     const handleErrorClose = () => {
@@ -449,12 +449,17 @@ function EditarPL() {
 
                         <div>
                             <label>Tipo de Transporte:</label>
-                            <Input
-                                type="text"
+                            <Select
+                                className="form-idioma"
                                 name="tipoTransporte"
-                                placeholder={'Digite o tipo de transporte...'}
+                                placeholder={'Selecione'}
+                                options={[
+                                    { value: 'Terrestre', label: 'Terrestre' },
+                                    { value: 'Marítimo', label: 'Marítimo' },
+                                    { value: 'Aéreo', label: 'Aéreo' }
+                                ]}
                                 value={formData.tipoTransporte}
-                                onChange={handleChange}
+                                onChange={e => setFormData({ ...formData, tipoTransporte: e.target.value })}
                             />
                         </div>
 

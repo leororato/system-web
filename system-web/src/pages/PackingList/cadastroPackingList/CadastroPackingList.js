@@ -63,7 +63,7 @@ function CadastroPackingList() {
 
     useEffect(() => {
         const fetchClienteNomus = async () => {
-            
+
             setEstadoDaPagina('Carregando');
             try {
                 const response = await api.get('/clienteNomus', config);
@@ -127,6 +127,10 @@ function CadastroPackingList() {
         setFormData({ ...formData, idioma: e.target.value });
     };
 
+    const handleSelectChangeTipoTransporte = (e) => {
+        setFormData({ ...formData, tipoTransporte: e.target.value });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setEstadoDaPagina('Salvando');
@@ -134,8 +138,8 @@ function CadastroPackingList() {
         try {
             const response = await api.post('/packinglist', formData, config);
             setSucessMessage('PackingList criado com sucesso!');
-            
-            navigate('/inicio', { state: { sucessMessage: 'Packinglist criado com sucesso!' }});
+
+            navigate('/inicio', { state: { sucessMessage: 'Packinglist criado com sucesso!' } });
 
             setContextLoading({ visible: true });
         } catch (error) {
@@ -210,7 +214,6 @@ function CadastroPackingList() {
                                 padding={7}
                                 cursor={'pointer'}
                                 placeholder={'Selecione'}
-                                required
                                 options={[{ value: 'Brasil', label: 'Brasil' }]}
                                 onChange={handleSelectChangePaisOrigem}
                             /></div>
@@ -223,7 +226,6 @@ function CadastroPackingList() {
                                 placeholder={"Ex: PARANAGUÁ, PR, BRASIL..."}
                                 name="fronteira"
                                 padding={7}
-                                required
                                 onChange={handleChange}
                             /></div>
                         <div>
@@ -235,7 +237,6 @@ function CadastroPackingList() {
                                 placeholder={"Ex: ARARUNA, PR, BRASIL..."}
                                 name="localEmbarque"
                                 padding={7}
-                                required
                                 onChange={handleChange}
                             /></div>
                         <div>
@@ -247,7 +248,6 @@ function CadastroPackingList() {
                                 placeholder={"Ex: PUERTO CORTÉS, HONDURAS..."}
                                 padding={7}
                                 name="localDestino"
-                                required
                                 onChange={handleChange}
                             /></div>
                         <div>
@@ -259,7 +259,6 @@ function CadastroPackingList() {
                                 placeholder={"Ex: (5% ADVANCE) + (45% EN ENERO) + (50% EN LA ENTREGA)..."}
                                 name="termosPagamento"
                                 padding={7}
-                                required
                                 onChange={handleChange}
                             /></div>
 
@@ -277,7 +276,6 @@ function CadastroPackingList() {
                                             placeholder={"Ex: Banco Bradesco S/A..."}
                                             name="dadosBancarios"
                                             padding={7}
-                                            required
                                             onChange={handleChangeBanco}
                                         /></div>
                                     <div id="div-dados-bancarios">
@@ -289,7 +287,6 @@ function CadastroPackingList() {
                                             placeholder={"Ex: 5815-7..."}
                                             name="dadosBancarios"
                                             padding={7}
-                                            required
                                             onChange={handleChangeAgencia}
                                         /></div>
                                     <div id="div-dados-bancarios">
@@ -301,7 +298,6 @@ function CadastroPackingList() {
                                             placeholder={"Ex: BBDEBRSPSPO..."}
                                             name="dadosBancarios"
                                             padding={7}
-                                            required
                                             onChange={handleChangeSwift}
                                         /></div>
                                     <div id="div-dados-bancarios">
@@ -313,7 +309,6 @@ function CadastroPackingList() {
                                             placeholder={"Ex: BR86 6074 6948 0581 5000 0631 612C1..."}
                                             name="dadosBancarios"
                                             padding={7}
-                                            required
                                             onChange={handleChangeIban}
                                         /></div>
 
@@ -328,7 +323,6 @@ function CadastroPackingList() {
                                             placeholder={"Ex: 63161-2..."}
                                             name="dadosBancarios"
                                             padding={7}
-                                            required
                                             onChange={handleChangeConta}
                                         /></div>
                                 </div>
@@ -344,7 +338,6 @@ function CadastroPackingList() {
                                 placeholder={"Ex: FCA - ARARUNA, PR, BRASIL..."}
                                 name="incoterm"
                                 padding={7}
-                                required
                                 onChange={handleChange}
                             /></div>
                         <div>
@@ -356,48 +349,28 @@ function CadastroPackingList() {
                                 placeholder={"Ex: INV01..."}
                                 name="invoice"
                                 padding={7}
-                                required
                                 onChange={handleChange}
                             /></div>
                         <div>
-                            <label>Tipo de Transporte</label>
-                            <Input
-                                type={"text"}
-                                id="input-tipo-transporte"
-                                title={"Digite o meio de transporte utilizado..."}
-                                placeholder={"Ex: MARÍTIMO..."}
+                            <Select
+                                className={"form-tipo-transporte"}
+                                label={"Tipo de transporte"}
+                                title={"Selecione o tipo de transporte..."}
                                 name="tipoTransporte"
                                 padding={7}
-                                required
-                                onChange={handleChange}
+                                cursor={'pointer'}
+                                placeholder={'Selecione'}
+                                options={[
+                                    { value: 'Terrestre', label: 'Terrestre' },
+                                    { value: 'Marítimo', label: 'Marítimo' },
+                                    { value: 'Aéreo', label: 'Aéreo' }
+                                ]}
+                                onChange={handleSelectChangeTipoTransporte}
                             /></div>
-                        {/* <div>
-                            <label>Peso Líquido Total</label>
-                            <Input
-                                type={"number"}
-                                id="input-peso-liquido"
-                                title={"O peso líquido total será definido automaticamente..."}
-                                name="pesoLiquidoTotal"
-                                padding={7}
-                                backgroundColor={"#ccc"}
-                                readOnly
-                            /></div>
-                        <div>
-                            <label>Peso Bruto Total</label>
-                            <Input
-                                type={"number"}
-                                id="input-peso-bruto"
-                                title={"O peso bruto total será definido automaticamente..."}
-                                name="pesoBrutoTotal"
-                                padding={7}
-                                backgroundColor={"#ccc"}
-                                readOnly
-                            /></div> */}
-
                         <div className="form-idioma">
                             <Select
                                 className={"form-idioma"}
-                                label={"Idioma:"}
+                                label={"Idioma"}
                                 title={"Selecione o idioma..."}
                                 name="idioma"
                                 padding={7}
@@ -435,10 +408,10 @@ function CadastroPackingList() {
                     </div>
                 </form>
             </div>
-                            
+
             {contextLoading.visible ? (
                 <div className="loading">
-                    <Loading message={estadoDaPagina === 'Salvando' ? 'Salvando...' : 'Carregando...'}/>
+                    <Loading message={estadoDaPagina === 'Salvando' ? 'Salvando...' : 'Carregando...'} />
                 </div>
             ) : (
                 <div></div>

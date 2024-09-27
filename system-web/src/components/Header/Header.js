@@ -16,6 +16,7 @@ const Header = () => {
 
   // Obtenha o token JWT do cookie
   const token = Cookies.get('jwt');
+  const [nomeUsuario, setNomeUsuario] = useState('');
 
   // Configure o header da requisição
   const config = {
@@ -70,6 +71,14 @@ const Header = () => {
     setContextHeaderMenu(false);
   }
 
+  useEffect(() => {
+    const storedUserName = localStorage.getItem('nomeUsuario');
+    if (storedUserName) {
+      setNomeUsuario(storedUserName);
+    }
+
+  }, []);
+
   const handleCreateTipoDeVolume = async (e) => {
     e.preventDefault();
     setEstadoDaPagina("Salvando");
@@ -119,6 +128,11 @@ const Header = () => {
 
       <div className="header-final">
         <div className="header-conta" title="Configurações da conta">
+          <Text
+            text={nomeUsuario}
+            color={'#ccc'}
+            fontSize={'15px'}
+          />
           <Link to="/minha-conta">
             <Icon icon="mdi:account-box" id="icon-conta" />
           </Link>
@@ -185,7 +199,7 @@ const Header = () => {
       )}
 
       {contextLoading.visible ? (
-        <Loading message={estadoDaPagina === "Salvando" ? "Salvando..." : "Carregando..."}/>
+        <Loading message={estadoDaPagina === "Salvando" ? "Salvando..." : "Carregando..."} />
       ) : (
         <></>
       )}

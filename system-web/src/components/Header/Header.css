@@ -56,6 +56,10 @@
     color: #114f8a;
 }
 
+#icon-conta {
+    margin-left: 5px;
+}
+
 .header-conta a {
     display: flex;
     align-items: center;

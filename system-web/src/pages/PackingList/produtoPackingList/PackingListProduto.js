@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Header from "../../../components/Header/Header";
 import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
@@ -38,6 +38,7 @@ function PackingListProduto() {
     const [contextLoading, setContextLoading] = useState({ visible: false });
 
     const [packingList, setPackingList] = useState([]);
+    const [tipoPackinglist, setTipoPackinglist] = useState("");
     const [dadosSeparados, setDadosSeparados] = useState([])
     const [produtos, setProdutos] = useState([]);
     const [filteredProdutos, setFilteredProdutos] = useState([]);
@@ -47,13 +48,24 @@ function PackingListProduto() {
     const [buscaDescricaoProduto, setBuscaDescricaoProduto] = useState('');
     const [buscaOrdemDeProducao, setBuscaOrdemDeProducao] = useState('');
 
+    const contextEditarRef = useRef(null);
     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null, selectedDesc: null });
+    const [contextEditar, setContextEditar] = useState({ visible: false, selectedIdProduto: '', selectedSeq: null });
     const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null, selectedDesc: null });
     const [contextDeleteSegundoFator, setContextDeleteSegundoFator] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null });
     const [inputDeleteSegundoFator, setInputDeleteSegundoFator] = useState("");
     const [botaoAdicionar, setBotaoAdicionar] = useState({ visible: true });
     const [contextAdicionar, setContextAdicionar] = useState({ visible: false });
 
+    const [infoProdutoParaExibirNoModoEdicao, setInfoProdutoParaExibirNoModoEdicao] = useState({
+        idPackinglist: id,
+        seq: "",
+        descricaoProduto: "",
+        ordemProducao: "",
+        totalPesoLiquido: "",
+        totalPesoBruto: "",
+        comprimento: ""
+    });
     const [formDataProduto, setFormDataProduto] = useState({
         idPackinglist: id,
         idProduto: '',
@@ -70,6 +82,15 @@ function PackingListProduto() {
             setContextLoading({ visible: true });
             setPackingList(response.data);
             setDadosSeparados(response.data.dadosBancarios.split('$'));
+
+            console.log(response.data.tipoTransporte)
+
+            const tipoTransporte = response.data.tipoTransporte
+            if (tipoTransporte === "Marítimo" || tipoTransporte === "Terrestre") {
+                setTipoPackinglist("maquina");
+            } else if (tipoTransporte === "Aéreo") {
+                setTipoPackinglist("reposicao");
+            }
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar Packing List";
@@ -131,13 +152,13 @@ function PackingListProduto() {
     };
 
 
-
     useEffect(() => {
         document.addEventListener('click', handleClickOutside);
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
     }, []);
+
 
 
 
@@ -166,7 +187,7 @@ function PackingListProduto() {
     }
 
 
-    const handleClickOutside = () => {
+    const handleClickOutside = (event) => {
         setContextMenu({
             visible: false,
             x: 0,
@@ -175,10 +196,11 @@ function PackingListProduto() {
             selectedSeq: null,
             selectedDesc: null
         });
+
     };
 
 
-    const handleRightClick = (e, idProduto, seq, descricaoProduto) => {
+    const handleRightClick = (e, idProduto, seq, produto, descricaoProduto, ordemProducao, totalPesoLiquido, totalPesoBruto, comprimento, largura, altura) => {
         e.preventDefault();
         setContextMenu({
             visible: true,
@@ -188,10 +210,35 @@ function PackingListProduto() {
             selectedSeq: seq,
             selectedDesc: descricaoProduto
         });
+
+        setInfoProdutoParaExibirNoModoEdicao({
+            idProduto: idProduto,
+            seq: seq,
+            produto: produto,
+            descricaoProduto: descricaoProduto,
+            ordemProducao: ordemProducao,
+            totalPesoLiquido: totalPesoLiquido,
+            totalPesoBruto: totalPesoBruto,
+            comprimento: comprimento,
+            largura: largura,
+            altura: altura
+        })
     };
 
-
     const handleEdit = () => {
+        console.log("EDIT: ", contextEditar)
+        setContextMenu({
+            visible: false,
+            x: 0,
+            y: 0,
+            selectedIdProduto: null,
+            selectedSeq: null
+        });
+
+        setContextEditar({ visible: true, selectedIdPackinglist: id, selectedIdProduto: contextMenu.selectedId, selectedSeq: contextMenu.selectedSeq });
+    }
+
+    const handleListarVolumes = () => {
         setContextMenu({
             visible: false,
             x: 0,
@@ -205,6 +252,65 @@ function PackingListProduto() {
 
     const handleChange = (e) => {
         setInputDeleteSegundoFator(e.target.value);
+    }
+
+    const handleChangeDimensao = (e) => {
+        const { name, value } = e.target;
+        setInfoProdutoParaExibirNoModoEdicao({ ...infoProdutoParaExibirNoModoEdicao, [name]: value });
+    }
+
+    const handleAtualizarProduto = async () => {
+        setEstadoDaPagina('Salvando');
+        setContextLoading({ visible: true });
+
+        const idPackinglist = id;
+        const idProduto = infoProdutoParaExibirNoModoEdicao.idProduto;
+        const seq = infoProdutoParaExibirNoModoEdicao.seq;
+
+        const payload = {
+            produto: infoProdutoParaExibirNoModoEdicao.produto,
+            descricaoProduto: infoProdutoParaExibirNoModoEdicao.descricaoProduto,
+            ordemProducao: infoProdutoParaExibirNoModoEdicao.ordemProducao,
+            totalPesoLiquido: infoProdutoParaExibirNoModoEdicao.totalPesoLiquido,
+            totalPesoBruto: infoProdutoParaExibirNoModoEdicao.totalPesoBruto,
+            comprimento: infoProdutoParaExibirNoModoEdicao.comprimento,
+            largura: infoProdutoParaExibirNoModoEdicao.largura,
+            altura: infoProdutoParaExibirNoModoEdicao.altura
+        }
+
+        console.log('payload: ', payload)
+        console.log('requisiçao: ', idPackinglist, idProduto, seq)
+        try {
+            await api.put(`/pl-produto/${idPackinglist}/${idProduto}/${seq}`, payload, config);
+
+            setSucessMessage('Volume de reposição atualizado com sucesso!');
+            setTimeout(() => setSucessMessage(null), 5000);
+
+            fetchProdutos();
+
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao atualizar Volume de Reposição";
+            setErrorMessage(errorMessage);
+            setTimeout(() => setErrorMessage(null), 5000);
+
+        } finally {
+            setContextLoading({ visible: false })
+            setContextEditar({ visible: false, selectedIdProduto: null, selectedSeq: null })
+        }
+    }
+
+    const handleCancelarEditarProduto = () => {
+
+        setContextEditar({ visible: false, selectedIdVolume: '' });
+
+        setFormDataProduto({
+            idPackinglist: id,
+            idProduto: '',
+            seq: '',
+            codigoMaquina: '',
+            nomeMaquina: '',
+            codigoOrdem: ''
+        })
     }
 
     const handleDelete = (e) => {
@@ -243,7 +349,7 @@ function PackingListProduto() {
     const handleDeleteConfirm = async (e) => {
         setEstadoDaPagina("Excluindo");
         const permissaoParaExcluir = "semPermissao";
-        
+
         try {
 
             await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}/${permissaoParaExcluir}`, config);
@@ -287,12 +393,12 @@ function PackingListProduto() {
     const handleDeleteConfirmSegundoFator = async (e) => {
         e.preventDefault();
         setEstadoDaPagina("Excluindo");
-        
+
         const permissaoParaExcluir = (inputDeleteSegundoFator === "Excluir") ? "comPermissao" : "semPermissao";
-        
+
         try {
             await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDeleteSegundoFator.selectedId}/${contextDeleteSegundoFator.selectedSeq}/${permissaoParaExcluir}`, config);
-            
+
             setSucessMessage(`Produto ${contextDeleteSegundoFator.selectedDesc} excluído com sucesso!`);
             setTimeout(() => {
                 setSucessMessage(null)
@@ -490,7 +596,7 @@ function PackingListProduto() {
                 </div>
             </div>
 
-            <div className="produto-container-prod">
+            <div className={tipoPackinglist === "maquina" ? "produto-container-prod" : "produto-container-prod-maior"}>
                 <div className="lista-produto">
                     {botaoAdicionar.visible && (
                         <div className="container-button-adicionar-produto">
@@ -554,21 +660,29 @@ function PackingListProduto() {
                                 <div>Id PackingList</div>
                                 <div>Id do Produto</div>
                                 <div>Seq</div>
+                                <div>Produto</div>
                                 <div>Descrição</div>
                                 <div>Ordem de Produção</div>
                                 <div>Total Peso Líquido</div>
                                 <div>Total Peso Bruto</div>
+                                {tipoPackinglist === "reposicao" && (
+                                    <div>Dimensão</div>
+                                )}
                             </li>
                             {filteredProdutos.length > 0 ? (
                                 filteredProdutos.map((p) => (
-                                    <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.id.idProduto, p.id.seq, p.descricaoProduto)} id="lista-prod-1">
+                                    <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.id.idProduto, p.id.seq, p.produto, p.descricaoProduto, p.ordemProducao, p.totalPesoLiquido, p.totalPesoBruto, p.comprimento, p.largura, p.altura)} id="lista-prod-1">
                                         <div>{packingList.idPackinglist}</div>
                                         <div>{p.id.idProduto}</div>
                                         <div>{p.id.seq}</div>
+                                        <div>{p.produto}</div>
                                         <div>{p.descricaoProduto}</div>
                                         <div>{p.ordemProducao}</div>
                                         <div>{p.totalPesoLiquido}</div>
                                         <div>{p.totalPesoBruto}</div>
+                                        {tipoPackinglist === "reposicao" && (
+                                            <div>{p.comprimento + ' X ' + p.largura + ' X ' + p.altura}</div>
+                                        )}
                                     </li>
                                 ))
                             ) : (
@@ -584,107 +698,250 @@ function PackingListProduto() {
                         </ul>
                     </div>
                 </div>
+            </div>
 
-                {contextMenu.visible && (
-                    <div className='context-menu' style={{
-                        top: `${contextMenu.y}px`, left: `${contextMenu.x}px`
-                    }}>
+
+            {contextMenu.visible && (
+                <div className='context-menu' style={{
+                    top: `${contextMenu.y}px`, left: `${contextMenu.x}px`
+                }}>
+                    {tipoPackinglist === "reposicao" && (
                         <div id='container-icon-menu' onClick={handleEdit}>
                             <Icon icon="mdi:edit" id='icone-menu' />
-                            <p>Listar Volumes</p>
+                            <p>Editar</p>
                         </div>
-                        <div id='container-icon-menu' onClick={handleGerarQRCodesProduto}>
-                            <Icon icon="vaadin:qrcode" id='icone-menu' />
-                            <p>Gerar QR Code</p>
+                    )}
+                    <div id='container-icon-menu' onClick={handleListarVolumes}>
+                        <Icon icon="ci:list-add" id='icone-menu' />
+                        <p>Listar Volumes</p>
+                    </div>
+                    <div id='container-icon-menu' onClick={handleGerarQRCodesProduto}>
+                        <Icon icon="vaadin:qrcode" id='icone-menu' />
+                        <p>Gerar QR Code</p>
+                    </div>
+                    <div id='container-icon-menu-excluir' onClick={handleDelete} >
+                        <Icon icon="material-symbols:delete-outline" id='icone-menu' />
+                        <p>Excluir</p>
+                    </div>
+                </div>
+
+
+            )}
+
+
+            {contextDelete.visible && (
+                <>
+                    <div className="overlay"></div>
+                    <div className="context-delete">
+                        <div>
+                            <Text
+                                text={'Tem certeza que deseja excluir o Volume?'}
+                                fontSize={20}
+                            />
                         </div>
-                        <div id='container-icon-menu-excluir' onClick={handleDelete} >
-                            <Icon icon="material-symbols:delete-outline" id='icone-menu' />
-                            <p>Excluir</p>
+
+                        <div className="buttons-delete">
+                            <Button
+                                className={'button-cancelar'}
+                                text={'CANCELAR'}
+                                fontSize={20}
+                                onClick={() => { setContextDelete({ visible: false }); }}
+                            />
+                            <Button
+                                className={'button-excluir'}
+                                text={'EXCLUIR'}
+                                fontSize={20}
+                                onClick={handleDeleteConfirm}
+                            />
                         </div>
                     </div>
+                </>
+            )}
 
 
-                )}
+            {contextDeleteSegundoFator.visible && (
 
-                {contextDelete.visible && (
+                <div>
                     <>
                         <div className="overlay"></div>
-                        <div className="context-delete">
-                            <div>
-                                <Text
-                                    text={'Tem certeza que deseja excluir o Volume?'}
-                                    fontSize={20}
-                                />
-                            </div>
+                        <div className="context-delete-segundo-fator">
+                            <form onSubmit={handleDeleteConfirmSegundoFator}>
+                                <div>
+                                    <div id="container-text-confirmar-exclusao-produto">
+                                        <Text
+                                            text={'Este produto possui volumes, para confirmar a exclusão do produto digite a palavra "Excluir" no campo abaixo:'}
+                                            fontSize={18}
+                                        />
+                                    </div>
+                                    <div id="container-input-confirmar-exclusao-produto">
+                                        <Input
+                                            className="input-confirmar-exclusao-produto"
+                                            type={'text'}
+                                            placeholder={'Digite: Excluir'}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
 
-                            <div className="buttons-delete">
+                                <div className="buttons-delete-segundo-fator">
+                                    <Button
+                                        className={'button-cancelar'}
+                                        text={'Cancelar'}
+                                        fontSize={20}
+                                        onClick={() => { setContextDeleteSegundoFator({ visible: false }); }}
+                                    />
+                                    <Button
+                                        className={'button-excluir'}
+                                        text={'Confirmar'}
+                                        fontSize={20}
+                                        type={"submit"}
+                                        onClick={handleDeleteConfirmSegundoFator}
+                                    />
+                                </div>
+                            </form>
+
+                        </div>
+                    </>
+                </div>
+
+            )}
+
+
+            {
+                contextEditar.visible && (
+
+                    <div className="overlay">
+                        <div className="overlay-content" ref={contextEditarRef}>
+                            <Title
+                                classname={'title-adicionar-volume'}
+                                text={'Editar o volume de reposição:'}
+                                color={'#1780e2'}
+                            />
+                            <div className="subcontainer-volume">
+                                <div className="container-input-adicionar-volume">
+                                    <form>
+                                        <div className="input-group-produto">
+                                            <div>
+                                                <label>Produto:</label>
+                                                <Input
+                                                    type={'text'}
+                                                    placeholder={infoProdutoParaExibirNoModoEdicao.produto}
+                                                    title={'Não é possível alterar o código do produto...'}
+                                                    value={infoProdutoParaExibirNoModoEdicao.produto}
+                                                    readOnly
+                                                />
+                                            </div>
+                                            <div>
+                                                <label>Descrição:</label>
+                                                <Input
+                                                    type={'text'}
+                                                    placeholder={infoProdutoParaExibirNoModoEdicao.descricaoProduto}
+                                                    title={'Não é possível alterar a descrição...'}
+                                                    value={infoProdutoParaExibirNoModoEdicao.descricaoProduto}
+                                                    readOnly
+                                                />
+                                            </div>
+                                            <div>
+                                                <label>Ordem de produção:</label>
+                                                <Input
+                                                    type={'text'}
+                                                    placeholder={infoProdutoParaExibirNoModoEdicao.ordemProducao || "Não possui ordem de produção..."}
+                                                    title={'Não é possível alterar a ordem de produção...'}
+                                                    value={infoProdutoParaExibirNoModoEdicao.descricaoProduto}
+                                                    readOnly
+                                                />
+                                            </div>
+                                            <div>
+                                                <label>Peso líquido total:</label>
+                                                <Input
+                                                    type={'text'}
+                                                    placeholder={infoProdutoParaExibirNoModoEdicao.pesoLiquidoTotal || "Não possui volumes ainda..."}
+                                                    title={'Não é possível alterar o peso líquido total...'}
+                                                    value={infoProdutoParaExibirNoModoEdicao.pesoLiquidoTotal}
+                                                    readOnly
+                                                />
+                                            </div>
+                                            <div>
+                                                <label>Peso bruto total:</label>
+                                                <Input
+                                                    type={'text'}
+                                                    placeholder={infoProdutoParaExibirNoModoEdicao.pesoBrutoTotal || "Não possui volumes ainda..."}
+                                                    title={'Não é possível alterar o peso bruto total...'}
+                                                    value={infoProdutoParaExibirNoModoEdicao.pesoBrutoTotal}
+                                                    readOnly
+                                                />
+                                            </div>
+
+                                            <div id="container-edit-prod-dims">
+
+                                                <label>Dimensões:</label>
+
+                                                <div id="sub-dimensao-container">
+                                                    <div className="container-inputs-dimensao-produto">
+                                                        <div>
+                                                            <label>Comprimento (cm):</label>
+                                                            <Input
+                                                                type={'number'}
+                                                                title={'Digite o comprimento do volume...'}
+                                                                placeholder={infoProdutoParaExibirNoModoEdicao.comprimento || "Ainda não possui..."}
+                                                                name={'comprimento'}
+                                                                onChange={handleChangeDimensao}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label>Largura (cm):</label>
+                                                            <Input
+                                                                type={'number'}
+                                                                title={'Digite a largura do volume...'}
+                                                                placeholder={infoProdutoParaExibirNoModoEdicao.largura || "Ainda não possui..."}
+                                                                name={'largura'}
+                                                                onChange={handleChangeDimensao}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label>Altura (cm)</label>
+                                                            <Input
+                                                                type={'number'}
+                                                                title={'Digite a altura do volume...'}
+                                                                placeholder={infoProdutoParaExibirNoModoEdicao.altura || "Ainda não possui..."}
+                                                                name={'altura'}
+                                                                onChange={handleChangeDimensao}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div className="buttons-adicionar-volume">
                                 <Button
-                                    className={'button-cancelar'}
-                                    text={'CANCELAR'}
-                                    fontSize={20}
-                                    onClick={() => { setContextDelete({ visible: false }); }}
+                                    className={'button-salvar-add-volume'}
+                                    text={'SALVAR'}
+                                    fontSize={15}
+                                    padding={10}
+                                    borderRadius={5}
+                                    onClick={handleAtualizarProduto}
                                 />
                                 <Button
-                                    className={'button-excluir'}
-                                    text={'EXCLUIR'}
-                                    fontSize={20}
-                                    onClick={handleDeleteConfirm}
+                                    className={'button-cancelar-add-volume'}
+                                    text={'CANCELAR'}
+                                    fontSize={15}
+                                    padding={10}
+                                    borderRadius={5}
+                                    onClick={handleCancelarEditarProduto}
                                 />
                             </div>
                         </div>
-                    </>
-                )}
-
-
-                {contextDeleteSegundoFator.visible && (
-
-                    <div>
-                        <>
-                            <div className="overlay"></div>
-                            <div className="context-delete-segundo-fator">
-                                <form onSubmit={handleDeleteConfirmSegundoFator}>
-                                    <div>
-                                        <div id="container-text-confirmar-exclusao-produto">
-                                            <Text
-                                                text={'Este produto possui volumes, para confirmar a exclusão do produto digite a palavra "Excluir" no campo abaixo:'}
-                                                fontSize={18}
-                                            />
-                                        </div>
-                                        <div id="container-input-confirmar-exclusao-produto">
-                                            <Input
-                                                className="input-confirmar-exclusao-produto"
-                                                type={'text'}
-                                                placeholder={'Digite: Excluir'}
-                                                onChange={handleChange}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="buttons-delete-segundo-fator">
-                                        <Button
-                                            className={'button-cancelar'}
-                                            text={'Cancelar'}
-                                            fontSize={20}
-                                            onClick={() => { setContextDeleteSegundoFator({ visible: false }); }}
-                                        />
-                                        <Button
-                                            className={'button-excluir'}
-                                            text={'Confirmar'}
-                                            fontSize={20}
-                                            type={"submit"}
-                                            onClick={handleDeleteConfirmSegundoFator}
-                                        />
-                                    </div>
-                                </form>
-
-                            </div>
-                        </>
                     </div>
+                )
+            }
 
-                )}
 
-
-            </div>
 
             {contextLoading.visible ? (
                 <Loading message={estadoDaPagina === "Carregando" ? "Carregando..." : estadoDaPagina === "Salvando" ? "Salvando..." : "Excluindo..."} />

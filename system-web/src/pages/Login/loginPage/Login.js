@@ -44,10 +44,8 @@ function Login() {
 
             const token = response.data.token;
             Cookies.set('jwt', token, { expires: 7, secure: true, sameSite: 'Strict' });
+            localStorage.setItem('nomeUsuario', login);
 
-
-            console.log(response.data);
-            console.log('Token: ', token);
             navigate('/inicio');
         } catch (error) {
             if (error.response) {

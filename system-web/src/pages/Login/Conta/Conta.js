@@ -6,7 +6,7 @@ import "./Conta.css";
 import Button from "../../../components/Button";
 import Cookies from 'js-cookie';
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import Loading from "../../../components/Loading/Loading";
 
@@ -15,6 +15,7 @@ function Conta() {
 
     const navigate = useNavigate();
     const [contextLoading, setContextLoading] = useState({ visible: false });
+    const [nomeUsuario, setNomeUsuario] = useState('');
 
     const handleLogoff = () => {
         Cookies.remove('jwt');
@@ -24,6 +25,14 @@ function Conta() {
             setContextLoading({visible: false})
         }, 5000);
     }
+
+    useEffect(() => {
+        const storedUserName = localStorage.getItem('nomeUsuario');
+
+        if (storedUserName) {
+            setNomeUsuario(storedUserName);
+        }
+    }, [])
 
     return (
         <div>
@@ -36,7 +45,10 @@ function Conta() {
                     <Title
                         text={'Minha Conta'}
                     />
-                    
+                    <Text 
+                    text={"Usuário: " + [nomeUsuario]}
+                    fontSize={'20px'}
+                    />
                     <div id="text-minha-conta">
                         <Text
                             text={'Está é uma conta vinculada ao sistema NOMUS, portanto se deseja alterar alguma informação em sua conta, acesse o NOMUS para altera-lá.'}
