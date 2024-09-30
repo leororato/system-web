@@ -226,7 +226,6 @@ function PackingListProduto() {
     };
 
     const handleEdit = () => {
-        console.log("EDIT: ", contextEditar)
         setContextMenu({
             visible: false,
             x: 0,
@@ -885,6 +884,7 @@ function PackingListProduto() {
                                                                 title={'Digite o comprimento do volume...'}
                                                                 placeholder={infoProdutoParaExibirNoModoEdicao.comprimento || "Ainda não possui..."}
                                                                 name={'comprimento'}
+                                                                value={infoProdutoParaExibirNoModoEdicao.comprimento}
                                                                 onChange={handleChangeDimensao}
                                                             />
                                                         </div>
@@ -895,6 +895,7 @@ function PackingListProduto() {
                                                                 title={'Digite a largura do volume...'}
                                                                 placeholder={infoProdutoParaExibirNoModoEdicao.largura || "Ainda não possui..."}
                                                                 name={'largura'}
+                                                                value={infoProdutoParaExibirNoModoEdicao.largura}
                                                                 onChange={handleChangeDimensao}
                                                             />
                                                         </div>
@@ -905,6 +906,7 @@ function PackingListProduto() {
                                                                 title={'Digite a altura do volume...'}
                                                                 placeholder={infoProdutoParaExibirNoModoEdicao.altura || "Ainda não possui..."}
                                                                 name={'altura'}
+                                                                value={infoProdutoParaExibirNoModoEdicao.altura}
                                                                 onChange={handleChangeDimensao}
                                                             />
                                                         </div>
