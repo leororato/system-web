@@ -1216,8 +1216,8 @@ function Volume() {
                                 <div id="list-vol">Altura (cm)</div>
                                 <div id="list-vol">Largura (cm)</div>
                                 <div id="list-vol">Comprimento (cm)</div>
-                                <div id="list-vol">Peso Líquido</div>
-                                <div id="list-vol">Peso Bruto</div>
+                                <div id="list-vol">Peso Líquido Unitário</div>
+                                <div id="list-vol">Peso Bruto Unitário</div>
                                 <div id="list-vol">Observação</div>
                             </li>
 
@@ -1542,7 +1542,7 @@ function Volume() {
                                                     name={'pesoLiquido'}
                                                     min={'0'}
                                                     placeholder={'Peso líquido unitário...'}
-                                                    title={'Digite o peso líquido do volume...'}
+                                                    title={'Digite o peso líquido de cada unidade do volume...'}
                                                     value={volumeEdicao.pesoLiquido}
                                                     onChange={handleChangeEdicao}
                                                 />
@@ -1554,7 +1554,7 @@ function Volume() {
                                                     name={'pesoBruto'}
                                                     min={'0'}
                                                     placeholder={'Peso bruto unitário...'}
-                                                    title={'Digite o peso bruto do volume...'}
+                                                    title={'Digite o peso bruto de cada unidade do volume...'}
                                                     value={volumeEdicao.pesoBruto}
                                                     onChange={handleChangeEdicao}
                                                 />

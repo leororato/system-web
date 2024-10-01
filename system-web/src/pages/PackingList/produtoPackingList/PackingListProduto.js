@@ -253,6 +253,10 @@ function PackingListProduto() {
         setInputDeleteSegundoFator(e.target.value);
     }
 
+    const handleChangePesoBruto = (e) => {
+        setInfoProdutoParaExibirNoModoEdicao({...infoProdutoParaExibirNoModoEdicao, totalPesoBruto: e.target.value });
+    }
+
     const handleChangeDimensao = (e) => {
         const { name, value } = e.target;
         setInfoProdutoParaExibirNoModoEdicao({ ...infoProdutoParaExibirNoModoEdicao, [name]: value });
@@ -285,6 +289,7 @@ function PackingListProduto() {
             setSucessMessage('Volume de reposição atualizado com sucesso!');
             setTimeout(() => setSucessMessage(null), 5000);
 
+            fetchPackingList();
             fetchProdutos();
 
         } catch (error) {
@@ -387,7 +392,6 @@ function PackingListProduto() {
         }
 
     };
-
 
     const handleDeleteConfirmSegundoFator = async (e) => {
         e.preventDefault();
@@ -856,7 +860,7 @@ function PackingListProduto() {
                                                     type={'text'}
                                                     placeholder={infoProdutoParaExibirNoModoEdicao.pesoLiquidoTotal || "Não possui volumes ainda..."}
                                                     title={'Não é possível alterar o peso líquido total...'}
-                                                    value={infoProdutoParaExibirNoModoEdicao.pesoLiquidoTotal}
+                                                    value={infoProdutoParaExibirNoModoEdicao.totalPesoLiquido}
                                                     readOnly
                                                 />
                                             </div>
@@ -866,8 +870,8 @@ function PackingListProduto() {
                                                     type={'text'}
                                                     placeholder={infoProdutoParaExibirNoModoEdicao.pesoBrutoTotal || "Não possui volumes ainda..."}
                                                     title={'Não é possível alterar o peso bruto total...'}
-                                                    value={infoProdutoParaExibirNoModoEdicao.pesoBrutoTotal}
-                                                    readOnly
+                                                    value={infoProdutoParaExibirNoModoEdicao.totalPesoBruto}
+                                                    onChange={handleChangePesoBruto}
                                                 />
                                             </div>
 

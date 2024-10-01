@@ -198,12 +198,16 @@
     background-color: #dddddd5b;
 }
 
-#nao-existe-prod {
+#nao-existe-produto {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     justify-content: center;
     align-items: center;
     width: 100%;
+}
+
+#nao-existe-produto li {
+    list-style: none;
 }
 
 .container-listagem-prod .header,
