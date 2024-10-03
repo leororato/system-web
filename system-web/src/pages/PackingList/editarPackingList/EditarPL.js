@@ -83,16 +83,18 @@ function EditarPL() {
             setContextLoading({ visible: true });
 
             let dadosBancarios = response.data.dadosBancarios;
-            let dadosBancariosSeparados = dadosBancarios.split('$')
+            if (dadosBancarios != null) {
 
-            setBancoResponse(dadosBancariosSeparados[0]);
-            setAgenciaResponse(dadosBancariosSeparados[1]);
-            setContaResponse(dadosBancariosSeparados[2]);
-            setSwiftResponse(dadosBancariosSeparados[3]);
-            setIbanResponse(dadosBancariosSeparados[4]);
+                let dadosBancariosSeparados = dadosBancarios.split('$')
+                
+                setBancoResponse(dadosBancariosSeparados[0]);
+                setAgenciaResponse(dadosBancariosSeparados[1]);
+                setContaResponse(dadosBancariosSeparados[2]);
+                setSwiftResponse(dadosBancariosSeparados[3]);
+                setIbanResponse(dadosBancariosSeparados[4]);
+            }
 
         } catch (error) {
-
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar PackingList";
             setErrorMessage(errorMessage);
 
@@ -165,8 +167,6 @@ function EditarPL() {
                         formData.idConsignatario ? api.get(`/clienteNomus/${formData.idConsignatario}`, config) : Promise.resolve({ data: { nome: '' } }),
                         formData.idNotificado ? api.get(`/clienteNomus/${formData.idNotificado}`, config) : Promise.resolve({ data: { nome: '' } })
                     ]);
-
-                    console.log('response:', responses[0].data.nome);
 
                     setGuardarNomes({
                         nomeImportador: responses[0].data.nome,
@@ -299,6 +299,7 @@ function EditarPL() {
                             <Select
                                 className="form-pais-origem"
                                 name="paisOrigem"
+                                placeholder={"Selecione"}
                                 options={[{ value: 'Brasil', label: 'Brasil' }]}
                                 value={formData.paisOrigem}
                                 onChange={e => setFormData({ ...formData, paisOrigem: e.target.value })}
@@ -338,14 +339,6 @@ function EditarPL() {
                                 onChange={handleChange}
                             />
                         </div>
-
-
-
-
-
-
-
-
 
                         <div id="container-total-dados-bancarios">
                             <label>Dados Bancários:</label>

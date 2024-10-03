@@ -81,9 +81,14 @@ function PackingListProduto() {
             const response = await api.get(`/packinglist/${id}`, config);
             setContextLoading({ visible: true });
             setPackingList(response.data);
-            setDadosSeparados(response.data.dadosBancarios.split('$'));
 
-            console.log(response.data.tipoTransporte)
+            const dadosBancarios = response.data.dadosBancarios;
+
+            if (dadosBancarios != null) {
+                setDadosSeparados(dadosBancarios.split('$'));
+            } else {
+                setDadosSeparados(null);
+            }
 
             const tipoTransporte = response.data.tipoTransporte
             if (tipoTransporte === "Marítimo" || tipoTransporte === "Terrestre") {
@@ -254,7 +259,7 @@ function PackingListProduto() {
     }
 
     const handleChangePesoBruto = (e) => {
-        setInfoProdutoParaExibirNoModoEdicao({...infoProdutoParaExibirNoModoEdicao, totalPesoBruto: e.target.value });
+        setInfoProdutoParaExibirNoModoEdicao({ ...infoProdutoParaExibirNoModoEdicao, totalPesoBruto: e.target.value });
     }
 
     const handleChangeDimensao = (e) => {
@@ -542,6 +547,7 @@ function PackingListProduto() {
                         </li>
 
                         {packingList && (
+
                             <li key={packingList.idPackinglist} className='li-listagem-produto'>
                                 <div>{packingList.idPackinglist}</div>
                                 <div>{formatarData(packingList.dtCriacao)}</div>
@@ -550,13 +556,20 @@ function PackingListProduto() {
                                 <div>{packingList.localEmbarque}</div>
                                 <div>{packingList.localDestino}</div>
                                 <div>{packingList.termosPagamento}</div>
-                                <div>
-                                    {dadosSeparados[0] + '\n'
-                                        + 'Agência: ' + dadosSeparados[1] + '\n'
-                                        + 'Conta: ' + dadosSeparados[2] + '\n'
-                                        + 'Swift: ' + dadosSeparados[3] + '\n'
-                                        + 'Iban: ' + dadosSeparados[4] + '\n'}
-                                </div>
+                                {dadosSeparados != null ? (
+                                    <div>
+                                        {
+                                            dadosSeparados[0] + '\n'
+                                            + 'Agência: ' + dadosSeparados[1] + '\n'
+                                            + 'Conta: ' + dadosSeparados[2] + '\n'
+                                            + 'Swift: ' + dadosSeparados[3] + '\n'
+                                            + 'Iban: ' + dadosSeparados[4] + '\n'
+                                        }
+                                    </div>
+                                ) : (
+                                    <div></div>
+                                )}
+
                                 <div>{packingList.incoterm}</div>
                                 <div>{packingList.invoice}</div>
                                 <div>{packingList.tipoTransporte}</div>

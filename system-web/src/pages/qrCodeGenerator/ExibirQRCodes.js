@@ -61,7 +61,7 @@ const ExibirQRCodes = () => {
 
     const [nomeProduto, setNomeProduto] = useState('');
     const [invoice, setInvoice] = useState('');
-    const [consignatario, setConsignatario] = useState('');
+    const [clienteAReceber, setClienteAReceber] = useState('');
     //---------------------------- ^FIM QR CODES PRODUTOS^ ----------------------------//
 
 
@@ -164,17 +164,27 @@ const ExibirQRCodes = () => {
     useEffect(() => {
 
         const buscarInvoiceDaPackinglistDoProdutoSelecionado = async () => {
-            try {
+        try {
                 if (modoDaPagina === 1) {
 
                     await api.get(`/packinglist/${idPackinglist}`, config)
                         .then(response => {
                             setInvoice(response.data.invoice);
-                            const idConsignatario = response.data.idConsignatario;
-                            api.get(`/clienteNomus/${idConsignatario}`, config)
-                                .then(response => {
-                                    setConsignatario(response.data.nome);
-                                });
+                            
+                            if (response.data.idConsignatario != null) {
+                                const idConsignatario = response.data.idConsignatario;
+                                api.get(`/clienteNomus/${idConsignatario}`, config)
+                                    .then(response => {
+                                        setClienteAReceber(response.data.nome);
+                                    });
+                            } else {
+                                const idImportador = response.data.idImportador;
+                                api.get(`/clienteNomus/${idImportador}`, config)
+                                    .then(response => {
+                                        setClienteAReceber(response.data.nome);
+                                    });
+                            }
+                            
                         })
                         .catch((error) => {
                             const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar nome do cliente";
@@ -399,8 +409,7 @@ const ExibirQRCodes = () => {
                                             <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
                                             <div className='texto-etiqueta'>
                                                 <p><strong>Descrição: {nomeProduto} </strong></p>
-                                                <p><strong>Invoice: {invoice} </strong></p>
-                                                <p><strong>Cliente: {consignatario} </strong></p>
+                                                <p><strong>Cliente: {clienteAReceber} </strong></p>
                                                 <p><strong>Volume: {pesquisaNosVolumes[index]?.descricao}</strong></p>
                                                 <p><strong>Quantidade Itens: {pesquisaNosVolumes[index]?.quantidadeItens}</strong></p>
                                             </div>
@@ -419,7 +428,6 @@ const ExibirQRCodes = () => {
                                     <QRCode value={infoQrCodeUnico} size={100} className='qr-code-img' />
                                     <div className='texto-etiqueta'>
                                         <p><strong>Descrição: {informacoesQrCodeUnico?.descricaoProduto} </strong></p>
-                                        <p><strong>Invoice: {informacoesQrCodeUnico?.invoice} </strong></p>
                                         <p><strong>Cliente: {informacoesQrCodeUnico?.consignatario} </strong></p>
                                         <p><strong>Volume: {informacoesQrCodeUnico?.volume}</strong></p>
                                         <p><strong>Quantidade Itens: {informacoesQrCodeUnico?.quantidadeItens}</strong></p>
@@ -437,8 +445,7 @@ const ExibirQRCodes = () => {
                                             <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
                                             <div className='texto-etiqueta'>
                                                 <p><strong>Descrição: {nomeProduto} </strong></p>
-                                                <p><strong>Invoice: {invoice} </strong></p>
-                                                <p><strong>Cliente: {consignatario} </strong></p>
+                                                <p><strong>Cliente: {clienteAReceber} </strong></p>
                                                 <p><strong>Volume: {[index]?.descricao}</strong></p>
                                                 <p><strong>Quantidade Itens: {pesquisaNosVolumes[index]?.quantidadeItens}</strong></p>
                                             </div>

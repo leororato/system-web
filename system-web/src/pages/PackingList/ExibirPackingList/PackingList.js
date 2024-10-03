@@ -201,18 +201,18 @@ function PackingList() {
         setEstadoDaPagina('Excluindo')
         setContextLoading({ visible: true });
         const permissaoParaExcluir = "semPermissao";
-        
+
         try {
             await api.delete(`/packinglist/${itemDeletado}/${permissaoParaExcluir}`, config);
 
-            
-            // setPackingLists(packingLists.filter(packingList =>
-                //     packingList.id !== contextDelete.selectedId));
-                setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
-                setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
-                setTimeout(() => setSucessMessage(null), 5000);
 
-                fetchPackingListContainer();
+            // setPackingLists(packingLists.filter(packingList =>
+            //     packingList.id !== contextDelete.selectedId));
+            setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
+            setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
+            setTimeout(() => setSucessMessage(null), 5000);
+
+            fetchPackingListContainer();
 
         } catch (error) {
 
@@ -248,10 +248,10 @@ function PackingList() {
         setContextLoading({ visible: true });
 
         const permissaoParaExcluir = (inputDeleteSegundoFator === "Excluir") ? "comPermissao" : "palavraChaveErrada";
-        
+
         try {
             await api.delete(`/packinglist/${itemDeletado}/${permissaoParaExcluir}`, config);
-            
+
             setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
             setTimeout(() => {
                 setSucessMessage(null);
@@ -262,7 +262,7 @@ function PackingList() {
 
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao excluir Packinglist";
-            
+
             if (error.response?.status === 406) {
                 setErrorMessage("A palavra de confirmação foi digitada incorretamente");
             } else {
@@ -404,8 +404,10 @@ function PackingList() {
                         <>
                             {filteredPackinglist && filteredPackinglist.length > 0 ? (
                                 filteredPackinglist.map((p) => {
-
-                                    const dadosSeparados = p.dadosBancarios.split('$');
+                                    let dadosSeparados = [];
+                                    if (p.dadosBancarios != null) {
+                                        dadosSeparados = p.dadosBancarios.split('$');
+                                    }
 
                                     return (
                                         <li key={p.idPackinglist} onContextMenu={(event) => handleRightClick(event, p.idPackinglist)} className='li-listagem'>
@@ -420,13 +422,18 @@ function PackingList() {
                                             <div>{p.localDestino}</div>
                                             <div>{p.termosPagamento}</div>
 
-                                            <div>
-                                                {dadosSeparados[0] + '\n'
-                                                    + 'Agência: ' + dadosSeparados[1] + '\n'
-                                                    + 'Conta: ' + dadosSeparados[2] + '\n'
-                                                    + 'Swift: ' + dadosSeparados[3] + '\n'
-                                                    + 'Iban: ' + dadosSeparados[4] + '\n'}
-                                            </div>
+                                            {p.dadosBancarios != null ? (
+                                                <div>
+                                                    {dadosSeparados[0] + '\n'
+                                                        + 'Agência: ' + dadosSeparados[1] + '\n'
+                                                        + 'Conta: ' + dadosSeparados[2] + '\n'
+                                                        + 'Swift: ' + dadosSeparados[3] + '\n'
+                                                        + 'Iban: ' + dadosSeparados[4] + '\n'}
+                                                </div>
+
+                                            ) : (
+                                                <div></div>
+                                            )}
 
                                             <div>{p.incoterm}</div>
                                             <div>{p.invoice}</div>
