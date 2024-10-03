@@ -60,6 +60,10 @@ function Volume() {
 
     const [contextMenu, setContextMenu] = useState({ visible: false, selectedIdVolume: '' });
 
+    const [buscaVolume, setBuscaVolume] = useState('');
+
+    const [filteredVolumes, setFilteredVolumes] = useState([]);
+
     // CARREGA O VALOR O IDVOLUME QUANDO CLICA EM CIMA DE ALGUM ITEM
     const [salvarIdVolume, setSalvarIdVolume] = useState('');
 
@@ -208,7 +212,7 @@ function Volume() {
             const comprimento = response.data.comprimento;
             const largura = response.data.largura;
             const altura = response.data.altura;
-            
+
             if (comprimento != null && largura != null && altura != null) {
                 setTipoPackinglist("reposicao");
             } else {
@@ -506,30 +510,30 @@ function Volume() {
         setEstadoDaPagina("Excluindo");
         setContextLoading({ visible: true });
 
-            try {
-                await api.delete(`/volume/${idVolumeSelecionado}`, config);
+        try {
+            await api.delete(`/volume/${idVolumeSelecionado}`, config);
 
-                setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
+            setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
 
-                setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
+            setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
 
-                setTimeout(() => {
-                    setSucessMessage(null);
-                }, 5000);
+            setTimeout(() => {
+                setSucessMessage(null);
+            }, 5000);
 
-                fetchVolumes();
-                fetchProdutoSelecionado();
-            } catch (error) {
-                const errorMessage = error.response?.data || "Erro desconhecido ao deletar Volume...";
-                setErrorMessage(errorMessage);
-                console.log('erro: ', error.response?.data)
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
+            fetchVolumes();
+            fetchProdutoSelecionado();
+        } catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao deletar Volume...";
+            setErrorMessage(errorMessage);
+            console.log('erro: ', error.response?.data)
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
 
-            } finally {
-                setContextLoading({ visible: false });
-            }
+        } finally {
+            setContextLoading({ visible: false });
+        }
 
     }
 
@@ -542,6 +546,16 @@ function Volume() {
         event.preventDefault();
         handleSalvarSubVolume();
     };
+
+
+    useEffect(() => {
+        const filteredVolumes = volumes.filter(p =>
+            (p.descricao ? p.descricao.toLowerCase() : '').includes(buscaVolume.toLowerCase())
+        );
+        setFilteredVolumes(filteredVolumes);
+    }, [buscaVolume, volumes]);
+
+
 
     // ------------------------------------- ^VOLUMES^ ------------------------------------- //              
 
@@ -1195,7 +1209,9 @@ function Volume() {
 
             <div className="org-lista-1">
                 <div className="org-lista-2">
-                    <div id="container-botao-add-volume">
+
+                    <div id="container-botao-add-busca-volume">
+                        <div>
                         <Button
                             className={'button-adicionar-volume'}
                             text={'Adicionar Volume'}
@@ -1204,6 +1220,16 @@ function Volume() {
                             borderRadius={5}
                             onClick={handleAddVolume}
                         />
+                        </div>
+                        <div className='busca-descricao-input'>
+                            <Input
+                                type={'text'}
+                                placeholder={'Descrição'}
+                                title={'Pesquise pela Descrição do volume...'}
+                                value={buscaVolume}
+                                onChange={(e) => setBuscaVolume(e.target.value)}
+                            />
+                        </div>
                     </div>
 
                     <div className='container-listagem-volume'>
@@ -1245,8 +1271,8 @@ function Volume() {
                                 </Box>
                             ) : (
                                 <>
-                                    {volumes.length > 0 ? (
-                                        volumes.map((v) => (
+                                    {filteredVolumes && filteredVolumes.length > 0 ? (
+                                        filteredVolumes.map((v) => (
                                             <li key={v.idVolume} className='li-listagem-volume'>
                                                 <div id="container-list-vol">
                                                     <div id="list-vol-divs" onContextMenu={(e) => handleRightClick(e, v.idVolume, v.idTipoVolumeId,

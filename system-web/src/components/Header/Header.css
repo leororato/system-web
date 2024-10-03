@@ -96,6 +96,23 @@
     padding: 5px;
 }
 
+.container-icone-fechar {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    transition: 0.5ms ease ;
+}
+
+#icone-fechar-criacao-tipo-volume {
+    font-size: 20px;
+}
+
+#icone-fechar-criacao-tipo-volume:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+    transform: scale(1.2);
+}
+
 .container-header-menu div {
     padding: 10px 5px 10px 10px;
     border-radius: 5px;

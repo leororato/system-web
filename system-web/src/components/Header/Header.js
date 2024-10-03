@@ -106,6 +106,11 @@ const Header = () => {
     }
   }
 
+  const handleCloseContextVolume = () => {
+    setContextVolume({ visible: false });
+    setTipoDeVolume({ descricao: '' });
+  }
+
   return (
     <div className='header-container'>
       <ErrorNotification message={errorMessage} onClose={() => setErrorMessage(null)} />
@@ -165,6 +170,7 @@ const Header = () => {
         <>
           <div className='overlay'></div>
           <div className='context-volume'>
+            <div className="container-icone-fechar"><Icon icon="ep:close-bold" id="icone-fechar-criacao-tipo-volume" onClick={handleCloseContextVolume}/></div>
             <div className='container-text-input'>
               <div className='container-text-cv'>
                 <Text

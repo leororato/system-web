@@ -81,9 +81,13 @@
     width: 1180px;
 }
 
-#container-botao-add-volume {
+#container-botao-add-busca-volume {
+    display: flex;
+    justify-content: end;
+    flex-direction: row-reverse;
+    gap: 20px;
     width: 100%;
-    text-align: right;
+    align-items: flex-end;
     margin-bottom: 15px;
 }
 
@@ -426,6 +430,13 @@
 .container-input-adicionar-volume input {
     padding: 5px;
     border: 1px solid black;
+    border-radius: 5px;
+}
+
+.busca-descricao-input input{
+    width: 200px;
+    padding: 10px;
+    border: 1px solid #ddd;
     border-radius: 5px;
 }
 

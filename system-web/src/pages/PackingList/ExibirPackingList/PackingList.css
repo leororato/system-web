@@ -108,6 +108,10 @@ body {
     transition: 0.3s ease;
 }
 
+#container-icon-menu {
+
+}
+
 #container-icon-menu:hover {
     background-color: #d8d8d8;
     transform: scale(1.02);
@@ -229,21 +233,23 @@ body {
 .button-cancelar-volume {
     background-color: #fa0000;
     padding: 7px;
-    border-radius: 7px;
+    border-radius: 4px;
     width: 7em;
-    transition: 0.5s ease;
+    transition: 0.5ms ease;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.418);
 }
 
 .button-cancelar-volume:hover {
-    background-color: #b30e0e;
+    background-color: #910c0c;
 }
 
 .button-criar-volume {
     background-color: #1780e2;
     padding: 7px;
-    border-radius: 7px;
+    border-radius: 4px;
     width: 7em;
-    transition: 0.5s ease;
+    transition: 0.5ms ease;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.418);
 }
 
 .button-criar-volume:hover {
