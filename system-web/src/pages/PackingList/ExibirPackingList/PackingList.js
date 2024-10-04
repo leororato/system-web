@@ -72,19 +72,26 @@ function PackingList() {
 
         const fetchPackingLists = async () => {
             setEstadoDaPagina('Carregando')
+            setContextLoading({ visible: true })
+
             try {
                 const response = await api.get('/packinglist', config);
-                setPackingLists(response.data);
-                setContextLoading({ visible: true })
+
+                if (response.data && Array.isArray(response.data)) {
+                    setPackingLists(response.data);
+
+                } else {
+                    setPackingLists([]);
+                }
+
             } catch (error) {
                 const errorMessage = error.response?.data?.message;
                 setErrorMessage(errorMessage);
 
-                console.log("Erro: ", errorMessage)
-
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000);
+                
             } finally {
                 setContextLoading({ visible: false })
             }
@@ -93,6 +100,8 @@ function PackingList() {
 
         const fetchClientes = async () => {
             setEstadoDaPagina('Carregando')
+            setContextLoading({ visible: true });
+
             try {
                 const response = await api.get('/clienteNomus', config);
                 const clientesData = response.data.reduce((acc, cliente) => {
@@ -100,7 +109,6 @@ function PackingList() {
                     return acc;
                 }, {});
                 setClientes(clientesData);
-                setContextLoading({ visible: true });
 
             } catch (error) {
 

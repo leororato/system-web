@@ -119,6 +119,7 @@ function PackingListProduto() {
         try {
             const response = await api.get(`/pl-produto/packinglist/${id}`, config);
             setProdutos(response.data);
+            console.log('response: ', response)
             setContextLoading({ visible: true });
 
         } catch (error) {
@@ -142,14 +143,13 @@ function PackingListProduto() {
 
     useEffect(() => {
         const filterProdutos = produtos.filter(p =>
-            (p.idProduto?.toString() || '').includes(buscaIdProduto) &&
+            (p.id.idProduto?.toString() || '').includes(buscaIdProduto) &&
             (p.descricaoProduto ? p.descricaoProduto.toLowerCase() : '').includes(buscaDescricaoProduto.toLowerCase()) &&
-            (p.ordemProducao?.toString() || '').includes(buscaOrdemDeProducao)
+            (p.ordemProducao ? p.ordemProducao.toLowerCase() : '').includes(buscaOrdemDeProducao.toLowerCase())
         );
         setFilteredProdutos(filterProdutos);
     }, [buscaIdProduto, buscaDescricaoProduto, buscaOrdemDeProducao, produtos]);
-
-
+    
 
     const formatarData = (dtCriacao) => {
         if (!dtCriacao) return 'Data inválida';

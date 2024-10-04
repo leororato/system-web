@@ -89,9 +89,7 @@ const Header = () => {
 
       setSucessMessage(`Tipo de Volume '${response.data.descricao}' criado com sucesso`);
 
-      setTimeout(() => {
-        navigate(0);
-      }, 3000);
+      setContextVolume({ visible: false });
 
     } catch (error) {
       const errorMessage = error.response?.data || "Erro desconhecido ao criar o Tipo de Volume";
@@ -170,20 +168,22 @@ const Header = () => {
         <>
           <div className='overlay'></div>
           <div className='context-volume'>
-            <div className="container-icone-fechar"><Icon icon="ep:close-bold" id="icone-fechar-criacao-tipo-volume" onClick={handleCloseContextVolume}/></div>
+            <div className="container-icone-fechar"><Icon icon="ep:close-bold" id="icone-fechar-criacao-tipo-volume" onClick={handleCloseContextVolume} /></div>
             <div className='container-text-input'>
               <div className='container-text-cv'>
                 <Text
                   text={'Criar tipo de volume:'}
                   fontSize={15}
-                /></div>
+                />
+              </div>
               <div className='container-input-criar-volume'>
                 <Input
                   className={"input-tipo-volume"}
                   placeholder={'Ex: Pallet...'}
                   padding={7}
                   onChange={(e) => setTipoDeVolume({ descricao: e.target.value })}
-                /></div>
+                />
+              </div>
             </div>
 
             <div className='buttons-create'>

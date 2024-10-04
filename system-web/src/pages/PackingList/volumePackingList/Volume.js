@@ -248,7 +248,13 @@ function Volume() {
 
         try {
             const response = await api.get(`/volume/produto/${id}/${idProduto}/${seq}`, config);
-            setVolumes(response.data);
+            
+            if (response.data && Array.isArray(response.data)) {
+                setVolumes(response.data);
+
+            } else {
+                setVolumes([]);
+            }
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao carregar volumes";
@@ -257,6 +263,9 @@ function Volume() {
             setTimeout(() => {
                 setErrorMessage(null);
             }, 5000);
+
+            setVolumes([]);
+
         } finally {
             setContextLoading({ visible: false });
             setLoading(false);
@@ -526,7 +535,7 @@ function Volume() {
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao deletar Volume...";
             setErrorMessage(errorMessage);
-            console.log('erro: ', error.response?.data)
+
             setTimeout(() => {
                 setErrorMessage(null);
             }, 5000);
