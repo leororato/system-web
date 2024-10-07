@@ -64,67 +64,29 @@ function PackingList() {
 
 
     useEffect(() => {
-        fetchPackingListContainer();
+        fetchListaPackinglist();
     }, []);
 
-
-    const fetchPackingListContainer = () => {
-
-        const fetchPackingLists = async () => {
-            setEstadoDaPagina('Carregando')
-            setContextLoading({ visible: true })
+    const fetchListaPackinglist = async () => {
+            setEstadoDaPagina('Carregando');
+            setContextLoading({ visible: true });
 
             try {
-                const response = await api.get('/packinglist', config);
-
-                if (response.data && Array.isArray(response.data)) {
-                    setPackingLists(response.data);
-
-                } else {
-                    setPackingLists([]);
-                }
-
+                const response = await api.get('/packinglist/listagem-packinglist-inicio', config);
+                setPackingLists(response.data);
+                console.log("packinglists: ", response.data);
+                
             } catch (error) {
-                const errorMessage = error.response?.data?.message;
+                const errorMessage = error.response?.data || "Erro desconhecido ao buscar as packinglists";
                 setErrorMessage(errorMessage);
-
+    
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000);
                 
             } finally {
-                setContextLoading({ visible: false })
+                setContextLoading({ visible: false });
             }
-        }
-
-
-        const fetchClientes = async () => {
-            setEstadoDaPagina('Carregando')
-            setContextLoading({ visible: true });
-
-            try {
-                const response = await api.get('/clienteNomus', config);
-                const clientesData = response.data.reduce((acc, cliente) => {
-                    acc[cliente.id] = cliente.nome;
-                    return acc;
-                }, {});
-                setClientes(clientesData);
-
-            } catch (error) {
-
-                const errorMessage = error.response?.data?.message;
-                setErrorMessage(errorMessage);
-                console.log("erro: ", error)
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000)
-            } finally {
-                setContextLoading({ visible: false })
-            }
-        };
-
-        fetchPackingLists();
-        fetchClientes();
     }
 
 
@@ -220,7 +182,7 @@ function PackingList() {
             setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
             setTimeout(() => setSucessMessage(null), 5000);
 
-            fetchPackingListContainer();
+            await fetchListaPackinglist();
 
         } catch (error) {
 
@@ -266,7 +228,7 @@ function PackingList() {
             }, 5000);
 
             setContextDeleteSegundoFator({ visible: false, selectedId: null, x: 0, y: 0 });
-            await fetchPackingListContainer();
+            await fetchListaPackinglist();
 
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao excluir Packinglist";
@@ -421,9 +383,9 @@ function PackingList() {
                                         <li key={p.idPackinglist} onContextMenu={(event) => handleRightClick(event, p.idPackinglist)} className='li-listagem'>
                                             <div>{p.idPackinglist}</div>
                                             <div>{formatarData(p.dtCriacao)}</div>
-                                            <div>{clientes[p.idImportador] || p.idImportador}</div>
-                                            <div>{clientes[p.idConsignatario] || p.idConsignatario}</div>
-                                            <div>{clientes[p.idNotificado] || p.idNotificado}</div>
+                                            <div>{p.nomeClienteImportador}</div>
+                                            <div>{p.nomeClienteConsignatario}</div>
+                                            <div>{p.nomeClienteNotificado}</div>
                                             <div>{p.paisOrigem}</div>
                                             <div>{p.fronteira}</div>
                                             <div>{p.localEmbarque}</div>

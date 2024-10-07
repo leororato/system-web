@@ -163,7 +163,7 @@ const Header = () => {
         </div>
       )}
 
-
+      {/* CRIAR TIPO DE VOLUME INICIO */}
       {contextVolume.visible && (
         <>
           <div className='overlay'></div>
@@ -202,7 +202,8 @@ const Header = () => {
             </div>
           </div>
         </>
-      )}
+      )} 
+      {/* FIM CRIAR TIPO DE VOLUME */}
 
       {contextLoading.visible ? (
         <Loading message={estadoDaPagina === "Salvando" ? "Salvando..." : "Carregando..."} />

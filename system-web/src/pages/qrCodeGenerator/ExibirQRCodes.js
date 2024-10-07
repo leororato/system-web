@@ -85,7 +85,7 @@ const ExibirQRCodes = () => {
             const fetchTodosOsQrCodesDeUmaPackinglist = async () => {
                 setEstadoDaPagina("Carregando");
                 setContextLoading({ visible: true });
-             
+
 
                 try {
                     const response = await api.get(`/busca-qrcode/todos-packinglist/${idPackinglist}`, config)
@@ -205,7 +205,7 @@ const ExibirQRCodes = () => {
                 <div className='info-qrcode'>
                     <div id='texto-qrcode'>
                         <Text
-                            text={modoDaPagina === 1 ? `Está é a lista dos QRCodes de todos os Volumes do Produto: ${todosQrCodesDoProduto.descricaoProduto}` : `Este é o QRCode do Volume '${qrCodeDeUmVolume.descricaoProduto}' `}
+                            text={modoDaPagina === 1 ? `Está é a lista dos QRCodes de todos os volumes do Produto: ${todosQrCodesDoProduto.descricaoProduto}` : `Este é o QRCode do Volume '${qrCodeDeUmVolume.descricaoProduto}' `}
                         />
                     </div>
 
@@ -218,97 +218,103 @@ const ExibirQRCodes = () => {
                     </div>
                 </div>
 
-                    <>
+                <>
 
 
-                        {/* SE FOR GERADO TODOS OS QRCODES DE UM PRODUTO */}
-                        {modoDaPagina === 1 && (
-                            <div className='qr-code-lista'>
-                                {todosQrCodesDoProduto && todosQrCodesDoProduto.length > 0 ? (
-                                    todosQrCodesDoProduto.map((item) => (
-                                        <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'> {/* Coloque a key aqui, usando algo único */}
-                                            <div className='qr-code-item'>
-                                                <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
-                                                <div className='texto-etiqueta'>
+                    {/* SE FOR GERADO TODOS OS QRCODES DE UM PRODUTO */}
+                    {modoDaPagina === 1 && (
+                        <div className='qr-code-lista'>
+                            {todosQrCodesDoProduto && todosQrCodesDoProduto.length > 0 ? (
+                                todosQrCodesDoProduto.map((item) => (
+                                    <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'>
+                                        <div className='qr-code-item'>
+                                            <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
+                                            <div className='texto-etiqueta'>
+                                                <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
                                                         <img src={logo} id='logo-para-etiquetas'></img>
                                                         <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                                     </div>
-                                                    <div id="textos-etiqueta-div">
-                                                        <p><strong>{item.descricaoProduto} </strong></p>
-                                                        <p><strong>{item.nomeCliente} </strong></p>
-                                                        <p><strong>{item.descricaoVolume}</strong></p>
-                                                        <p><strong>{item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
-                                                    </div>
+                                                </div>
+                                                <div id="textos-etiqueta-div">
+                                                    <p><strong>{item.descricaoProduto} </strong></p>
+                                                    <p><strong>{item.nomeCliente} </strong></p>
+                                                    <p><strong>{item.descricaoVolume}</strong></p>
+                                                    <p><strong>{item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
                                                 </div>
                                             </div>
                                         </div>
-                                    ))
-                                ) : (
-                                    <p>Nenhum QR Code encontrado. Provavelmente não há volumes criados para este produto ainda...</p>
-                                )}
-                            </div>
-                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <p>Nenhum QR Code encontrado. Provavelmente não há volumes criados para este produto ainda...</p>
+                            )}
+                        </div>
+                    )}
 
-                        {/* SE FOR GERADO APENAS O QRCODE DE UM VOLUME */}
-                        {modoDaPagina === 2 && (
-                            <div className='qr-code-lista'>
-                                {qrCodeDeUmVolume.length > 0 ? (
-                                    qrCodeDeUmVolume.map((item) => (
-                                        <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'> {/* Colocando a key aqui */}
-                                            <div className='qr-code-item'>
-                                                <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
-                                                <div className='texto-etiqueta'>
+                    {/* SE FOR GERADO APENAS O QRCODE DE UM VOLUME */}
+                    {modoDaPagina === 2 && (
+                        <div className='qr-code-lista'>
+                            {qrCodeDeUmVolume.length > 0 ? (
+                                qrCodeDeUmVolume.map((item) => (
+                                    <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'> {/* Colocando a key aqui */}
+                                        <div className='qr-code-item'>
+                                            <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
+                                            <div className='texto-etiqueta'>
+                                                <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
                                                         <img src={logo} id='logo-para-etiquetas'></img>
                                                         <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                                     </div>
-                                                    <div id="textos-etiqueta-div">
-                                                        <p><strong>{item.descricaoProduto} </strong></p>
-                                                        <p><strong>{item.nomeCliente} </strong></p>
-                                                        <p><strong>{item.descricaoVolume}</strong></p>
-                                                        <p><strong>{item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
-                                                    </div>
+                                                </div>
+                                                <div id="textos-etiqueta-div">
+                                                    <p><strong>{item.descricaoProduto} </strong></p>
+                                                    <p><strong>{item.nomeCliente} </strong></p>
+                                                    <p><strong>{item.descricaoVolume}</strong></p>
+                                                    <p><strong>{item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
                                                 </div>
                                             </div>
                                         </div>
-                                    ))
-                                ) : (
-                                    <p>Houve algum erro ao gerar a etiqueta do volume selecionado...</p>
-                                )}
-                            </div>
-                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <p>Houve algum erro ao gerar a etiqueta do volume selecionado...</p>
+                            )}
+                        </div>
+                    )}
 
-                        {/* SE FOR GERADO TODOS OS QRCODES DE UM PRODUTO */}
-                        {modoDaPagina === 3 && (
-                            <div className='qr-code-lista'>
-                                {todosQrCodesDaPackinglist.length > 0 ? (
-                                    todosQrCodesDaPackinglist.map((item) => (
-                                        <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'> {/* Colocando a key aqui */}
-                                            <div className='qr-code-item'>
-                                                <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
-                                                <div className='texto-etiqueta'>
+                    {/* SE FOR GERADO TODOS OS QRCODES DE UM PRODUTO */}
+                    {modoDaPagina === 3 && (
+                        <div className='qr-code-lista'>
+                            {todosQrCodesDaPackinglist.length > 0 ? (
+                                todosQrCodesDaPackinglist.map((item) => (
+                                    <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'> {/* Colocando a key aqui */}
+                                        <div className='qr-code-item'>
+                                            <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
+                                            <div className='texto-etiqueta'>
+                                                <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
                                                         <img src={logo} id='logo-para-etiquetas'></img>
                                                         <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                                     </div>
-                                                    <div id="textos-etiqueta-div">
-                                                        <p><strong>{item.descricaoProduto} </strong></p>
-                                                        <p><strong>{item.nomeCliente} </strong></p>
-                                                        <p><strong>{item.descricaoVolume}</strong></p>
-                                                        <p><strong>{item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
-                                                    </div>
+                                                </div>
+                                                <div id="textos-etiqueta-div">
+                                                    <p><strong>{item.descricaoProduto} </strong></p>
+                                                    <p><strong>{item.nomeCliente} </strong></p>
+                                                    <p><strong>{item.descricaoVolume}</strong></p>
+                                                    <p><strong>{item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
                                                 </div>
                                             </div>
                                         </div>
-                                    ))
-                                ) : (
-                                    <p>Nenhum QR Code encontrado. Provavelmente não há volumes criados para este packinglist ainda...</p>
-                                )}
-                            </div>
-                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <p>Nenhum QR Code encontrado. Provavelmente não há volumes criados para este packinglist ainda...</p>
+                            )}
+                        </div>
+                    )}
 
-                    </>
+                </>
             </div>
 
 

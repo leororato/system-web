@@ -41,14 +41,9 @@ function EditarPL() {
     const [contaResponse, setContaResponse] = useState("");
     const [swiftResponse, setSwiftResponse] = useState("");
     const [ibanResponse, setIbanResponse] = useState("");
-
+    
+    const [nomeCliente, setNomeCliente] = useState("");
     const [clientesNomus, setClientesNomus] = useState([]);
-
-    const [guardarNomes, setGuardarNomes] = useState({
-        nomeImportador: '',
-        nomeConsignatario: '',
-        nomeNotificado: ''
-    });
 
     const [formData, setFormData] = useState({
         paisOrigem: '',
@@ -77,11 +72,9 @@ function EditarPL() {
         setEstadoDaPagina("Carregando");
 
         try {
-            const response = await api.get(`/packinglist/${id}`, config);
+            const response = await api.get(`/packinglist/listar-packinglist-edicao/${id}`, config);
             setFormData(response.data);
-
             setContextLoading({ visible: true });
-
             let dadosBancarios = response.data.dadosBancarios;
             if (dadosBancarios != null) {
 
@@ -107,16 +100,18 @@ function EditarPL() {
         }
     };
 
-    useEffect(() => {
-        fetchClienteNomus();
-    }, []);
+
+    // useEffect(() => {
+    //     fetchClienteNomus();
+    // }, []);
 
     const fetchClienteNomus = async () => {
         setEstadoDaPagina("Carregando");
         try {
-            const response = await api.get('/clienteNomus', config);
+            const response = await api.get(`/clienteNomus/pesquisa-cliente-nome/${nomeCliente}`, config);
             setClientesNomus(response.data);
             setContextLoading({ visible: true });
+            console.log('resp: ', response.data)
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar cliente Nomus";
@@ -152,44 +147,6 @@ function EditarPL() {
             setContextLoading({ visible: false });
         }
     };
-
-
-    useEffect(() => {
-        const fetchClientes = async () => {
-            setEstadoDaPagina("Carregando");
-
-            try {
-                if (formData.idImportador || formData.idConsignatario || formData.idNotificado) {
-                    setContextLoading({ visible: true });
-
-                    const responses = await Promise.all([
-                        formData.idImportador ? api.get(`/clienteNomus/${formData.idImportador}`, config) : Promise.resolve({ data: { nome: '' } }),
-                        formData.idConsignatario ? api.get(`/clienteNomus/${formData.idConsignatario}`, config) : Promise.resolve({ data: { nome: '' } }),
-                        formData.idNotificado ? api.get(`/clienteNomus/${formData.idNotificado}`, config) : Promise.resolve({ data: { nome: '' } })
-                    ]);
-
-                    setGuardarNomes({
-                        nomeImportador: responses[0].data.nome,
-                        nomeConsignatario: responses[1].data.nome,
-                        nomeNotificado: responses[2].data.nome
-                    });
-                }
-            } catch (error) {
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar nomes dos clientes atuais";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
-            } finally {
-                setContextLoading({ visible: false });
-            }
-        };
-
-        fetchClientes();
-
-    }, [formData.idImportador, formData.idConsignatario, formData.idNotificado]);
-
 
 
     const handleErrorClose = () => {
@@ -247,6 +204,11 @@ function EditarPL() {
         navigate(-1);
     };
 
+    const handleChangeCliente = (e) => {
+        setNomeCliente(e.target.value);
+        fetchClienteNomus();
+        console.log('handlec: ', e.target.value)
+    }
 
     return (
         <div>
@@ -270,7 +232,8 @@ function EditarPL() {
                                 data={clientesNomus}
                                 onSelect={handleAutocompleteChange('idImportador')}
                                 displayField={'nome'}
-                                value={guardarNomes.nomeImportador}
+                                value={formData.nomeClienteImportador}
+                                onChange={handleChangeCliente}
                             />
                         </div>
 
@@ -280,7 +243,8 @@ function EditarPL() {
                                 data={clientesNomus}
                                 onSelect={handleAutocompleteChange('idConsignatario')}
                                 displayField={'nome'}
-                                value={guardarNomes.nomeConsignatario}
+                                value={formData.nomeClienteConsignatario}
+                                onChange={handleChangeCliente}
                             />
                         </div>
 
@@ -290,7 +254,8 @@ function EditarPL() {
                                 data={clientesNomus}
                                 onSelect={handleAutocompleteChange('idNotificado')}
                                 displayField={'nome'}
-                                value={guardarNomes.nomeNotificado}
+                                value={formData.nomeClienteNotificado}
+                                onChange={handleChangeCliente}
                             />
                         </div>
 
@@ -461,6 +426,7 @@ function EditarPL() {
                             <Input
                                 type="text"
                                 name="pesoLiquidoTotal"
+                                placeholder={'Não é possível editar o peso líquido total...'}
                                 title={'Não é possível editar o peso líquido total...'}
                                 backgroundColor={"#ccc"}
                                 value={formData.pesoLiquidoTotal}
@@ -473,6 +439,7 @@ function EditarPL() {
                             <Input
                                 type="text"
                                 name="pesoBrutoTotal"
+                                placeholder={'Não é possível editar o peso bruto total...'}
                                 title={'Não é possível editar o peso bruto total...'}
                                 backgroundColor={"#ccc"}
                                 value={formData.pesoBrutoTotal}
@@ -510,7 +477,7 @@ function EditarPL() {
             </div>
 
             {contextLoading.visible ? (
-                <Loading message={estadoDaPagina == "Carregando" ? "Carregando..." : "Salvando..."} />
+                <Loading message={estadoDaPagina === "Carregando" ? "Carregando..." : "Salvando..."} />
             ) : (
                 <> </>
             )}
