@@ -238,9 +238,9 @@ const ExibirQRCodes = () => {
                                                 </div>
                                                 <div id="textos-etiqueta-div">
                                                     <p><strong>{item.descricaoProduto} </strong></p>
-                                                    <p><strong>{item.nomeCliente} </strong></p>
-                                                    <p><strong>{item.descricaoVolume}</strong></p>
-                                                    <p><strong>{item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
+                                                    <p><strong>Para: {item.nomeCliente} </strong></p>
+                                                    <p><strong>Desc: {item.descricaoVolume}</strong></p>
+                                                    <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -269,9 +269,9 @@ const ExibirQRCodes = () => {
                                                 </div>
                                                 <div id="textos-etiqueta-div">
                                                     <p><strong>{item.descricaoProduto} </strong></p>
-                                                    <p><strong>{item.nomeCliente} </strong></p>
-                                                    <p><strong>{item.descricaoVolume}</strong></p>
-                                                    <p><strong>{item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
+                                                    <p><strong>Para: {item.nomeCliente} </strong></p>
+                                                    <p><strong>Desc: {item.descricaoVolume}</strong></p>
+                                                    <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -283,7 +283,7 @@ const ExibirQRCodes = () => {
                         </div>
                     )}
 
-                    {/* SE FOR GERADO TODOS OS QRCODES DE UM PRODUTO */}
+                    {/* SE FOR GERADO TODOS OS QRCODES DE UMA PACKINGLIST */}
                     {modoDaPagina === 3 && (
                         <div className='qr-code-lista'>
                             {todosQrCodesDaPackinglist.length > 0 ? (
@@ -300,9 +300,9 @@ const ExibirQRCodes = () => {
                                                 </div>
                                                 <div id="textos-etiqueta-div">
                                                     <p><strong>{item.descricaoProduto} </strong></p>
-                                                    <p><strong>{item.nomeCliente} </strong></p>
-                                                    <p><strong>{item.descricaoVolume}</strong></p>
-                                                    <p><strong>{item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
+                                                    <p><strong>Para: {item.nomeCliente} </strong></p>
+                                                    <p><strong>Desc: {item.descricaoVolume}</strong></p>
+                                                    <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
                                                 </div>
                                             </div>
                                         </div>

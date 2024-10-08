@@ -41,7 +41,7 @@ function EditarPL() {
     const [contaResponse, setContaResponse] = useState("");
     const [swiftResponse, setSwiftResponse] = useState("");
     const [ibanResponse, setIbanResponse] = useState("");
-    
+
     const [nomeCliente, setNomeCliente] = useState("");
     const [clientesNomus, setClientesNomus] = useState([]);
 
@@ -79,7 +79,7 @@ function EditarPL() {
             if (dadosBancarios != null) {
 
                 let dadosBancariosSeparados = dadosBancarios.split('$')
-                
+
                 setBancoResponse(dadosBancariosSeparados[0]);
                 setAgenciaResponse(dadosBancariosSeparados[1]);
                 setContaResponse(dadosBancariosSeparados[2]);
@@ -101,16 +101,17 @@ function EditarPL() {
     };
 
 
-    // useEffect(() => {
-    //     fetchClienteNomus();
-    // }, []);
+    useEffect(() => {
+        fetchClienteNomus();
+    }, []);
 
     const fetchClienteNomus = async () => {
         setEstadoDaPagina("Carregando");
+        setContextLoading({ visible: true });
+
         try {
-            const response = await api.get(`/clienteNomus/pesquisa-cliente-nome/${nomeCliente}`, config);
+            const response = await api.get(`/clienteNomus`, config);
             setClientesNomus(response.data);
-            setContextLoading({ visible: true });
             console.log('resp: ', response.data)
 
         } catch (error) {
@@ -129,11 +130,12 @@ function EditarPL() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setEstadoDaPagina("Salvando...")
+        setContextLoading({ visible: true });
+
         try {
             await api.put(`/packinglist/${id}`, formData, config);
 
             navigate('/inicio', { state: { sucessMessage: `PackingList ${id} atualizado com sucesso!` } }, setTimeout(() => setSucessMessage(null), 5000));
-            setContextLoading({ visible: true });
 
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar a PackingList!";
@@ -206,7 +208,6 @@ function EditarPL() {
 
     const handleChangeCliente = (e) => {
         setNomeCliente(e.target.value);
-        fetchClienteNomus();
         console.log('handlec: ', e.target.value)
     }
 
@@ -233,7 +234,6 @@ function EditarPL() {
                                 onSelect={handleAutocompleteChange('idImportador')}
                                 displayField={'nome'}
                                 value={formData.nomeClienteImportador}
-                                onChange={handleChangeCliente}
                             />
                         </div>
 
@@ -244,7 +244,6 @@ function EditarPL() {
                                 onSelect={handleAutocompleteChange('idConsignatario')}
                                 displayField={'nome'}
                                 value={formData.nomeClienteConsignatario}
-                                onChange={handleChangeCliente}
                             />
                         </div>
 
@@ -255,10 +254,8 @@ function EditarPL() {
                                 onSelect={handleAutocompleteChange('idNotificado')}
                                 displayField={'nome'}
                                 value={formData.nomeClienteNotificado}
-                                onChange={handleChangeCliente}
                             />
                         </div>
-
                         <div id="select-div">
                             <label>País de Origem:</label>
                             <Select

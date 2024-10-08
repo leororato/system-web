@@ -78,7 +78,7 @@ function PackingListProduto() {
     const fetchPackingList = async () => {
         setEstadoDaPagina("Carregando");
         try {
-            const response = await api.get(`/packinglist/${id}`, config);
+            const response = await api.get(`/packinglist/listar-packinglist-produto/${id}`, config);
             setContextLoading({ visible: true });
             setPackingList(response.data);
 

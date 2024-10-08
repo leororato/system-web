@@ -43,7 +43,6 @@ function Volume() {
 
     // CARREGA OS DADOS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const [produtoSelecionado, setProdutoSelecionado] = useState(null);
-    const [tipoPackinglist, setTipoPackinglist] = useState("");
 
 
 
@@ -67,15 +66,8 @@ function Volume() {
     // CARREGA O VALOR O IDVOLUME QUANDO CLICA EM CIMA DE ALGUM ITEM
     const [salvarIdVolume, setSalvarIdVolume] = useState('');
 
-    // CARREGA A DESCRICAO DO TIPO DE VOLUME DO ITEM QUANDO CLICA EM CIMA
-    const [salvarTipoDeVolumeAtual, setSalvarTipoDeVolumeAtual] = useState({ descricao: '' });
-
-
     // CONTAINER QUE POSSUI TODOS OS VOLUMES
     const [volumes, setVolumes] = useState([]);
-
-    // CONTAINER QUE POSSUI TODOS OS TIPOS DE VOLUMES
-    const [tiposDeVolume, setTiposDeVolume] = useState([]);
 
     // CONTAINER QUE POSSUI TODOS OS TIPOS DE VOLUMES EM ARRAY PARA USAR NO AUTOCOMPLETE
     const [tiposDeVolumeArray, setTiposDeVolumeArray] = useState([]);
@@ -174,19 +166,6 @@ function Volume() {
     // ------------------------------------- ^CONTEXTOS^ ------------------------------------- //   
 
 
-    // ------------------------------------- QR CODE ------------------------------------- //   
-
-    // CARREGA O VALOR DOS IDS DO VOLUME PARA GERAR QRCODES
-    const [salvarIdsVolume, setSalvarIdsVolume] = useState({
-        idVolumeProduto: '',
-        idPackinglist: id,
-        idProduto: idProduto,
-        seq: seq,
-        idVolume: ''
-    });
-
-    // ------------------------------------- ^QR CODE^ ------------------------------------- //   
-
     // ------------------------------------- EXIBIR PRODUTO ------------------------------------- //
 
     // CARREGA OS PRODUTOS EXISTENTES AO ENTRAR NA PAGINA
@@ -208,16 +187,6 @@ function Volume() {
         try {
             const response = await api.get(`/pl-produto/${id}/${idProduto}/${seq}`, config);
             setProdutoSelecionado(response.data);
-
-            const comprimento = response.data.comprimento;
-            const largura = response.data.largura;
-            const altura = response.data.altura;
-
-            if (comprimento != null && largura != null && altura != null) {
-                setTipoPackinglist("reposicao");
-            } else {
-                setTipoPackinglist("maquina");
-            }
 
         } catch (error) {
             const errorMessage = error.response?.data?.message.message || "Erro desconhecido ao carregar o produto selecionado";
@@ -247,7 +216,7 @@ function Volume() {
         setContextLoading({ visible: true });
 
         try {
-            const response = await api.get(`/volume/produto/${id}/${idProduto}/${seq}`, config);
+            const response = await api.get(`/volume/listar-volumes/${id}/${idProduto}/${seq}`, config);
             
             if (response.data && Array.isArray(response.data)) {
                 setVolumes(response.data);
@@ -292,8 +261,8 @@ function Volume() {
                     acc[tipo.idTipoVolume] = tipo.descricao;
                     return acc;
                 }, {});
-                setTiposDeVolume(tipoVolumeMap);
                 setTiposDeVolumeArray(response.data); // Armazena o array original
+
             } catch (error) {
                 const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar tipo de volume";
                 setErrorMessage(errorMessage);
@@ -301,6 +270,7 @@ function Volume() {
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000);
+
             } finally {
                 setContextLoading({ visible: false });
             }
@@ -308,36 +278,6 @@ function Volume() {
 
         fetchTipoDeVolume();
     }, []);
-
-
-    // BUSCANDO O TIPO DE VOLUME DO PRODUTO SELECIONADO
-
-    const fetchTipoDeVolume = async (tipoDeVolume) => {
-
-        await setSalvarTipoDeVolumeAtual(tiposDeVolume[tipoDeVolume]);
-
-        console.log(salvarTipoDeVolumeAtual);
-
-
-        // setEstadoDaPagina("Carregando");
-        // setContextLoading({ visible: true });
-
-        // if (!volumeEdicao.idTipoVolumeId) return;
-
-        // try {
-        //     const response = await api.get(`/tipo-de-volume/${volumeEdicao.idTipoVolumeId}`, config);
-        //     setSalvarTipoDeVolumeAtual({ descricao: response.data.descricao });
-        // } catch (error) {
-        //     const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar tipo de volume";
-        //     setErrorMessage(errorMessage);
-
-        //     setTimeout(() => {
-        //         setErrorMessage(null);
-        //     }, 5000);
-        // }
-    };
-
-
 
     // SALVANDO O VOLUME 
     const handleSalvarVolume = async (e) => {
@@ -375,7 +315,6 @@ function Volume() {
         } finally {
             setContextLoading({ visible: false });
         }
-
 
     };
 
@@ -492,8 +431,6 @@ function Volume() {
         });
         setContextEditar({ visible: true, selectedIdVolume: contextMenu.selectedIdVolume });
     }
-
-
 
 
     // AÇAO PARA QUANDO CLICAR NO BOTAO EXCLUIR VOLUME
@@ -914,16 +851,6 @@ function Volume() {
     // ------------------------------------- FUNÇÕES QR CODE ------------------------------------- //
 
     // QUANDO O SALVARIDVOLUME FOI ALTERADO, VAI CHAMAR ESTE useEFFECT PARA SETAR OS IDS USADOS NA REQUISIÇAO DO IDVOLUMEPRODUTO
-    useEffect(() => {
-        setSalvarIdsVolume({
-            idVolumeProduto: '',
-            idPackinglist: id,
-            idProduto: idProduto,
-            seq: seq,
-            idVolume: salvarIdVolume.idVolume
-        })
-    }, [salvarIdVolume]);
-
 
     const gerarQrCode = async (e) => {
         e.preventDefault();
@@ -966,19 +893,11 @@ function Volume() {
         return tiposDeVolumeArray;
     }
 
-    // relacionado a inserir a hora da criaçao
-    const formatarData = (dtCriacao) => {
-        return format(new Date(dtCriacao), 'dd/MM/yyyy - HH:mm');
-    };
-
-
     // FECHAR MENSAGEM DE ERRO OU SUCESSO
     const closeMessages = () => {
         setErrorMessage(null);
         setSucessMessage(null);
     }
-
-
 
 
 
@@ -1089,7 +1008,7 @@ function Volume() {
 
 
     // AÇAO PARA QUANDO CLICAR COM O BOTAO DIREITO EM CIMA DE ALGUM ITEM
-    const handleRightClick = async (e, idVolume, tipoDeVolume, quantidadeItens, descricao, altura, largura, comprimento, pesoLiquido, pesoBruto, observacao) => {
+    const handleRightClick = async (e, idVolume, idTipoDeVolume, nomeTipoVolume, quantidadeItens, descricao, altura, largura, comprimento, pesoLiquido, pesoBruto, observacao) => {
         e.preventDefault();
         setContextMenu({
             visible: true,
@@ -1106,7 +1025,8 @@ function Volume() {
         });
 
         setVolumeEdicao({
-            idTipoVolumeId: tipoDeVolume,
+            idTipoVolumeId: idTipoDeVolume,
+            nomeTipoVolume: nomeTipoVolume,
             quantidadeItens: quantidadeItens,
             descricao: descricao,
             altura: altura,
@@ -1116,8 +1036,6 @@ function Volume() {
             pesoBruto: pesoBruto,
             observacao: observacao,
         })
-
-        await fetchTipoDeVolume(tipoDeVolume);
 
     };
 
@@ -1142,9 +1060,6 @@ function Volume() {
             };
         }
     }, []);
-
-
-
 
 
 
@@ -1284,10 +1199,10 @@ function Volume() {
                                         filteredVolumes.map((v) => (
                                             <li key={v.idVolume} className='li-listagem-volume'>
                                                 <div id="container-list-vol">
-                                                    <div id="list-vol-divs" onContextMenu={(e) => handleRightClick(e, v.idVolume, v.idTipoVolumeId,
+                                                    <div id="list-vol-divs" onContextMenu={(e) => handleRightClick(e, v.idVolume, v.idTipoVolumeId, v.nomeTipoVolume,
                                                         v.quantidadeItens, v.descricao, v.altura, v.largura, v.comprimento, v.pesoLiquido, v.pesoBruto, v.observacao)}>
                                                         <div id="list-vol">{v.idVolume}</div>
-                                                        <div id="list-vol">{tiposDeVolume[v.idTipoVolumeId]}</div>
+                                                        <div id="list-vol">{v.nomeTipoVolume}</div>
                                                         <div id="list-vol">{v.quantidadeItens}</div>
                                                         <div id="list-vol">{v.descricao}</div>
                                                         <div id="list-vol">{v.altura}</div>
@@ -1544,7 +1459,7 @@ function Volume() {
                                                     onSelect={handleAutocompleteChangeTipoVolumeEdicao}
                                                     displayField={'descricao'}
                                                     title={'Pesquise por algum tipo de volume...'}
-                                                    value={salvarTipoDeVolumeAtual}
+                                                    value={volumeEdicao.nomeTipoVolume}
                                                 />
                                             </div>
                                             <div>

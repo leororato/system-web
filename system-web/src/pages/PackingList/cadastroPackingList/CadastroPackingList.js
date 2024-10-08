@@ -63,12 +63,13 @@ function CadastroPackingList() {
 
     useEffect(() => {
         const fetchClienteNomus = async () => {
-
             setEstadoDaPagina('Carregando');
+            setContextLoading({ visible: true });
+
             try {
                 const response = await api.get('/clienteNomus', config);
                 setClientesNomus(response.data);
-                setContextLoading({ visible: true })
+                
             } catch (error) {
                 const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar clientes";
                 setErrorMessage(errorMessage);
@@ -134,6 +135,7 @@ function CadastroPackingList() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setEstadoDaPagina('Salvando');
+        setContextLoading({ visible: true });
 
         try {
             const response = await api.post('/packinglist', formData, config);
@@ -141,7 +143,6 @@ function CadastroPackingList() {
 
             navigate('/inicio', { state: { sucessMessage: 'Packinglist criado com sucesso!' } });
 
-            setContextLoading({ visible: true });
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao criar Packinglist";
             setErrorMessage(errorMessage);
