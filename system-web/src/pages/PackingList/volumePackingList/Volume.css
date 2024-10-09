@@ -152,7 +152,7 @@
 }
 
 .header-volume div:first-child {
-    border-left: 1px solid #ddd;
+    border-left: none;
 
 }
 
@@ -703,4 +703,71 @@
 .tooltip-wrapper:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
+}
+
+.context-delete-segundo-fator-volume {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    z-index: 1001;
+}
+
+/* Estilo para o texto de confirmação */
+#container-text-confirmar-exclusao-volume {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilos para o input de confirmação */
+.input-confirmar-exclusao-produto {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+/* Estilo do container dos botões */
+.buttons-delete-segundo-fator-volume {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Estilo do botão de cancelar */
+.button-cancelar {
+    background-color: #ccc;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Estilo do botão de excluir */
+.button-excluir {
+    background-color: #ff4c4c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Efeito hover para os botões */
+.button-cancelar:hover {
+    background-color: #acacac;
+}
+
+.button-excluir:hover {
+    background-color: #e60000;
 }

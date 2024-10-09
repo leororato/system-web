@@ -149,7 +149,7 @@ function PackingListProduto() {
         );
         setFilteredProdutos(filterProdutos);
     }, [buscaIdProduto, buscaDescricaoProduto, buscaOrdemDeProducao, produtos]);
-    
+
 
     const formatarData = (dtCriacao) => {
         if (!dtCriacao) return 'Data inválida';
@@ -411,15 +411,20 @@ function PackingListProduto() {
             setTimeout(() => {
                 setSucessMessage(null)
             }, 5000);
-
             setContextDeleteSegundoFator({ visible: false, x: 0, y: 0, selectedId: null });
 
             await fetchProdutos();
             await fetchPackingList();
 
         } catch (error) {
-            const errorMessage = error.response?.data?.message || "Erro desconhecido ao excluir Produto";
-            setErrorMessage(errorMessage);
+
+            if (inputDeleteSegundoFator !== "Excluir") {
+                const errorMessage = "Confirmação inválida, digite a palavra corretamente";
+                setErrorMessage(errorMessage);
+            } else {
+                const errorMessage = error.response?.data || "Erro desconhecido ao excluir Produto";
+                setErrorMessage(errorMessage);
+            }
 
             setTimeout(() => {
                 setErrorMessage(null);
@@ -828,11 +833,16 @@ function PackingListProduto() {
 
                     <div className="overlay">
                         <div className="overlay-content" ref={contextEditarRef}>
-                            <Title
-                                classname={'title-adicionar-volume'}
-                                text={'Editar o volume de reposição:'}
-                                color={'#1780e2'}
-                            />
+                            <div>
+                                <div className="container-icone-fechar"><Icon icon="ep:close-bold" id="icone-fechar-criacao-tipo-volume" onClick={handleCancelarEditarProduto} /></div>
+                            </div>
+                            <div>
+                                <Title
+                                    classname={'title-adicionar-volume'}
+                                    text={'Editar o volume de reposição:'}
+                                    color={'#1780e2'}
+                                />
+                            </div>
                             <div className="subcontainer-volume">
                                 <div className="container-input-adicionar-volume">
                                     <form>
