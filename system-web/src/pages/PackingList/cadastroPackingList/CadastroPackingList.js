@@ -389,7 +389,7 @@ function CadastroPackingList() {
                     <div className="botoes-finais">
                         <div className="container-button-save">
                             <Button
-                                className={"button-save"}
+                                className={"botao-salvar"}
                                 text={"Salvar"}
                                 title={"Salvar"}
                                 type={"submit"}
@@ -399,7 +399,7 @@ function CadastroPackingList() {
 
                         <div className="container-button-cancel">
                             <Button
-                                className={"button-cancel"}
+                                className={"botao-cancelar"}
                                 text={"Cancelar"}
                                 title={"Cancelar"}
                                 type={"button"}

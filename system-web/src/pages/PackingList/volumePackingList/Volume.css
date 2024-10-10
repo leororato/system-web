@@ -83,21 +83,28 @@
 
 #container-botao-add-busca-volume {
     display: flex;
-    justify-content: end;
-    flex-direction: row-reverse;
+    justify-content: space-between;
+    flex-direction: row;
     gap: 20px;
     width: 100%;
     align-items: flex-end;
     margin-bottom: 15px;
 }
 
+#subcontainer-botao-add-busca-volume {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
 .button-adicionar-volume {
     background-color: #1780e2;
-    transition: 0.5ms ease;
+    padding: 10px;
+    font-size: 14px;
+    transition: 0.5s ease;
 }
 
 .button-adicionar-volume:hover {
-    transform: scale(1.05);
     background-color: #0056b3;
 }
 
@@ -685,15 +692,15 @@
 
 .tooltip-text {
     visibility: hidden;
-    width: 200px; /* Largura do tooltip */
-    background-color: black; /* Cor de fundo */
-    color: #fff; /* Cor do texto */
+    width: 200px;
+    background-color: black;
+    color: #fff;
     text-align: center;
-    border-radius: 5px; /* Borda arredondada */
+    border-radius: 5px;
     padding: 5px;
     position: absolute;
     z-index: 1;
-    bottom: 125%; /* Posição do tooltip */
+    bottom: 125%; 
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
@@ -705,69 +712,53 @@
     opacity: 1;
 }
 
-.context-delete-segundo-fator-volume {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    width: 400px;
-    z-index: 1001;
-}
-
-/* Estilo para o texto de confirmação */
-#container-text-confirmar-exclusao-volume {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-/* Estilos para o input de confirmação */
-.input-confirmar-exclusao-produto {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-    box-sizing: border-box;
-    margin-bottom: 20px;
-}
-
-/* Estilo do container dos botões */
-.buttons-delete-segundo-fator-volume {
+.container-botao-excluir-volume {
     display: flex;
-    justify-content: space-between;
-}
-
-/* Estilo do botão de cancelar */
-.button-cancelar {
-    background-color: #ccc;
-    color: #333;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-/* Estilo do botão de excluir */
-.button-excluir {
-    background-color: #ff4c4c;
     color: white;
-    border: none;
-    padding: 10px 20px;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    gap: 5px;
     border-radius: 3px;
+    background-color: #ff4c4c;
     cursor: pointer;
+    transition: 1s ease;
     font-size: 14px;
 }
 
-/* Efeito hover para os botões */
-.button-cancelar:hover {
-    background-color: #acacac;
+.container-botao-excluir-volume button {
+    background-color: transparent;
+    cursor: pointer;
+    transition: 1s ease;
 }
 
-.button-excluir:hover {
+.container-botao-excluir-volume:hover {
     background-color: #e60000;
 }
+
+.container-botao-excluir-volume-false {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #383838;
+    border-radius: 3px;
+    padding: 10px;
+    gap: 5px;
+    cursor: not-allowed;
+    transition: 1s ease;
+    font-size: 14px;
+}
+
+.container-botao-excluir-volume-false:hover {
+    background-color: #38383849 !important;
+}
+
+.container-botao-excluir-volume-false button {
+    background-color: transparent;
+    color: #000 !important;
+    cursor: not-allowed !important;
+    transition: 1s ease;
+}
+
+

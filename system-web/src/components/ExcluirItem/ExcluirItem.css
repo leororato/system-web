@@ -1,0 +1,47 @@
+.context-delete {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #F5F5F5;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.747);
+    padding: 20px;
+    height: 150px;
+    border-radius: 3px;
+    z-index: 2000;
+}
+
+.buttons-delete {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.button-cancelar {
+    background-color: transparent;
+    color: black !important;
+    padding: 5px;
+    width: 10em;
+    border-radius: 3px;
+    transition: 0.5s ease;
+    border: 1.5px solid #000000 !important;
+}
+
+.button-cancelar:hover {
+    background-color: #d3d3d3;
+}
+
+.button-excluir {
+    background-color: #E55757;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+    padding: 3px;
+    width: 10em;
+    border-radius: 3px;
+    transition: 0.5s ease;
+}
+
+.button-excluir:hover {
+    background-color: #C13838;
+    color: white !important;
+}

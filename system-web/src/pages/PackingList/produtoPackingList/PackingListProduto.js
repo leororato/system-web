@@ -15,6 +15,8 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import Cookies from 'js-cookie';
 import api from '../../../axiosConfig';
 import Loading from "../../../components/Loading/Loading";
+import ExcluirItemSegundoFator from "../../../components/ExcluirItemSegundoFator/ExcluirItemSegundoFator";
+import ExcluirItem from "../../../components/ExcluirItem/ExcluirItem";
 
 
 function PackingListProduto() {
@@ -656,7 +658,7 @@ function PackingListProduto() {
 
                             <div className="buttons-adicionar-produtos">
                                 <Button
-                                    className={'button-salvar-add-prod'}
+                                    className={'botao-salvar'}
                                     text={'SALVAR'}
                                     fontSize={15}
                                     borderRadius={5}
@@ -665,7 +667,7 @@ function PackingListProduto() {
                                 />
 
                                 <Button
-                                    className={'button-cancelar-add-prod'}
+                                    className={'botao-cancelar'}
                                     text={'CANCELAR'}
                                     fontSize={15}
                                     borderRadius={5}
@@ -752,79 +754,25 @@ function PackingListProduto() {
 
             {contextDelete.visible && (
                 <>
-                    <div className="overlay"></div>
-                    <div className="context-delete">
-                        <div>
-                            <Text
-                                text={'Tem certeza que deseja excluir o Volume?'}
-                                fontSize={20}
-                            />
-                        </div>
-
-                        <div className="buttons-delete">
-                            <Button
-                                className={'button-cancelar'}
-                                text={'CANCELAR'}
-                                fontSize={20}
-                                onClick={() => { setContextDelete({ visible: false }); }}
-                            />
-                            <Button
-                                className={'button-excluir'}
-                                text={'EXCLUIR'}
-                                fontSize={20}
-                                onClick={handleDeleteConfirm}
-                            />
-                        </div>
-                    </div>
+                    <ExcluirItem 
+                        descricao={'Tem certeza que deseja excluir o Volume?'}
+                        onClickBotaoCancelar={() => { setContextDelete({ visible: false }); }}
+                        onClickBotaoExcluir={handleDeleteConfirm}
+                    />
                 </>
             )}
 
 
             {contextDeleteSegundoFator.visible && (
-
-                <div>
-                    <>
-                        <div className="overlay"></div>
-                        <div className="context-delete-segundo-fator">
-                            <form onSubmit={handleDeleteConfirmSegundoFator}>
-                                <div>
-                                    <div id="container-text-confirmar-exclusao-produto">
-                                        <Text
-                                            text={'Este produto possui volumes, para confirmar a exclusão do produto digite a palavra "Excluir" no campo abaixo:'}
-                                            fontSize={18}
-                                        />
-                                    </div>
-                                    <div id="container-input-confirmar-exclusao-produto">
-                                        <Input
-                                            className="input-confirmar-exclusao-produto"
-                                            type={'text'}
-                                            placeholder={'Digite: Excluir'}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="buttons-delete-segundo-fator">
-                                    <Button
-                                        className={'button-cancelar'}
-                                        text={'Cancelar'}
-                                        fontSize={20}
-                                        onClick={() => { setContextDeleteSegundoFator({ visible: false }); }}
-                                    />
-                                    <Button
-                                        className={'button-excluir'}
-                                        text={'Confirmar'}
-                                        fontSize={20}
-                                        type={"submit"}
-                                        onClick={handleDeleteConfirmSegundoFator}
-                                    />
-                                </div>
-                            </form>
-
-                        </div>
-                    </>
-                </div>
-
+                <>
+                    <ExcluirItem 
+                        onSubmit={handleDeleteConfirmSegundoFator}
+                        descricao={'Este produto possui volumes, para confirmar a exclusão do produto digite a palavra "Excluir" no campo abaixo:'}
+                        onChange={handleChange}
+                        onClickBotaoCancelar={() => { setContextDeleteSegundoFator({ visible: false }); }}
+                        onClickBotaoExcluir={handleDeleteConfirmSegundoFator}
+                    />
+                </>
             )}
 
 
@@ -949,7 +897,7 @@ function PackingListProduto() {
                             </div>
                             <div className="buttons-adicionar-volume">
                                 <Button
-                                    className={'button-salvar-add-volume'}
+                                    className={'botao-salvar'}
                                     text={'SALVAR'}
                                     fontSize={15}
                                     padding={10}
@@ -957,7 +905,7 @@ function PackingListProduto() {
                                     onClick={handleAtualizarProduto}
                                 />
                                 <Button
-                                    className={'button-cancelar-add-volume'}
+                                    className={'botao-cancelar'}
                                     text={'CANCELAR'}
                                     fontSize={15}
                                     padding={10}

@@ -87,6 +87,36 @@
     cursor: pointer;
 }
 
+.botao-salvar {
+    background-color: #30985A;
+    color: #fff;
+    border: 1px solid #686868;
+    padding: 10px 20px;
+    border-radius: 3px;
+    width: 110px;
+    transition: 1s ease;
+    font-size: 15px;
+}
+
+.botao-salvar:hover {
+    background-color: #0D6530;
+}
+
+.botao-cancelar {
+    padding: 10px 20px;
+    color: black !important;
+    border-radius: 3px;
+    background-color: transparent;
+    border: 1px solid #686868 !important;
+    width: 110px;
+    transition: 1s ease;
+    font-size: 15px;
+  }
+  
+  .botao-cancelar:hover {
+    background-color: #ccc;
+  }
+
 .botoes-finais {
     display: flex;
     align-items: center;

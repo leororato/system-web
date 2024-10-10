@@ -141,48 +141,6 @@ body {
     z-index: 100;
 }
 
-.context-delete {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgb(255, 255, 255);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.747);
-    padding: 20px;
-    height: 150px;
-    border-radius: 3px;
-    z-index: 2000;
-}
-
-.context-delete .buttons-delete {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 60px;
-}
-
-.button-cancelar {
-    background-color: #1780e2;
-    padding: 7px;
-    border-radius: 3px;
-    width: 7em;
-    transition: 0.5s ease;
-}
-
-.button-cancelar:hover {
-    background-color: #114b81;
-}
-
-.button-excluir {
-    background-color: #fa0000;
-    padding: 7px;
-    width: 7em;
-    border-radius: 3px;
-    transition: 0.5s ease;
-}
-
-.button-excluir:hover {
-    background-color: #b30e0e;
-}
 
 .container-input-criar-volume {
     width: 100%;

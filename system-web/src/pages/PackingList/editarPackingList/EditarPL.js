@@ -460,14 +460,12 @@ function EditarPL() {
                         </div>
 
                     </div>
-                    <div className="botoes-finais-edicao">
-                        <Button type="submit" className={"button-salvar-edicao"}
+                    <div className="botoes-finais-edicao" style={{ marginTop: '20px'}}>
+                        <Button type="submit" className={"botao-salvar"}
                             text={"Salvar"}
-                            fontSize={20}
                         />
-                        <Button onClick={handleCancel} className={"button-cancelar-edicao"}
+                        <Button onClick={handleCancel} className={"botao-cancelar"}
                             text={"Cancelar"}
-                            fontSize={20}
                         />
                     </div>
                 </form>

@@ -225,6 +225,7 @@
 
 .buttons-create {
     display: flex;
+    width: 100%;
     justify-content: space-between;
     margin-top: 20px;
 }
@@ -254,67 +255,3 @@
 .button-criar-volume:hover {
     background-color: #114b81;
 }
-
-
-/* .context-volume {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    min-height: 200px;
-    min-width: 300px;
-    transform: translate(-50%, -50%);
-    background-color: #d4d4d4;
-    padding: 20px;
-    border-radius: 8px;
-    z-index: 2000;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.747);
-}
-
-.container-text-input {
-    justify-content: center;
-
-    margin-top: 10px;
-}
-
-.container-text-input input {
-    border-radius: 5px;
-    border: none;
-    width: 100%;
-}
-
-.button-criar-volume {
-    background-color: #1780e2;
-    padding: 7px;
-    border-radius: 4px;
-    width: 7em;
-    transition: 0.5ms ease;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.418);
-}
-
-.button-criar-volume:hover {
-    background-color: #114b81;
-}
-
-.buttons-create {
-    display: flex;
-    justify-content: space-between;
-    min-width: 300px;
-    margin-top: 30px;
-}
-
-.button-cancelar-volume {
-    background-color: #fa0000;
-    padding: 7px;
-    border-radius: 4px;
-    width: 7em;
-    transition: 0.5ms ease;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.418);
-}
-
-.button-cancelar-volume:hover {
-    background-color: #910c0c;
-} */

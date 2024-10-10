@@ -299,45 +299,6 @@
     background-color: #eee;
 }
 
-.context-delete-segundo-fator {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000; 
-}
-
-#container-text-confirmar-exclusao-produto {
-    display: flex;
-    text-align: left;
-}
-
-#container-input-confirmar-exclusao-produto {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.context-delete-segundo-fator input {
-    width: 30%;
-    margin-top: 5px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-.buttons-delete-segundo-fator {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    width: 100%;
-}
-
 .input-group-produto {
     display: grid;
     grid-template-columns: 1fr;

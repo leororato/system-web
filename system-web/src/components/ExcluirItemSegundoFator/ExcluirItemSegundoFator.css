@@ -1,0 +1,39 @@
+.context-delete-segundo-fator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    z-index: 1001;
+}
+
+#container-text-confirmar-exclusao {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#container-input-confirmar-exclusao {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.input-confirmar-exclusao {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+.buttons-delete-segundo-fator {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
