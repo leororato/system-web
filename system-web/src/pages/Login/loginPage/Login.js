@@ -26,12 +26,12 @@ function Login() {
     useEffect(() => {
         if (errorTokenMessage != null) {
             setErrorMessage(errorTokenMessage);
-        
-            setTimeout(() => {setErrorMessage(null)}, 10000)
+
+            setTimeout(() => { setErrorMessage(null) }, 10000)
         }
     }, [errorTokenMessage])
 
-    
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -57,7 +57,7 @@ function Login() {
                     setErrorMessage(null);
                 }, 5000);
 
-            } 
+            }
         }
     };
 

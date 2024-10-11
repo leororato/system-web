@@ -662,7 +662,6 @@ function Volume() {
 
 
     useEffect(() => {
-        console.log("volume checkbox: ", volumesCheckeds);
 
         if (volumesCheckeds.length <= 0) {
             setContextBotaoExcluirVolume(false);
@@ -1851,7 +1850,6 @@ function Volume() {
                                         borderRadius={5}
                                         onClick={estadoSubVolumeOverlay === 'adicionar' ? handleSalvarSubVolume : handleSalvarEdicaoSubVolume}
                                     />
-
 
                                     <Button
                                         className={'botao-cancelar'}

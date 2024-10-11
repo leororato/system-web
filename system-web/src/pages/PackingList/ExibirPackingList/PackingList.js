@@ -76,7 +76,6 @@ function PackingList() {
             try {
                 const response = await api.get('/packinglist/listagem-packinglist-inicio', config);
                 setPackingLists(response.data);
-                console.log("packinglists: ", response.data);
                 
             } catch (error) {
                 const errorMessage = error.response?.data || "Erro desconhecido ao buscar as packinglists";

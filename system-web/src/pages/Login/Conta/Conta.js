@@ -22,7 +22,7 @@ function Conta() {
         setContextLoading({ visible: true });
         setTimeout(() => {
             navigate('/login');
-            setContextLoading({visible: false})
+            setContextLoading({ visible: false })
         }, 5000);
     }
 
@@ -40,14 +40,14 @@ function Conta() {
             <div className="container-minha-conta">
                 <div className="subcontainer-minha-conta">
 
-                    <Icon icon="mingcute:user-4-fill" id="icone-minha-conta"/>
+                    <Icon icon="mingcute:user-4-fill" id="icone-minha-conta" />
 
                     <Title
                         text={'Minha Conta'}
                     />
-                    <Text 
-                    text={"Usuário: " + [nomeUsuario]}
-                    fontSize={'20px'}
+                    <Text
+                        text={"Usuário: " + [nomeUsuario]}
+                        fontSize={'20px'}
                     />
                     <div id="text-minha-conta">
                         <Text
@@ -55,16 +55,16 @@ function Conta() {
                         />
                     </div>
 
-                    <Button 
-                    text={'Sair da Conta'}
-                    onClick={handleLogoff}
+                    <Button
+                        text={'Sair da Conta'}
+                        onClick={handleLogoff}
                     />
                 </div>
             </div>
-            
+
             {contextLoading.visible && (
                 <>
-                <Loading message={'Desconectando...'}/>
+                    <Loading message={'Desconectando...'} />
                 </>
             )}
 

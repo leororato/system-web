@@ -48,7 +48,12 @@ function EditarCliente() {
                     setContainerNomus(response.data);
                 })
                 .catch(error => {
-                    console.error('Erro ao buscar os containers Nomus(requisição nomus por id)', error);
+                    const errorMessage = error.response?.data || "Erro ao buscar os containers Nomus(requisição nomus por id)";
+                    setErrorMessage(errorMessage);
+
+                    setTimeout(() => {
+                        setErrorMessage(null);
+                    }, 5000);
                 });
 
             // Buscando o cliente no banco App e salvando todas as informações dele no ContainerApp
@@ -64,7 +69,12 @@ function EditarCliente() {
                     })
                 })
                 .catch(error => {
-                    console.error('Erro ao buscar os containers App(requisição app por id)', error);
+                    const errorMessage = error.response?.data || "Erro desconhecido ao buscar o cliente";
+                    setErrorMessage(errorMessage);
+
+                    setTimeout(() => {
+                        setErrorMessage(null);
+                    }, 5000);
                     // Verifica que o cliente não existe no banco App e vai para o POST
                     setClienteExiste(false);
                 });

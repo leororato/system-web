@@ -69,7 +69,7 @@ function CadastroPackingList() {
             try {
                 const response = await api.get('/clienteNomus', config);
                 setClientesNomus(response.data);
-                
+
             } catch (error) {
                 const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar clientes";
                 setErrorMessage(errorMessage);

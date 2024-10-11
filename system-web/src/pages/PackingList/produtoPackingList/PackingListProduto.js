@@ -121,7 +121,6 @@ function PackingListProduto() {
         try {
             const response = await api.get(`/pl-produto/packinglist/${id}`, config);
             setProdutos(response.data);
-            console.log('response: ', response)
             setContextLoading({ visible: true });
 
         } catch (error) {
@@ -288,8 +287,6 @@ function PackingListProduto() {
             altura: infoProdutoParaExibirNoModoEdicao.altura
         }
 
-        console.log('payload: ', payload)
-        console.log('requisiçao: ', idPackinglist, idProduto, seq)
         try {
             await api.put(`/pl-produto/${idPackinglist}/${idProduto}/${seq}`, payload, config);
 
@@ -373,10 +370,8 @@ function PackingListProduto() {
             await fetchProdutos();
 
         } catch (error) {
-            console.error('erro:', error.response)
             if (error.response?.status === 409) {
                 handleDeleteSegundoFator(e);
-                console.log(error.response)
                 const errorMessage = error.response?.data || "Erro desconhecido ao excluir Produto";
                 setErrorMessage(errorMessage);
 
@@ -754,7 +749,7 @@ function PackingListProduto() {
 
             {contextDelete.visible && (
                 <>
-                    <ExcluirItem 
+                    <ExcluirItem
                         descricao={'Tem certeza que deseja excluir o Volume?'}
                         onClickBotaoCancelar={() => { setContextDelete({ visible: false }); }}
                         onClickBotaoExcluir={handleDeleteConfirm}
@@ -765,7 +760,7 @@ function PackingListProduto() {
 
             {contextDeleteSegundoFator.visible && (
                 <>
-                    <ExcluirItem 
+                    <ExcluirItem
                         onSubmit={handleDeleteConfirmSegundoFator}
                         descricao={'Este produto possui volumes, para confirmar a exclusão do produto digite a palavra "Excluir" no campo abaixo:'}
                         onChange={handleChange}

@@ -112,7 +112,6 @@ function EditarPL() {
         try {
             const response = await api.get(`/clienteNomus`, config);
             setClientesNomus(response.data);
-            console.log('resp: ', response.data)
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar cliente Nomus";
@@ -205,11 +204,6 @@ function EditarPL() {
         e.preventDefault();
         navigate(-1);
     };
-
-    const handleChangeCliente = (e) => {
-        setNomeCliente(e.target.value);
-        console.log('handlec: ', e.target.value)
-    }
 
     return (
         <div>
@@ -460,7 +454,7 @@ function EditarPL() {
                         </div>
 
                     </div>
-                    <div className="botoes-finais-edicao" style={{ marginTop: '20px'}}>
+                    <div className="botoes-finais-edicao" style={{ marginTop: '20px' }}>
                         <Button type="submit" className={"botao-salvar"}
                             text={"Salvar"}
                         />
