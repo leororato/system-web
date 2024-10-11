@@ -8,7 +8,6 @@ import Button from "../../../components/Button";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import Cookies from 'js-cookie';
-import api from '../../../axiosConfig';
 import axios from "axios";
 
 
@@ -59,11 +58,6 @@ function Login() {
 
             }
         }
-    };
-
-    const handleSubmitEnter = (event) => {
-        event.preventDefault();
-        handleSubmit();
     };
 
     return (

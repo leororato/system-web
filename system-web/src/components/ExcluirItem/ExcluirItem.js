@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import './ExcluirItem.css';
 import Text from '../Text';
 import Button from '../Button';

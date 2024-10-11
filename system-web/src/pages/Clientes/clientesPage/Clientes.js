@@ -100,7 +100,7 @@ function Clientes() {
         };
 
         fetchData();
-    }, []); // Fim do useEffect
+    }, [config]); // Fim do useEffect
 
     return (
         <div>

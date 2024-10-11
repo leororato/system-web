@@ -70,8 +70,6 @@ function Volume() {
 
     const [buscaVolume, setBuscaVolume] = useState('');
 
-    const [checked, setChecked] = useState(false);
-
     const [filteredVolumes, setFilteredVolumes] = useState([]);
 
     // CARREGA O VALOR O IDVOLUME QUANDO CLICA EM CIMA DE ALGUM ITEM
@@ -183,9 +181,7 @@ function Volume() {
 
     // CARREGA OS PRODUTOS EXISTENTES AO ENTRAR NA PAGINA
     useEffect(() => {
-
         fetchProdutoSelecionado();
-
     }, [])
 
 
@@ -270,10 +266,7 @@ function Volume() {
 
             try {
                 const response = await api.get(`/tipo-de-volume`, config);
-                const tipoVolumeMap = response.data.reduce((acc, tipo) => {
-                    acc[tipo.idTipoVolume] = tipo.descricao;
-                    return acc;
-                }, {});
+                
                 setTiposDeVolumeArray(response.data); // Armazena o array original
 
             } catch (error) {

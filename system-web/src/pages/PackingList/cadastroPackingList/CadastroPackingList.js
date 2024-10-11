@@ -84,7 +84,7 @@ function CadastroPackingList() {
 
         fetchClienteNomus();
 
-    }, []);
+    }, [config]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -138,7 +138,7 @@ function CadastroPackingList() {
         setContextLoading({ visible: true });
 
         try {
-            const response = await api.post('/packinglist', formData, config);
+            await api.post('/packinglist', formData, config);
             setSucessMessage('PackingList criado com sucesso!');
 
             navigate('/inicio', { state: { sucessMessage: 'Packinglist criado com sucesso!' } });

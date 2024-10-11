@@ -4,7 +4,6 @@ import axios from 'axios';
 import Header from '../../../components/Header/Header';
 import './PackingList.css';
 import Title from '../../../components/Title';
-import Text from '../../../components/Text';
 import Button from '../../../components/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -42,7 +41,6 @@ function PackingList() {
     const [contextLoading, setContextLoading] = useState({ visible: false });
     const [packingLists, setPackingLists] = useState([]);
 
-    const [clientes, setClientes] = useState({});
 
     const [buscaInvoice, setBuscaInvoice] = useState('');
     const [filteredPackinglist, setFilteredPackinglist] = useState([]);
@@ -70,24 +68,24 @@ function PackingList() {
     }, []);
 
     const fetchListaPackinglist = async () => {
-            setEstadoDaPagina('Carregando');
-            setContextLoading({ visible: true });
+        setEstadoDaPagina('Carregando');
+        setContextLoading({ visible: true });
 
-            try {
-                const response = await api.get('/packinglist/listagem-packinglist-inicio', config);
-                setPackingLists(response.data);
-                
-            } catch (error) {
-                const errorMessage = error.response?.data || "Erro desconhecido ao buscar as packinglists";
-                setErrorMessage(errorMessage);
-    
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
-                
-            } finally {
-                setContextLoading({ visible: false });
-            }
+        try {
+            const response = await api.get('/packinglist/listagem-packinglist-inicio', config);
+            setPackingLists(response.data);
+
+        } catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao buscar as packinglists";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+
+        } finally {
+            setContextLoading({ visible: false });
+        }
     }
 
 
@@ -454,7 +452,7 @@ function PackingList() {
 
                 {contextDelete.visible && (
                     <>
-                        <ExcluirItem 
+                        <ExcluirItem
                             descricao={'Tem certeza que deseja excluir o Packing List?'}
                             onClickBotaoCancelar={(e) => { setContextDelete({ visible: false }); }}
                             onClickBotaoExcluir={handleDeleteConfirm}
@@ -464,7 +462,7 @@ function PackingList() {
 
                 {contextDeleteSegundoFator.visible && (
                     <>
-                        <ExcluirItemSegundoFator 
+                        <ExcluirItemSegundoFator
                             onSubmit={handleDeleteConfirmSegundoFator}
                             descricao={'Esta packinglist possui produtos, para confirmar a exclusão da packinglist digite a palavra "Excluir" no campo abaixo:'}
                             onChange={handleChange}

@@ -142,7 +142,7 @@ const Header = () => {
         </div>
 
         <div id="container-logo-header">
-          <img src={logo} id="logo-header" />
+          <img src={logo} id="logo-header" alt="Logo da empresa"/>
         </div>
       </div>
 

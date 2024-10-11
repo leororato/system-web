@@ -8,8 +8,6 @@ import ErrorNotification from '../../components/ErrorNotification/ErrorNotificat
 import SucessNotification from '../../components/SucessNotification/SucessNotification';
 import Title from '../../components/Title';
 import Button from '../../components/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
 import Cookies from 'js-cookie';
 import api from '../../axiosConfig';
 import logo from '../../assets/logo.png';
@@ -102,7 +100,7 @@ const ExibirQRCodes = () => {
             }
             fetchTodosOsQrCodesDeUmaPackinglist();
         }
-    }, [idPackinglist, modoDaPagina])
+    }, [idPackinglist, modoDaPagina, config])
 
 
     // --------------------------- ^FIM DO GERAR QRCODES DA PACKINGLIST^ ----------------------------//
@@ -177,7 +175,7 @@ const ExibirQRCodes = () => {
 
             fetchQrCodeDeUmVolume();
         } else return
-    }, [idVolume, modoDaPagina])
+    }, [idVolume, modoDaPagina, config])
 
 
     //---------------------------- ^FIM QR CODE GERADO DE CADA VOLUME^ ----------------------------//
@@ -232,7 +230,7 @@ const ExibirQRCodes = () => {
                                             <div className='texto-etiqueta'>
                                                 <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
-                                                        <img src={logo} id='logo-para-etiquetas'></img>
+                                                        <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
                                                         <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                                     </div>
                                                 </div>
@@ -263,7 +261,7 @@ const ExibirQRCodes = () => {
                                             <div className='texto-etiqueta'>
                                                 <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
-                                                        <img src={logo} id='logo-para-etiquetas'></img>
+                                                        <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
                                                         <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                                     </div>
                                                 </div>
@@ -294,7 +292,7 @@ const ExibirQRCodes = () => {
                                             <div className='texto-etiqueta'>
                                                 <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
-                                                        <img src={logo} id='logo-para-etiquetas'></img>
+                                                        <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
                                                         <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                                     </div>
                                                 </div>

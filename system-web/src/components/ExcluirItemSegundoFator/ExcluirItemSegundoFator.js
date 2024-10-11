@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import './ExcluirItemSegundoFator.css';
 import Text from '../Text';
 import Input from '../Input';

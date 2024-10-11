@@ -7,7 +7,6 @@ import Button from "../../../components/Button";
 import Cookies from 'js-cookie';
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import Loading from "../../../components/Loading/Loading";
 
 

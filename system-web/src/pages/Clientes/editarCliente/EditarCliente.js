@@ -80,7 +80,7 @@ function EditarCliente() {
                 });
         }
         fetchContainers();
-    }, [id]); // Fim do useEffect
+    }, [id, config]); // Fim do useEffect
 
 
 

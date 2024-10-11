@@ -42,7 +42,6 @@ function EditarPL() {
     const [swiftResponse, setSwiftResponse] = useState("");
     const [ibanResponse, setIbanResponse] = useState("");
 
-    const [nomeCliente, setNomeCliente] = useState("");
     const [clientesNomus, setClientesNomus] = useState([]);
 
     const [formData, setFormData] = useState({

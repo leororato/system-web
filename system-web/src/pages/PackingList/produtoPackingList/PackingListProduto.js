@@ -760,7 +760,7 @@ function PackingListProduto() {
 
             {contextDeleteSegundoFator.visible && (
                 <>
-                    <ExcluirItem
+                    <ExcluirItemSegundoFator
                         onSubmit={handleDeleteConfirmSegundoFator}
                         descricao={'Este produto possui volumes, para confirmar a exclusão do produto digite a palavra "Excluir" no campo abaixo:'}
                         onChange={handleChange}
