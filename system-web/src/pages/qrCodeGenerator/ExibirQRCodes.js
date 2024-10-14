@@ -100,7 +100,7 @@ const ExibirQRCodes = () => {
             }
             fetchTodosOsQrCodesDeUmaPackinglist();
         }
-    }, [idPackinglist, modoDaPagina, config])
+    }, [idPackinglist, modoDaPagina])
 
 
     // --------------------------- ^FIM DO GERAR QRCODES DA PACKINGLIST^ ----------------------------//
@@ -175,7 +175,7 @@ const ExibirQRCodes = () => {
 
             fetchQrCodeDeUmVolume();
         } else return
-    }, [idVolume, modoDaPagina, config])
+    }, [idVolume, modoDaPagina])
 
 
     //---------------------------- ^FIM QR CODE GERADO DE CADA VOLUME^ ----------------------------//

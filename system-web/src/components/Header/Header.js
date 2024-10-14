@@ -189,13 +189,13 @@ const Header = () => {
             <div className='buttons-create'>
               <Button
                 className={'botao-cancelar'}
-                text={'CANCELAR'}
+                text={'Cancelar'}
                 fontSize={15}
                 onClick={() => setContextVolume({ visible: false })}
               />
               <Button
                 className={'botao-salvar'}
-                text={'CRIAR'}
+                text={'Criar'}
                 fontSize={15}
                 onClick={handleCreateTipoDeVolume}
               />
