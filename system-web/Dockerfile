@@ -1,14 +1,28 @@
-# versão do maven e depois versão do jdk
-FROM maven:3.9.9-amazoncorretto-17 as build
-# diretório que vai ficar os itens dentro do container
-WORKDIR /app
-# copia tudo para o container
-COPY . .
-# comando de empacotamento gerando o log com o -X e pulando os testes com o -DskipTests
-RUN mvn clean package -X -DskipTests
-# rodando o jar que foi gerado pelo comando acima
+# Estágio 1: build
+FROM node:20-alpine as build
 
-FROM openjdk:17-ea-10-jdk-slim
+# Define o diretório de trabalho no container
 WORKDIR /app
-COPY --from=build ./app/target/*.jar ./systemcharging.jar
-ENTRYPOINT java -jar systemcharging.jar
+
+# Copia o package.json e instala as dependências usando npm
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copia o restante dos arquivos da aplicação e faz o build
+COPY . .
+RUN npm run build
+
+# Estágio 2: Nginx para servir a aplicação
+FROM nginx:alpine
+
+# Copia os arquivos de build para o diretório do Nginx
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copia a configuração padrão do Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expõe a porta 80 para servir a aplicação
+EXPOSE 80
+
+# Inicia o Nginx
+CMD ["nginx", "-g", "daemon off;"]
