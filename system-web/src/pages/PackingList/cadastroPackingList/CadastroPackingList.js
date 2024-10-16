@@ -11,22 +11,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
-import Cookies from 'js-cookie';
 import api from '../../../axiosConfig';
 import Loading from "../../../components/Loading/Loading";
-import axios from "axios";
 
 function CadastroPackingList() {
-
-    // Obtenha o token JWT do cookie
-    const token = Cookies.get('jwt');
-
-    // Configure o header da requisição
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
 
     const navigate = useNavigate();
 
@@ -67,7 +55,7 @@ function CadastroPackingList() {
             setContextLoading({ visible: true });
 
             try {
-                const response = await api.get('/clienteNomus', config);
+                const response = await api.get('/clienteNomus');
                 setClientesNomus(response.data);
 
             } catch (error) {
@@ -138,7 +126,7 @@ function CadastroPackingList() {
         setContextLoading({ visible: true });
 
         try {
-            await api.post('/packinglist', formData, config);
+            await api.post('/packinglist', formData);
             setSucessMessage('PackingList criado com sucesso!');
 
             navigate('/inicio', { state: { sucessMessage: 'Packinglist criado com sucesso!' } });

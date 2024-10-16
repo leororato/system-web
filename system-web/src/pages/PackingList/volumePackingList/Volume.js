@@ -11,7 +11,6 @@ import ErrorNotification from "../../../components/ErrorNotification/ErrorNotifi
 import Text from "../../../components/Text";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Box, CircularProgress } from "@mui/material";
-import Cookies from 'js-cookie';
 import api from '../../../axiosConfig';
 import Loading from "../../../components/Loading/Loading";
 import ExcluirItemSegundoFator from "../../../components/ExcluirItemSegundoFator/ExcluirItemSegundoFator";
@@ -20,16 +19,6 @@ import ExcluirItem from "../../../components/ExcluirItem/ExcluirItem";
 
 
 function Volume() {
-
-    // Obtenha o token JWT do cookie
-    const token = Cookies.get('jwt');
-
-    // Configure o header da requisição
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
 
     // ------------------------------------- PRODUTOS ------------------------------------- //
 
@@ -194,7 +183,7 @@ function Volume() {
         setLoading(true);
 
         try {
-            const response = await api.get(`/pl-produto/${id}/${idProduto}/${seq}`, config);
+            const response = await api.get(`/pl-produto/${id}/${idProduto}/${seq}`);
             setProdutoSelecionado(response.data);
 
         } catch (error) {
@@ -225,7 +214,7 @@ function Volume() {
         setContextLoading({ visible: true });
 
         try {
-            const response = await api.get(`/volume/listar-volumes/${id}/${idProduto}/${seq}`, config);
+            const response = await api.get(`/volume/listar-volumes/${id}/${idProduto}/${seq}`);
 
             if (response.data && Array.isArray(response.data)) {
                 setVolumes(response.data);
@@ -265,8 +254,8 @@ function Volume() {
             setContextLoading({ visible: true });
 
             try {
-                const response = await api.get(`/tipo-de-volume`, config);
-                
+                const response = await api.get(`/tipo-de-volume`);
+
                 setTiposDeVolumeArray(response.data); // Armazena o array original
 
             } catch (error) {
@@ -293,7 +282,7 @@ function Volume() {
         setContextLoading({ visible: true });
 
         try {
-            const response = await api.post(`/volume`, formDataVolume, config);
+            const response = await api.post(`/volume`, formDataVolume);
             setIdVolumeSave(response.data.idVolume);
 
             setFormDataVolume({
@@ -341,7 +330,7 @@ function Volume() {
                         },
                         qrCodeVolumeProduto: `${id}-${idProduto}-${seq}-${idVolumeSave}`
 
-                    }, config);
+                    });
 
                     fetchVolumes();
                     fetchProdutoSelecionado();
@@ -371,7 +360,7 @@ function Volume() {
         setContextLoading({ visible: true });
 
         try {
-            await api.put(`/volume/${salvarIdVolume.idVolume}`, volumeEdicao, config)
+            await api.put(`/volume/${salvarIdVolume.idVolume}`, volumeEdicao)
 
             setFormDataVolume({
                 idTipoVolumeId: '16',
@@ -465,7 +454,7 @@ function Volume() {
         setContextLoading({ visible: true });
 
         try {
-            await api.delete(`/volume/${idVolumeSelecionado}`, config);
+            await api.delete(`/volume/${idVolumeSelecionado}`);
 
             setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
 
@@ -510,8 +499,7 @@ function Volume() {
 
         try {
             await api.delete(`/volume/deletar-itens-checkbox/${permissaoSegundoFator}`, {
-                data: volumesCheckeds,
-                ...config
+                data: volumesCheckeds
             });
 
             setSucessMessage(volumesCheckeds.length > 1 ? `Volumes excluídos com sucesso!` : `Volume excluído com sucesso!`);
@@ -560,8 +548,7 @@ function Volume() {
 
         try {
             await api.delete(`/volume/deletar-itens-checkbox/${permissaoParaExcluir}`, {
-                data: volumesCheckeds,
-                ...config
+                data: volumesCheckeds
             });
 
             setSucessMessage("Produtos excluídos com sucesso!");
@@ -680,7 +667,7 @@ function Volume() {
         setContextLoading({ visible: true });
 
         try {
-            await api.post(`/subvolume`, formDataSubVolume, config);
+            await api.post(`/subvolume`, formDataSubVolume);
 
             setSucessMessage('Subvolume adicionado com sucesso');
 
@@ -727,7 +714,7 @@ function Volume() {
         }
 
         try {
-            await api.put(`/subvolume/${idVolume}/${idSubVolume}`, formDataEditarSubVolume, config);
+            await api.put(`/subvolume/${idVolume}/${idSubVolume}`, formDataEditarSubVolume);
 
             setSucessMessage('Subvolume atualizado com sucesso');
 
@@ -769,7 +756,7 @@ function Volume() {
         const descricao = subVolumesIds.descricao;
 
         try {
-            await api.delete(`/subvolume/${idVolume}/${idSubVolume}`, config);
+            await api.delete(`/subvolume/${idVolume}/${idSubVolume}`);
 
             setSucessMessage(`Subvolume '${descricao}' deletado com sucesso!`);
             setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
@@ -802,7 +789,7 @@ function Volume() {
         setContextLoading({ visible: true });
 
         try {
-            const response = await api.get(`/subvolume/volume/${idVolume}`, config);
+            const response = await api.get(`/subvolume/volume/${idVolume}`);
             setSubVolumesPorVolume(prevState => ({
                 ...prevState,
                 [idVolume]: response.data
@@ -829,7 +816,7 @@ function Volume() {
         setContextLoading({ visible: true });
 
         try {
-            const response = await api.get(`/subvolume/volume/${idVolume}`, config);
+            const response = await api.get(`/subvolume/volume/${idVolume}`);
             setSubVolumeSelecionado(response.data);
 
         } catch (error) {
@@ -1970,7 +1957,7 @@ function Volume() {
             {
                 contextDelete.visible && (estadoExcluirOverlay === 'volume' || estadoExcluirOverlay === 'subvolume') && (
                     <>
-                        <ExcluirItem 
+                        <ExcluirItem
                             descricao={estadoExcluirOverlay === 'volume' ? 'Tem certeza que deseja excluir o Volume?' : `Tem certeza que deseja excluir o Subvolume '${subVolumesIds.descricao}' ?`}
                             onClickBotaoCancelar={() => { setContextDelete({ visible: false }); }}
                             onClickBotaoExcluir={estadoExcluirOverlay === 'volume' ? handleDeleteConfirm : handleDeleteSubVolumeConfirm}

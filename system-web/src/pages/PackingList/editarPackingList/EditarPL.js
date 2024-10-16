@@ -1,7 +1,6 @@
 import Header from "../../../components/Header/Header";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import Cookies from 'js-cookie';
 import './EditarPL.css';
 import Button from "../../../components/Button";
 import Autocomplete from "../../../components/Autocomplete/Autocomplete";
@@ -14,16 +13,6 @@ import api from '../../../axiosConfig';
 import Loading from "../../../components/Loading/Loading";
 
 function EditarPL() {
-
-    // Obtenha o token JWT do cookie
-    const token = Cookies.get('jwt');
-
-    // Configure o header da requisição
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
 
     const navigate = useNavigate();
 
@@ -71,7 +60,7 @@ function EditarPL() {
         setEstadoDaPagina("Carregando");
 
         try {
-            const response = await api.get(`/packinglist/listar-packinglist-edicao/${id}`, config);
+            const response = await api.get(`/packinglist/listar-packinglist-edicao/${id}`);
             setFormData(response.data);
             setContextLoading({ visible: true });
             let dadosBancarios = response.data.dadosBancarios;
@@ -109,7 +98,7 @@ function EditarPL() {
         setContextLoading({ visible: true });
 
         try {
-            const response = await api.get(`/clienteNomus`, config);
+            const response = await api.get(`/clienteNomus`);
             setClientesNomus(response.data);
 
         } catch (error) {
@@ -131,7 +120,7 @@ function EditarPL() {
         setContextLoading({ visible: true });
 
         try {
-            await api.put(`/packinglist/${id}`, formData, config);
+            await api.put(`/packinglist/${id}`, formData);
 
             navigate('/inicio', { state: { sucessMessage: `PackingList ${id} atualizado com sucesso!` } }, setTimeout(() => setSucessMessage(null), 5000));
 

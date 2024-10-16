@@ -8,22 +8,11 @@ import ErrorNotification from '../../components/ErrorNotification/ErrorNotificat
 import SucessNotification from '../../components/SucessNotification/SucessNotification';
 import Title from '../../components/Title';
 import Button from '../../components/Button';
-import Cookies from 'js-cookie';
 import api from '../../axiosConfig';
 import logo from '../../assets/logo.png';
 import Loading from '../../components/Loading/Loading';
 
 const ExibirQRCodes = () => {
-
-    // Obtenha o token JWT do cookie
-    const token = Cookies.get('jwt');
-
-    // Configure o header da requisição
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
 
     const { idVolumeProduto, idPackinglist, idProduto, seq, idVolume } = useParams();
 
@@ -86,7 +75,7 @@ const ExibirQRCodes = () => {
 
 
                 try {
-                    const response = await api.get(`/busca-qrcode/todos-packinglist/${idPackinglist}`, config)
+                    const response = await api.get(`/busca-qrcode/todos-packinglist/${idPackinglist}`)
                     setTodosQrCodesDaPackinglist(response.data);
 
                 } catch (error) {
@@ -118,7 +107,7 @@ const ExibirQRCodes = () => {
 
             try {
                 if (modoDaPagina === 1) {
-                    const response = await api.get(`/busca-qrcode/todos-por-produto/${idPackinglist}/${idProduto}/${seq}`, config);
+                    const response = await api.get(`/busca-qrcode/todos-por-produto/${idPackinglist}/${idProduto}/${seq}`);
                     setTodosQrCodesDoProduto(response.data);
 
                 } else return;
@@ -156,7 +145,7 @@ const ExibirQRCodes = () => {
                 setContextLoading({ visible: true });
 
                 try {
-                    const response = await api.get(`/busca-qrcode/por-volume/${idVolume}`, config);
+                    const response = await api.get(`/busca-qrcode/por-volume/${idVolume}`);
                     setQrCodeDeUmVolume(response.data);
 
                 }

@@ -12,7 +12,6 @@ import Autocomplete from "../../../components/Autocomplete/Autocomplete";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import Cookies from 'js-cookie';
 import api from '../../../axiosConfig';
 import Loading from "../../../components/Loading/Loading";
 import ExcluirItemSegundoFator from "../../../components/ExcluirItemSegundoFator/ExcluirItemSegundoFator";
@@ -20,16 +19,6 @@ import ExcluirItem from "../../../components/ExcluirItem/ExcluirItem";
 
 
 function PackingListProduto() {
-
-    // Obtenha o token JWT do cookie
-    const token = Cookies.get('jwt');
-
-    // Configure o header da requisição
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -80,7 +69,7 @@ function PackingListProduto() {
     const fetchPackingList = async () => {
         setEstadoDaPagina("Carregando");
         try {
-            const response = await api.get(`/packinglist/listar-packinglist-produto/${id}`, config);
+            const response = await api.get(`/packinglist/listar-packinglist-produto/${id}`);
             setContextLoading({ visible: true });
             setPackingList(response.data);
 
@@ -119,7 +108,7 @@ function PackingListProduto() {
     const fetchProdutos = async () => {
         setEstadoDaPagina("Carregando");
         try {
-            const response = await api.get(`/pl-produto/packinglist/${id}`, config);
+            const response = await api.get(`/pl-produto/packinglist/${id}`);
             setProdutos(response.data);
             setContextLoading({ visible: true });
 
@@ -175,7 +164,7 @@ function PackingListProduto() {
     const fetchProdutoNomus = async () => {
         setEstadoDaPagina("Carregando");
         try {
-            const response = await api.get(`/ordens/details`, config)
+            const response = await api.get(`/ordens/details`)
             setProdutoNomus(response.data);
             setContextLoading({ visible: true });
 
@@ -288,7 +277,7 @@ function PackingListProduto() {
         }
 
         try {
-            await api.put(`/pl-produto/${idPackinglist}/${idProduto}/${seq}`, payload, config);
+            await api.put(`/pl-produto/${idPackinglist}/${idProduto}/${seq}`, payload);
 
             setSucessMessage('Volume de reposição atualizado com sucesso!');
             setTimeout(() => setSucessMessage(null), 5000);
@@ -360,7 +349,7 @@ function PackingListProduto() {
 
         try {
 
-            await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}/${permissaoParaExcluir}`, config);
+            await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}/${permissaoParaExcluir}`);
             setSucessMessage(`Produto ${contextDelete.selectedDesc} excluído com sucesso!`);
             setTimeout(() => {
                 setSucessMessage(null)
@@ -402,7 +391,7 @@ function PackingListProduto() {
         const permissaoParaExcluir = (inputDeleteSegundoFator === "Excluir") ? "comPermissao" : "semPermissao";
 
         try {
-            await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDeleteSegundoFator.selectedId}/${contextDeleteSegundoFator.selectedSeq}/${permissaoParaExcluir}`, config);
+            await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDeleteSegundoFator.selectedId}/${contextDeleteSegundoFator.selectedSeq}/${permissaoParaExcluir}`);
 
             setSucessMessage(`Produto ${contextDeleteSegundoFator.selectedDesc} excluído com sucesso!`);
             setTimeout(() => {
@@ -458,7 +447,7 @@ function PackingListProduto() {
         };
 
         try {
-            await api.post('/pl-produto', payload, config);
+            await api.post('/pl-produto', payload);
 
             setSucessMessage('Produto adicionado com sucesso!');
             setTimeout(() => {

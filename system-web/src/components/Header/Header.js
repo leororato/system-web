@@ -8,22 +8,12 @@ import Button from "../Button";
 import ErrorNotification from "../ErrorNotification/ErrorNotification";
 import SucessNotification from "../SucessNotification/SucessNotification";
 import logo from '../../assets/logo.png';
-import Cookies from 'js-cookie';
 import api from "../../axiosConfig";
 import Loading from "../Loading/Loading";
 
 const Header = () => {
 
-  // Obtenha o token JWT do cookie
-  const token = Cookies.get('jwt');
   const [nomeUsuario, setNomeUsuario] = useState('');
-
-  // Configure o header da requisição
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  };
 
   const navigate = useNavigate();
 
@@ -85,7 +75,7 @@ const Header = () => {
     setContextLoading({ visible: true });
 
     try {
-      const response = await api.post(`/tipo-de-volume`, tipoDeVolume, config);
+      const response = await api.post(`/tipo-de-volume`, tipoDeVolume);
 
       setSucessMessage(`Tipo de Volume '${response.data.descricao}' criado com sucesso`);
 

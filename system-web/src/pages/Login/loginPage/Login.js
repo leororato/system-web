@@ -36,14 +36,21 @@ function Login() {
         e.preventDefault();
         try {
             // Faz a requisição de login
-            const response = await axios.post('http://localhost:8080/auth/login', {
+            const response = await axios.post('http://192.168.1.238:8080/auth/login', {
                 login: login,
-                senha: senha
+                // senha: senha
             });
 
+            console.log('Resposta do login: ', response)
+
             const token = response.data.token;
-            Cookies.set('jwt', token, { expires: 7, secure: true, sameSite: 'Strict' });
+            Cookies.set('token', response.data.token, {
+                expires: 7,               // Expira em 7 dias
+                sameSite: 'Lax',        // Impede o envio do cookie em solicitações de terceiros
+            });
+            
             localStorage.setItem('nomeUsuario', login);
+            console.log("Token armazenado:", token);
 
             navigate('/inicio');
         } catch (error) {

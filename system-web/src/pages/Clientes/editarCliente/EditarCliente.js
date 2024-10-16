@@ -7,20 +7,9 @@ import { useEffect, useState } from "react";
 import './EditarCliente.css'
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
-import Cookies from 'js-cookie';
 import api from '../../../axiosConfig';
 
 function EditarCliente() {
-
-    // Obtenha o token JWT do cookie
-    const token = Cookies.get('jwt');
-
-    // Configure o header da requisição
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
 
     const navigate = useNavigate();
     const { id } = useParams();
@@ -43,7 +32,7 @@ function EditarCliente() {
     useEffect(() => {
         const fetchContainers = async () => {
             // Buscando o cliente no banco Nomus e salvando todas as informações dele no ContainerNomus
-            api.get(`/clienteNomus/${id}`, config)
+            api.get(`/clienteNomus/${id}`)
                 .then(response => {
                     setContainerNomus(response.data);
                 })
@@ -57,7 +46,7 @@ function EditarCliente() {
                 });
 
             // Buscando o cliente no banco App e salvando todas as informações dele no ContainerApp
-            api.get(`/clienteApp/${id}`, config)
+            api.get(`/clienteApp/${id}`)
                 .then(response => {
                     // Verifica que o cliente já existe no banco App e vai para o PUT
                     setClienteExiste(true);
@@ -80,7 +69,7 @@ function EditarCliente() {
                 });
         }
         fetchContainers();
-    }, [id, config]); // Fim do useEffect
+    }, [id]); // Fim do useEffect
 
 
 
@@ -120,7 +109,7 @@ function EditarCliente() {
             // Se o cliente já existe no banco App é realizado um PUT
             const nome = containerNomus.nome;
             try {
-                await api.put(`/clienteApp/${id}`, formData, config);
+                await api.put(`/clienteApp/${id}`, formData);
 
                 navigate('/clientes', { state: { sucessMessage: `O cliente '${nome}' foi atualizado com sucesso!` } });
 
@@ -139,7 +128,7 @@ function EditarCliente() {
             // Se o cliente não existe no banco App é realizado um POST
             const nome = containerNomus.nome;
             try {
-                await api.post(`/clienteApp`, formData, config);
+                await api.post(`/clienteApp`, formData);
                 navigate('/clientes', { state: { sucessMessage: `O cliente '${nome}' foi atualizado com sucesso!` } });
 
             } catch (error) {

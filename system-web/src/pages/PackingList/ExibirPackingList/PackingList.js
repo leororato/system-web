@@ -20,16 +20,6 @@ import ExcluirItem from '../../../components/ExcluirItem/ExcluirItem';
 
 function PackingList() {
 
-    // Obtenha o token JWT do cookie
-    const token = Cookies.get('jwt');
-
-    // Configure o header da requisição
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
-
 
     const navigate = useNavigate();
 
@@ -72,9 +62,8 @@ function PackingList() {
         setContextLoading({ visible: true });
 
         try {
-            const response = await api.get('/packinglist/listagem-packinglist-inicio', config);
+            const response = await api.get('/packinglist/listagem-packinglist-inicio');
             setPackingLists(response.data);
-
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao buscar as packinglists";
             setErrorMessage(errorMessage);
@@ -172,7 +161,7 @@ function PackingList() {
         const permissaoParaExcluir = "semPermissao";
 
         try {
-            await api.delete(`/packinglist/${itemDeletado}/${permissaoParaExcluir}`, config);
+            await api.delete(`/packinglist/${itemDeletado}/${permissaoParaExcluir}`);
 
 
             // setPackingLists(packingLists.filter(packingList =>
@@ -219,7 +208,7 @@ function PackingList() {
         const permissaoParaExcluir = (inputDeleteSegundoFator === "Excluir") ? "comPermissao" : "palavraChaveErrada";
 
         try {
-            await api.delete(`/packinglist/${itemDeletado}/${permissaoParaExcluir}`, config);
+            await api.delete(`/packinglist/${itemDeletado}/${permissaoParaExcluir}`);
 
             setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
             setTimeout(() => {
@@ -278,25 +267,22 @@ function PackingList() {
 
     const handleGerarPdf = async () => {
         try {
-
             const configHeaderPdf = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                responseType: 'arraybuffer',  // Inclua o responseType dentro do config
+                responseType: 'arraybuffer',  // Definimos o responseType corretamente
             };
-
-            const response = await axios.get(`http://localhost:8080/api/packinglist/pdf/${contextMenu.selectedId}`, configHeaderPdf);
-
+    
+            // Usamos 'api' em vez de 'axios' diretamente, pois ele já tem o interceptor configurado para adicionar o token
+            const response = await api.get(`/packinglist/pdf/${contextMenu.selectedId}`, configHeaderPdf);
+    
             // Criar um URL para o blob e forçar o download
-            const blob = new Blob([response.data], { type: 'application/pdf' }); // Defina o tipo explicitamente
+            const blob = new Blob([response.data], { type: 'application/pdf' }); // Defina o tipo explicitamente como PDF
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', `packinglist_${contextMenu.selectedId}.pdf`);
             document.body.appendChild(link);
             link.click();
-            link.parentNode.removeChild(link);
+            link.remove();  // Remover o link após o clique
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao gerar o PDF";
             setErrorMessage(errorMessage);

@@ -5,20 +5,9 @@ import Header from '../../../components/Header/Header';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ErrorNotification from '../../../components/ErrorNotification/ErrorNotification';
 import SucessNotification from '../../../components/SucessNotification/SucessNotification';
-import Cookies from 'js-cookie';
 import api from '../../../axiosConfig';
 
 function Clientes() {
-
-    // Obtenha o token JWT do cookie
-    const token = Cookies.get('jwt');
-
-    // Configure o header da requisição
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
 
     const navigate = useNavigate();
 
@@ -82,11 +71,11 @@ function Clientes() {
         const fetchData = async () => {
             try {
                 // Buscando todos os clientes do banco Nomus
-                const clientesResponse = await api.get('/clienteNomus', config);
+                const clientesResponse = await api.get('/clienteNomus');
                 setClientes(clientesResponse.data);
 
                 // Buscando todos os clientes do banco App
-                const clientesAppResponse = await api.get('/clienteApp', config);
+                const clientesAppResponse = await api.get('/clienteApp');
                 setClientesApp(clientesAppResponse.data);
 
             } catch (error) {
@@ -100,7 +89,7 @@ function Clientes() {
         };
 
         fetchData();
-    }, [config]); // Fim do useEffect
+    }, []); // Fim do useEffect
 
     return (
         <div>
