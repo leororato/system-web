@@ -10,11 +10,12 @@ import SucessNotification from "../SucessNotification/SucessNotification";
 import logo from '../../assets/logo.png';
 import api from "../../axiosConfig";
 import Loading from "../Loading/Loading";
+import Cookies from 'js-cookie';
 
 const Header = () => {
 
   const [nomeUsuario, setNomeUsuario] = useState('');
-
+  const userRole  = Cookies.get('nivelAcesso');
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -66,7 +67,6 @@ const Header = () => {
     if (storedUserName) {
       setNomeUsuario(storedUserName);
     }
-
   }, []);
 
   const handleCreateTipoDeVolume = async (e) => {
@@ -140,16 +140,22 @@ const Header = () => {
       {contextHeaderMenu && (
         <div className="container-header-menu" ref={menuRef}>
           <div id="tipo-de-volume-header">
-            <Text text={'Cadastrar Tipo de Volume'} onClick={handleFuncaoTipoVolume} />
+            <Text text={'Cadastrar tipo de volume'} onClick={handleFuncaoTipoVolume} />
           </div>
 
           <div id="criar-packinglist-header">
-            <Text text={'Criar Novo PackingList'} onClick={() => navigate('/cadastrar-packing-list')} />
+            <Text text={'Criar novo packingList'} onClick={() => navigate('/cadastrar-packing-list')} />
           </div>
 
           <div id="encontrar-clientes-header">
-            <Text text={'Encontrar Clientes'} onClick={() => navigate('/clientes')} />
+            <Text text={'Encontrar clientes'} onClick={() => navigate('/clientes')} />
           </div>
+
+          {userRole === "A" && (
+            <div id="criar-nova-conta-header">
+              <Text text={'Cadastrar usuário'} onClick={() => navigate('/cadastrar-usuario')} />
+            </div>
+          )}
         </div>
       )}
 

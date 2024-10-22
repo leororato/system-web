@@ -1,13 +1,13 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import Header from "../../../components/Header/Header";
-import Title from "../../../components/Title";
-import Text from "../../../components/Text";
 import "./Conta.css";
-import Button from "../../../components/Button";
 import Cookies from 'js-cookie';
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Loading from "../../../components/Loading/Loading";
+import Header from "../../../../components/Header/Header";
+import Title from "../../../../components/Title";
+import Text from "../../../../components/Text";
+import Loading from "../../../../components/Loading/Loading";
+import Button from "../../../../components/Button";
 
 
 function Conta() {

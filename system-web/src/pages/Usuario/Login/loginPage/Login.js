@@ -1,15 +1,14 @@
 import "./Login.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Text from "../../../components/Text";
-import Logo from "../../../components/Logo";
-import Input from "../../../components/Input";
-import Button from "../../../components/Button";
-import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
-import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import Cookies from 'js-cookie';
 import axios from "axios";
-
+import ErrorNotification from "../../../../components/ErrorNotification/ErrorNotification";
+import SucessNotification from "../../../../components/SucessNotification/SucessNotification";
+import Text from "../../../../components/Text";
+import Input from "../../../../components/Input";
+import Button from "../../../../components/Button";
+import Logo from "../../../../assets/logo.png"
 
 function Login() {
     const navigate = useNavigate();
@@ -36,22 +35,30 @@ function Login() {
         e.preventDefault();
         try {
             // Faz a requisição de login
-            const response = await axios.post('http://192.168.1.238:8080/auth/login', {
+            const response = await axios.post('http://localhost:8080/auth/login', {
                 login: login,
                 // senha: senha
             });
 
             console.log('Resposta do login: ', response)
 
-            const token = response.data.token;
-            Cookies.set('token', response.data.token, {
+            Cookies.set('token', response.data.token, { 
                 expires: 7,               // Expira em 7 dias
                 sameSite: 'Lax',        // Impede o envio do cookie em solicitações de terceiros
             });
-            
-            localStorage.setItem('nomeUsuario', login);
-            console.log("Token armazenado:", token);
 
+            Cookies.set('nomeUsuario', response.data.nome, {
+                expires: 7,               // Expira em 7 dias
+                sameSite: 'Lax',        // Impede o envio do cookie em solicitações de terceiros
+            });
+
+            Cookies.set('nivelAcesso', response.data.nivelAcesso, {
+                expires: 7,               // Expira em 7 dias
+                sameSite: 'Lax',        // Impede o envio do cookie em solicitações de terceiros
+            })
+            
+            console.log('nivel de acesso: ', response.data.nivelAcesso);
+            console.log('nome usuario: ', response.data.nome)
             navigate('/inicio');
         } catch (error) {
             if (error.response) {
@@ -76,7 +83,7 @@ function Login() {
                     <div className="login-bloco">
 
                         <div className="logo-container">
-                            <Logo width={'200px'} height={'80px'} />
+                            <img src={Logo} width={'200px'} height={'80px'} />
                         </div>
                         <div className="login-itens">
                             <div className="login-container">
