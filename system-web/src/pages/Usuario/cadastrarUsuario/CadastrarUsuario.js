@@ -1,12 +1,23 @@
+import { Icon } from "@iconify/react/dist/iconify.js";
 import Button from "../../../components/Button";
 import Header from "../../../components/Header/Header";
 import Input from "../../../components/Input";
 import Text from "../../../components/Text";
 import Title from "../../../components/Title";
 import './CadastrarUsuario.css';
+import { useState } from "react";
 
 function CadastrarUsuario() {
 
+    const [mostrarSenha, setMostrarSenha] = useState(false);
+
+    const handleToggleSenha = () => {
+        if (mostrarSenha === true) {
+            setMostrarSenha(false);
+        } else {
+            setMostrarSenha(true);
+        }
+    };
 
     return (
         <div>
@@ -29,8 +40,22 @@ function CadastrarUsuario() {
 
                             <div>
                                 <label>Senha:</label>
-                                <Input type={"password"} title={"Digite a senha do usuário"} placeholder={"Digite a senha do usuário"} />
+                                <div className="input-password-wrapper">
+                                    <Input
+                                        type={mostrarSenha ? "text" : "password"}
+                                        title={"Digite a senha do usuário"}
+                                        placeholder={"Digite a senha do usuário"}
+                                        className="input-password"
+                                    />
+                                    <Icon
+                                        icon={mostrarSenha ? "mdi:eye-off" : "mdi:eye"}
+                                        onClick={handleToggleSenha}
+                                        className="icon-password"
+                                        title={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                                    />
+                                </div>
                             </div>
+                            
                             <div>
                                 <label>Tipo de acesso:</label>
                                 <select>
