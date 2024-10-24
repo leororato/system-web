@@ -61,6 +61,7 @@
   cursor: pointer;
   font-size: 18px;
   color: #999;
+  margin-bottom: 10px;
 }
 
 .icon-password:hover {
