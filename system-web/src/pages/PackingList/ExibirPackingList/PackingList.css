@@ -8,6 +8,7 @@ body {
     overflow-x: auto;
     padding: 20px;
     max-width: 100%;
+    min-height: 50vh;
     margin-bottom: 120px;
 }
 
@@ -23,7 +24,7 @@ body {
     gap: 30px;
 }
 
-.busca-invoice-input input{
+.busca-invoice-input input {
     width: 150px;
     padding: 10px;
     border: 1px solid #ddd;
@@ -39,6 +40,74 @@ body {
 .button-item:hover {
     transform: scale(1.05);
     background-color: #114b81;
+}
+
+.botao-filtros-inicio {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    width: 100px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: 1s ease;
+}
+
+.botao-filtros-inicio:hover {
+    background-color: #e4dbdb;
+    cursor: pointer;
+}
+
+.filter-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 200px;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.filter-item label {
+    margin-left: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+.filter-item input[type="date"] {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.filter-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+
+#icon-arrow-down {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.button-filtro {
+    background-color: transparent;
+    color: #747474 !important;
+    padding: 10px;
+    width: 100%;
+    height: 100%;
 }
 
 .container-listagem-inicio {
@@ -108,9 +177,7 @@ body {
     transition: 0.3s ease;
 }
 
-#container-icon-menu {
-
-}
+#container-icon-menu {}
 
 #container-icon-menu:hover {
     background-color: #d8d8d8;
@@ -123,7 +190,7 @@ body {
     color: #f0f0f0;
 }
 
-#icone-menu{
+#icone-menu {
     font-size: 1.3em;
 }
 

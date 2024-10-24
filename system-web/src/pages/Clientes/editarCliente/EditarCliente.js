@@ -8,6 +8,7 @@ import './EditarCliente.css'
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import api from '../../../axiosConfig';
+import Cookies from 'js-cookie';
 
 function EditarCliente() {
 
@@ -18,13 +19,17 @@ function EditarCliente() {
     const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
     const [errorMessage, setErrorMessage] = useState(null);
 
-
+    const userId = Cookies.get('userId');
     const [clienteExiste, setClienteExiste] = useState();
     const [containerNomus, setContainerNomus] = useState([]);
     const [formData, setFormData] = useState({
         id: id,
         sigla_codigo_identificacao: '',
-        codigo_identificacao: ''
+        codigo_identificacao: '',
+        registro_criado_por: userId,
+        registro_alterado_por: "",
+        registro_alterado: "",
+        registro_deletado: ""
     })
 
 
@@ -54,7 +59,11 @@ function EditarCliente() {
                     setFormData({
                         id: id,
                         sigla_codigo_identificacao: response.data.sigla_codigo_identificacao || '',
-                        codigo_identificacao: response.data.codigo_identificacao || ''
+                        codigo_identificacao: response.data.codigo_identificacao || '',
+                        registro_criado_por: userId,
+                        registro_alterado_por: "",
+                        registro_alterado: "",
+                        registro_deletado: ""
                     })
                 })
                 .catch(error => {
@@ -88,23 +97,10 @@ function EditarCliente() {
         navigate(-1);
     }
 
-    const validateForm = () => {
-        for (const key in formData) {
-            if (formData[key] === "") {
-                alert(`Por favor, preencha o campo: ${key}`);
-                return false;
-            }
-        }
-        return true;
-    };
-
-
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!validateForm()) {
-            return;
-        }
+
         if (clienteExiste === true) {
             // Se o cliente já existe no banco App é realizado um PUT
             const nome = containerNomus.nome;

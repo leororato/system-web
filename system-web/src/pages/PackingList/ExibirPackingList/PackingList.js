@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import Header from '../../../components/Header/Header';
 import './PackingList.css';
@@ -22,7 +22,7 @@ function PackingList() {
 
 
     const navigate = useNavigate();
-
+    const userId = Cookies.get('userId');
     const location = useLocation();
     const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -31,9 +31,10 @@ function PackingList() {
     const [contextLoading, setContextLoading] = useState({ visible: false });
     const [packingLists, setPackingLists] = useState([]);
 
-
     const [buscaInvoice, setBuscaInvoice] = useState('');
     const [filteredPackinglist, setFilteredPackinglist] = useState([]);
+    const [contextFiltro, setContextFiltro] = useState({ visible: false, x: 0, y: 0 })
+    const filtroRef = useRef(null);
 
     const [contextMenu, setContextMenu] = useState({
         visible: false, x: 0, y: 0, selectedId: null
@@ -51,7 +52,6 @@ function PackingList() {
         );
         setFilteredPackinglist(filterPackinglist);
     }, [buscaInvoice, packingLists]);
-
 
     useEffect(() => {
         fetchListaPackinglist();
@@ -77,6 +77,13 @@ function PackingList() {
         }
     }
 
+    const handleMenuFiltros = () => {
+        if (contextFiltro.visible) {
+            setContextFiltro({ visible: false });
+        } else { 
+            setContextFiltro({ visible: true });
+        }
+    }
 
     useEffect(() => {
         document.addEventListener('click', handleClickOutside);
@@ -96,13 +103,9 @@ function PackingList() {
         }
     }, [sucessMessage, navigate]);
 
-
-
-
     const formatarData = (dtCriacao) => {
         return format(new Date(dtCriacao), 'dd/MM/yyyy - HH:mm');
     };
-
 
     const handleRightClick = (event, id) => {
         event.preventDefault();
@@ -114,12 +117,10 @@ function PackingList() {
         });
     };
 
-
-
     const handleClickOutside = () => {
         setContextMenu({ visible: false, x: 0, y: 0, selectedId: null });
+        setContextFiltro({ visible: false });
     };
-
 
 
     const handleEdit = () => {
@@ -161,11 +162,11 @@ function PackingList() {
         const permissaoParaExcluir = "semPermissao";
 
         try {
-            await api.delete(`/packinglist/${itemDeletado}/${permissaoParaExcluir}`);
+            await api.put(
+                `/packinglist/deletar-packinglist/${itemDeletado}/${permissaoParaExcluir}`,
+                { userId }
+            );
 
-
-            // setPackingLists(packingLists.filter(packingList =>
-            //     packingList.id !== contextDelete.selectedId));
             setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
             setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
             setTimeout(() => setSucessMessage(null), 5000);
@@ -270,10 +271,10 @@ function PackingList() {
             const configHeaderPdf = {
                 responseType: 'arraybuffer',  // Definimos o responseType corretamente
             };
-    
+
             // Usamos 'api' em vez de 'axios' diretamente, pois ele já tem o interceptor configurado para adicionar o token
             const response = await api.get(`/packinglist/pdf/${contextMenu.selectedId}`, configHeaderPdf);
-    
+
             // Criar um URL para o blob e forçar o download
             const blob = new Blob([response.data], { type: 'application/pdf' }); // Defina o tipo explicitamente como PDF
             const url = window.URL.createObjectURL(blob);
@@ -332,6 +333,32 @@ function PackingList() {
                             onChange={(e) => setBuscaInvoice(e.target.value)}
                         />
                     </div>
+
+                    <div className='botao-filtros-inicio' onClick={handleMenuFiltros} title='Filtros' style={{ position: 'relative' }}>
+                        <Button
+                            text={"Filtros"}
+                            className={'button-filtro'}
+                        />
+                        <Icon icon="eva:arrow-down-fill" id='icon-arrow-down' />
+
+                        {contextFiltro.visible && (
+                            <div ref={filtroRef} className="filter-container">
+                                <div className="filter-item">
+                                    <Input type={'date'} id="filter-date" />
+                                    <label htmlFor="filter-date">Data</label>
+                                </div>
+                                <div className="filter-item">
+                                    <Input type={'checkbox'} id="filter-in-progress" />
+                                    <label htmlFor="filter-in-progress">Em andamento</label>
+                                </div>
+                                <div className="filter-item">
+                                    <Input type={'checkbox'} id="filter-completed" />
+                                    <label htmlFor="filter-completed">Finalizados</label>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
 
                 </div>
                 <div className='container-listagem-inicio'>
@@ -460,15 +487,17 @@ function PackingList() {
 
             </div>
 
-            {contextLoading.visible ? (
-                <div className="loading">
-                    <Loading message={estadoDaPagina === 'Carregando' ? 'Carregando...' : 'Excluindo...'} />
-                </div>
-            ) : (
-                <div></div>
-            )}
+            {
+                contextLoading.visible ? (
+                    <div className="loading">
+                        <Loading message={estadoDaPagina === 'Carregando' ? 'Carregando...' : 'Excluindo...'} />
+                    </div>
+                ) : (
+                    <div></div>
+                )
+            }
 
-        </div>
+        </div >
     );
 }
 

@@ -13,6 +13,7 @@ import ErrorNotification from "../../../components/ErrorNotification/ErrorNotifi
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import api from '../../../axiosConfig';
 import Loading from "../../../components/Loading/Loading";
+import Cookies from 'js-cookie';
 
 function CadastroPackingList() {
 
@@ -31,6 +32,8 @@ function CadastroPackingList() {
     const [ibanResponse, setIbanResponse] = useState("");
 
     const [clientesNomus, setClientesNomus] = useState([]);
+
+    const userId = Cookies.get('userId');
     const [formData, setFormData] = useState({
         idImportador: "",
         idConsignatario: "",
@@ -46,7 +49,12 @@ function CadastroPackingList() {
         tipoTransporte: "",
         pesoLiquidoTotal: "",
         pesoBrutoTotal: "",
-        idioma: ""
+        idioma: "",
+        finalizado: "",
+        registro_criado_por: userId,
+        registro_alterado_por: "",
+        registro_alterado: "",
+        registro_deletado: ""
     });
 
     useEffect(() => {
@@ -71,7 +79,7 @@ function CadastroPackingList() {
         }
 
         fetchClienteNomus();
-
+        console.log("usuario id: ", userId)
     }, []);
 
     const handleChange = (e) => {
@@ -137,7 +145,7 @@ function CadastroPackingList() {
             setTimeout(() => {
                 setErrorMessage(null);
             }, 5000);
-
+            console.log("formdata> ", formData)
         } finally {
             setContextLoading({ visible: false });
         }

@@ -52,13 +52,16 @@ function Login() {
                 sameSite: 'Lax',        // Impede o envio do cookie em solicitações de terceiros
             });
 
+            Cookies.set('userId', response.data.id, {
+                expires: 7,               // Expira em 7 dias
+                sameSite: 'Lax',        // Impede o envio do cookie em solicitações de terceiros
+            })
+
             Cookies.set('nivelAcesso', response.data.nivelAcesso, {
                 expires: 7,               // Expira em 7 dias
                 sameSite: 'Lax',        // Impede o envio do cookie em solicitações de terceiros
             })
-            
-            console.log('nivel de acesso: ', response.data.nivelAcesso);
-            console.log('nome usuario: ', response.data.nome)
+
             navigate('/inicio');
         } catch (error) {
             if (error.response) {

@@ -11,6 +11,7 @@ import Title from "../../../components/Title";
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import api from '../../../axiosConfig';
 import Loading from "../../../components/Loading/Loading";
+import Cookies from 'js-cookie';
 
 function EditarPL() {
 
@@ -33,23 +34,8 @@ function EditarPL() {
 
     const [clientesNomus, setClientesNomus] = useState([]);
 
-    const [formData, setFormData] = useState({
-        paisOrigem: '',
-        fronteira: '',
-        localEmbarque: '',
-        localDestino: '',
-        termosPagamento: '',
-        dadosBancarios: '',
-        incoterm: '',
-        invoice: '',
-        tipoTransporte: '',
-        pesoLiquidoTotal: '',
-        pesoBrutoTotal: '',
-        idioma: '',
-        idImportador: '',
-        idConsignatario: '',
-        idNotificado: ''
-    });
+    const userId = Cookies.get('userId');
+    const [formData, setFormData] = useState({});
 
 
     useEffect(() => {
@@ -62,6 +48,12 @@ function EditarPL() {
         try {
             const response = await api.get(`/packinglist/listar-packinglist-edicao/${id}`);
             setFormData(response.data);
+
+            setFormData(formData => ({
+                ...formData,
+                registro_alterado_por: userId
+            }));
+
             setContextLoading({ visible: true });
             let dadosBancarios = response.data.dadosBancarios;
             if (dadosBancarios != null) {
@@ -156,7 +148,6 @@ function EditarPL() {
             [field]: item.id
         }));
     };
-
 
     const handleChangeBanco = (e) => {
         const value = e.target.value;
@@ -441,6 +432,20 @@ function EditarPL() {
                             />
                         </div>
 
+                        <div>
+                            <label>Status:</label>
+                            <Select
+                                className="status-packinglist"
+                                name="status"
+                                placeholder={'Selecione'}
+                                options={[
+                                    { value: false, label: 'Em andamento' },
+                                    { value: true, label: 'Finalizado' }
+                                ]}
+                                value={formData.finalizado}
+                                onChange={e => setFormData({ ...formData, finalizado: e.target.value })}
+                            />
+                        </div>
                     </div>
                     <div className="botoes-finais-edicao" style={{ marginTop: '20px' }}>
                         <Button type="submit" className={"botao-salvar"}
