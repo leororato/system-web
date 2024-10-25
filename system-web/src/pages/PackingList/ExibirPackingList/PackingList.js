@@ -35,6 +35,12 @@ function PackingList() {
     const [filteredPackinglist, setFilteredPackinglist] = useState([]);
     const [contextFiltro, setContextFiltro] = useState({ visible: false, x: 0, y: 0 })
     const filtroRef = useRef(null);
+    const [filtrosDeListagem, setFiltrosDeListagem] = useState({
+        dataInicio: null,
+        dataFim: null,
+        emAndamento: false,
+        finalizado: false
+    })
 
     const [contextMenu, setContextMenu] = useState({
         visible: false, x: 0, y: 0, selectedId: null
@@ -60,30 +66,48 @@ function PackingList() {
     const fetchListaPackinglist = async () => {
         setEstadoDaPagina('Carregando');
         setContextLoading({ visible: true });
+        console.log("Enviando filtros: ", filtrosDeListagem);
 
         try {
-            const response = await api.get('/packinglist/listagem-packinglist-inicio');
+            const response = await api.post('/packinglist/listagem-packinglist-inicio', filtrosDeListagem);
             setPackingLists(response.data);
-        } catch (error) {
-            const errorMessage = error.response?.data || "Erro desconhecido ao buscar as packinglists";
-            setErrorMessage(errorMessage);
+            console.log("Dados recebidos:", response.data);
 
-            setTimeout(() => {
-                setErrorMessage(null);
-            }, 5000);
+        } catch (error) {
+            console.error("Erro ao buscar packinglists:", error);
+            setErrorMessage(error.response?.data || "Erro desconhecido ao buscar as packinglists");
+            setTimeout(() => setErrorMessage(null), 5000);
 
         } finally {
             setContextLoading({ visible: false });
         }
-    }
+    };
+    
 
     const handleMenuFiltros = () => {
         if (contextFiltro.visible) {
             setContextFiltro({ visible: false });
-        } else { 
+        } else {
             setContextFiltro({ visible: true });
         }
     }
+
+    useEffect(() => {
+        if (contextFiltro.visible) {
+            document.addEventListener('mousedown', handleClickOutsideFiltro);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutsideFiltro);
+        }
+
+        return () => document.removeEventListener('mousedown', handleClickOutsideFiltro);
+    }, [contextFiltro.visible]);
+
+    const handleClickOutsideFiltro = (event) => {
+        if (filtroRef.current && !filtroRef.current.contains(event.target)) {
+            setContextFiltro({ visible: false });
+        }
+    };
+
 
     useEffect(() => {
         document.addEventListener('click', handleClickOutside);
@@ -91,7 +115,6 @@ function PackingList() {
             document.removeEventListener('click', handleClickOutside);
         };
     }, []);
-
 
     useEffect(() => {
         if (sucessMessage) {
@@ -119,9 +142,7 @@ function PackingList() {
 
     const handleClickOutside = () => {
         setContextMenu({ visible: false, x: 0, y: 0, selectedId: null });
-        setContextFiltro({ visible: false });
     };
-
 
     const handleEdit = () => {
         setContextMenu({ visible: false, x: 0, y: 0, selectedId: null });
@@ -272,11 +293,9 @@ function PackingList() {
                 responseType: 'arraybuffer',  // Definimos o responseType corretamente
             };
 
-            // Usamos 'api' em vez de 'axios' diretamente, pois ele já tem o interceptor configurado para adicionar o token
             const response = await api.get(`/packinglist/pdf/${contextMenu.selectedId}`, configHeaderPdf);
 
-            // Criar um URL para o blob e forçar o download
-            const blob = new Blob([response.data], { type: 'application/pdf' }); // Defina o tipo explicitamente como PDF
+            const blob = new Blob([response.data], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
@@ -290,6 +309,33 @@ function PackingList() {
             setTimeout(() => setErrorMessage(null), 5000);
         }
     };
+
+    useEffect(() => {
+        fetchListaPackinglist();
+    }, [filtrosDeListagem]);
+
+    const checkboxIsChecked = (name) => {
+        setFiltrosDeListagem(prev => ({
+            ...prev,
+            [name]: !prev[name]
+        }));
+    };
+
+    const salvarDataFiltro = (e, name) => {
+        if (filtrosDeListagem[name]) {
+            setFiltrosDeListagem(filtrosDeListagem => ({
+                ...filtrosDeListagem,
+                [name]: null
+            }))
+
+        } else {
+            setFiltrosDeListagem(filtrosDeListagem => ({
+                ...filtrosDeListagem,
+                [name]: e.target.value
+            }))
+        }
+    }
+
 
     return (
         <div>
@@ -334,7 +380,8 @@ function PackingList() {
                         />
                     </div>
 
-                    <div className='botao-filtros-inicio' onClick={handleMenuFiltros} title='Filtros' style={{ position: 'relative' }}>
+                    <div className="botao-filtros-inicio"
+                        onClick={handleMenuFiltros} title='Filtros' style={{ position: 'relative' }}>
                         <Button
                             text={"Filtros"}
                             className={'button-filtro'}
@@ -342,18 +389,51 @@ function PackingList() {
                         <Icon icon="eva:arrow-down-fill" id='icon-arrow-down' />
 
                         {contextFiltro.visible && (
-                            <div ref={filtroRef} className="filter-container">
-                                <div className="filter-item">
-                                    <Input type={'date'} id="filter-date" />
-                                    <label htmlFor="filter-date">Data</label>
+                            <div ref={filtroRef} className="filter-container" onClick={(e) => e.stopPropagation()}>
+                                <div className="filter-item-data">
+                                    <label htmlFor="filter-date">Data Início</label>
+                                    <Input
+                                        id="filter-date"
+                                        type={'date'}
+                                        value={filtrosDeListagem.filtroDataInicio || ""}
+                                        onChange={(e) => salvarDataFiltro(e, 'dataInicio')}
+                                    />
+                                </div>
+                                <div className="filter-item-data">
+                                    <label htmlFor="filter-date">Data Fim</label>
+                                    <Input
+                                        id="filter-date"
+                                        type={'date'}
+                                        value={filtrosDeListagem.filtroDataFim || ""}
+                                        onChange={(e) => salvarDataFiltro(e, 'dataFim')}
+                                    />
                                 </div>
                                 <div className="filter-item">
-                                    <Input type={'checkbox'} id="filter-in-progress" />
-                                    <label htmlFor="filter-in-progress">Em andamento</label>
+                                    <div>
+                                        <Input
+                                            id="filter-in-progress"
+                                            type={'checkbox'}
+                                            name={'filtroAndamento'}
+                                            value={filtrosDeListagem.filtroAndamento || ""}
+                                            onChange={() => checkboxIsChecked('emAndamento')}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="filter-in-progress">Em andamento</label>
+                                    </div>
                                 </div>
                                 <div className="filter-item">
-                                    <Input type={'checkbox'} id="filter-completed" />
-                                    <label htmlFor="filter-completed">Finalizados</label>
+                                    <div>
+                                        <Input
+                                            id="filter-completed"
+                                            type={'checkbox'}
+                                            value={filtrosDeListagem.filtroFinalizado || ""}
+                                            onChange={() => checkboxIsChecked('finalizado')}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="filter-completed">Finalizados</label>
+                                    </div>
                                 </div>
                             </div>
                         )}
