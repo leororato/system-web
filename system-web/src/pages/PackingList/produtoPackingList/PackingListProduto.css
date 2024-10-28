@@ -171,7 +171,7 @@
 }
 
 .container-listagem-prod li {
-    grid-template-columns: repeat(14, 1fr);
+    grid-template-columns: repeat(15, 1fr);
     border-bottom: none;
     border-left: 1px solid #ddd;
 }
@@ -322,6 +322,14 @@
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
+}
+
+.input-sem-edicao {
+    background-color: #d3d3d3;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 #container-edit-prod-dims {

@@ -16,6 +16,8 @@ const Header = () => {
 
   const [nomeUsuario, setNomeUsuario] = useState('');
   const userRole  = Cookies.get('nivelAcesso');
+  const id = Cookies.get('userId');
+  const usuario = { id }
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -74,8 +76,13 @@ const Header = () => {
     setEstadoDaPagina("Salvando");
     setContextLoading({ visible: true });
 
+    const tipoVolume = {
+      tipoDeVolume: tipoDeVolume,
+      usuario: usuario
+    }
+
     try {
-      const response = await api.post(`/tipo-de-volume`, tipoDeVolume);
+      const response = await api.post(`/tipo-de-volume`, tipoVolume);
 
       setSucessMessage(`Tipo de Volume '${response.data.descricao}' criado com sucesso`);
 

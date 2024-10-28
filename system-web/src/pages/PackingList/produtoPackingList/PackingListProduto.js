@@ -16,12 +16,15 @@ import api from '../../../axiosConfig';
 import Loading from "../../../components/Loading/Loading";
 import ExcluirItemSegundoFator from "../../../components/ExcluirItemSegundoFator/ExcluirItemSegundoFator";
 import ExcluirItem from "../../../components/ExcluirItem/ExcluirItem";
+import Cookies from 'js-cookie';
 
 
 function PackingListProduto() {
 
     const { id } = useParams();
     const navigate = useNavigate();
+    const userId = Cookies.get('userId');
+    const usuario = { id: userId };
 
     const [errorMessage, setErrorMessage] = useState(null);
     const [sucessMessage, setSucessMessage] = useState(null);
@@ -30,7 +33,7 @@ function PackingListProduto() {
 
     const [packingList, setPackingList] = useState([]);
     const [tipoPackinglist, setTipoPackinglist] = useState("");
-    const [dadosSeparados, setDadosSeparados] = useState([])
+    const [dadosSeparados, setDadosSeparados] = useState([]);
     const [produtos, setProdutos] = useState([]);
     const [filteredProdutos, setFilteredProdutos] = useState([]);
     const [produtoNomus, setProdutoNomus] = useState([]);
@@ -276,8 +279,13 @@ function PackingListProduto() {
             altura: infoProdutoParaExibirNoModoEdicao.altura
         }
 
+        const produtoRequest = {
+            produto: payload, 
+            usuario: usuario
+        }
+
         try {
-            await api.put(`/pl-produto/${idPackinglist}/${idProduto}/${seq}`, payload);
+            await api.put(`/pl-produto/${idPackinglist}/${idProduto}/${seq}`, produtoRequest);
 
             setSucessMessage('Volume de reposição atualizado com sucesso!');
             setTimeout(() => setSucessMessage(null), 5000);
@@ -349,7 +357,7 @@ function PackingListProduto() {
 
         try {
 
-            await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}/${permissaoParaExcluir}`);
+            await api.put(`/pl-produto/excluir-produto/${packingList.idPackinglist}/${contextDelete.selectedId}/${contextDelete.selectedSeq}/${permissaoParaExcluir}`, usuario);
             setSucessMessage(`Produto ${contextDelete.selectedDesc} excluído com sucesso!`);
             setTimeout(() => {
                 setSucessMessage(null)
@@ -391,7 +399,7 @@ function PackingListProduto() {
         const permissaoParaExcluir = (inputDeleteSegundoFator === "Excluir") ? "comPermissao" : "semPermissao";
 
         try {
-            await api.delete(`/pl-produto/${packingList.idPackinglist}/${contextDeleteSegundoFator.selectedId}/${contextDeleteSegundoFator.selectedSeq}/${permissaoParaExcluir}`);
+            await api.put(`/pl-produto/excluir-produto/${packingList.idPackinglist}/${contextDeleteSegundoFator.selectedId}/${contextDeleteSegundoFator.selectedSeq}/${permissaoParaExcluir}`, usuario);
 
             setSucessMessage(`Produto ${contextDeleteSegundoFator.selectedDesc} excluído com sucesso!`);
             setTimeout(() => {
@@ -446,8 +454,13 @@ function PackingListProduto() {
             totalPesoBruto: '0'
         };
 
+        const payloadAndUser = {
+            produto: payload,
+            usuario: usuario
+        }
+
         try {
-            await api.post('/pl-produto', payload);
+            await api.post('/pl-produto/adicionar-produto', payloadAndUser);
 
             setSucessMessage('Produto adicionado com sucesso!');
             setTimeout(() => {
@@ -535,6 +548,7 @@ function PackingListProduto() {
                             <div>Peso Líquido Total</div>
                             <div>Peso Bruto Total</div>
                             <div>Idioma</div>
+                            <div>Status</div>
                         </li>
 
                         {packingList && (
@@ -567,6 +581,11 @@ function PackingListProduto() {
                                 <div>{packingList.pesoLiquidoTotal}</div>
                                 <div>{packingList.pesoBrutoTotal}</div>
                                 <div>{packingList.idioma}</div>
+                                {packingList.finalizado == 0 ? (
+                                    <div>Em andamento</div>
+                                ) : (
+                                    <div>Finalizado</div>
+                                )}
                             </li>
                         )}
                     </ul>
@@ -783,6 +802,7 @@ function PackingListProduto() {
                                                 <label>Produto:</label>
                                                 <Input
                                                     type={'text'}
+                                                    className={"input-sem-edicao"}
                                                     placeholder={infoProdutoParaExibirNoModoEdicao.produto}
                                                     title={'Não é possível alterar o código do produto...'}
                                                     value={infoProdutoParaExibirNoModoEdicao.produto}
@@ -793,6 +813,7 @@ function PackingListProduto() {
                                                 <label>Descrição:</label>
                                                 <Input
                                                     type={'text'}
+                                                    className={"input-sem-edicao"}
                                                     placeholder={infoProdutoParaExibirNoModoEdicao.descricaoProduto}
                                                     title={'Não é possível alterar a descrição...'}
                                                     value={infoProdutoParaExibirNoModoEdicao.descricaoProduto}
@@ -803,9 +824,10 @@ function PackingListProduto() {
                                                 <label>Ordem de produção:</label>
                                                 <Input
                                                     type={'text'}
+                                                    className={"input-sem-edicao"}
                                                     placeholder={infoProdutoParaExibirNoModoEdicao.ordemProducao || "Não possui ordem de produção..."}
                                                     title={'Não é possível alterar a ordem de produção...'}
-                                                    value={infoProdutoParaExibirNoModoEdicao.descricaoProduto}
+                                                    value={infoProdutoParaExibirNoModoEdicao.ordemProducao}
                                                     readOnly
                                                 />
                                             </div>
@@ -813,6 +835,7 @@ function PackingListProduto() {
                                                 <label>Peso líquido total:</label>
                                                 <Input
                                                     type={'text'}
+                                                    className={"input-sem-edicao"}
                                                     placeholder={infoProdutoParaExibirNoModoEdicao.pesoLiquidoTotal || "Não possui volumes ainda..."}
                                                     title={'Não é possível alterar o peso líquido total...'}
                                                     value={infoProdutoParaExibirNoModoEdicao.totalPesoLiquido}
@@ -824,7 +847,7 @@ function PackingListProduto() {
                                                 <Input
                                                     type={'text'}
                                                     placeholder={infoProdutoParaExibirNoModoEdicao.pesoBrutoTotal || "Não possui volumes ainda..."}
-                                                    title={'Não é possível alterar o peso bruto total...'}
+                                                    title={'Altere o peso bruto total...'}
                                                     value={infoProdutoParaExibirNoModoEdicao.totalPesoBruto}
                                                     onChange={handleChangePesoBruto}
                                                 />

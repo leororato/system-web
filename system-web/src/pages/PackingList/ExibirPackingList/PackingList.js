@@ -23,6 +23,7 @@ function PackingList() {
 
     const navigate = useNavigate();
     const userId = Cookies.get('userId');
+    const usuario = { id: userId };
     const location = useLocation();
     const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -82,7 +83,7 @@ function PackingList() {
             setContextLoading({ visible: false });
         }
     };
-    
+
 
     const handleMenuFiltros = () => {
         if (contextFiltro.visible) {
@@ -184,8 +185,7 @@ function PackingList() {
 
         try {
             await api.put(
-                `/packinglist/deletar-packinglist/${itemDeletado}/${permissaoParaExcluir}`,
-                { userId }
+                `/packinglist/deletar-packinglist/${itemDeletado}/${permissaoParaExcluir}`, usuario
             );
 
             setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
@@ -322,19 +322,24 @@ function PackingList() {
     };
 
     const salvarDataFiltro = (e, name) => {
+        const dataSelecionada = e.target.value;
+
         if (filtrosDeListagem[name]) {
             setFiltrosDeListagem(filtrosDeListagem => ({
                 ...filtrosDeListagem,
                 [name]: null
-            }))
-
+            }));
         } else {
             setFiltrosDeListagem(filtrosDeListagem => ({
                 ...filtrosDeListagem,
                 [name]: e.target.value
-            }))
+            }));
         }
-    }
+    };
+
+    useEffect(() => {
+        console.log('data inicio', filtrosDeListagem)
+    }, filtrosDeListagem)
 
 
     return (
@@ -391,20 +396,26 @@ function PackingList() {
                         {contextFiltro.visible && (
                             <div ref={filtroRef} className="filter-container" onClick={(e) => e.stopPropagation()}>
                                 <div className="filter-item-data">
-                                    <label htmlFor="filter-date">Data Início</label>
+                                    <div id='label-filtro-data'>
+                                        <label htmlFor="filter-date">Data Início</label>
+                                        <label id='label-limpar-data' onClick={() => { setFiltrosDeListagem(filtrosDeListagem => ({ ...filtrosDeListagem, dataInicio: null})) }}>Limpar</label>
+                                    </div>
                                     <Input
                                         id="filter-date"
                                         type={'date'}
-                                        value={filtrosDeListagem.filtroDataInicio || ""}
+                                        value={filtrosDeListagem.dataInicio || ""}
                                         onChange={(e) => salvarDataFiltro(e, 'dataInicio')}
                                     />
                                 </div>
                                 <div className="filter-item-data">
-                                    <label htmlFor="filter-date">Data Fim</label>
+                                    <div id='label-filtro-data'>
+                                        <label htmlFor="filter-date">Data Fim</label>
+                                        <label id='label-limpar-data' onClick={() => { setFiltrosDeListagem(filtrosDeListagem => ({ ...filtrosDeListagem, dataFim: null})) }} >Limpar</label>
+                                    </div>
                                     <Input
                                         id="filter-date"
                                         type={'date'}
-                                        value={filtrosDeListagem.filtroDataFim || ""}
+                                        value={filtrosDeListagem.dataFim || ""}
                                         onChange={(e) => salvarDataFiltro(e, 'dataFim')}
                                     />
                                 </div>
@@ -461,6 +472,7 @@ function PackingList() {
                             <div>Peso Líquido Total</div>
                             <div>Peso Bruto Total</div>
                             <div>Idioma</div>
+                            <div>Status</div>
                         </li>
 
                         <>
@@ -503,6 +515,11 @@ function PackingList() {
                                             <div>{p.pesoLiquidoTotal}</div>
                                             <div>{p.pesoBrutoTotal}</div>
                                             <div>{p.idioma}</div>
+                                            {p.finalizado == 0 ? (
+                                                <div>Em andamento</div>
+                                            ) : (
+                                                <div>Finalizado</div>
+                                            )}
                                         </li>
                                     );
                                 })

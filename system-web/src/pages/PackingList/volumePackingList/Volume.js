@@ -15,6 +15,7 @@ import api from '../../../axiosConfig';
 import Loading from "../../../components/Loading/Loading";
 import ExcluirItemSegundoFator from "../../../components/ExcluirItemSegundoFator/ExcluirItemSegundoFator";
 import ExcluirItem from "../../../components/ExcluirItem/ExcluirItem";
+import Cookies from 'js-cookie';
 
 
 
@@ -24,6 +25,9 @@ function Volume() {
 
     // CHAVES COMPOSTAS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const { id, idProduto, seq } = useParams();
+
+    const userId = Cookies.get('userId');
+    const usuario = { id: userId };
 
     const navigate = useNavigate();
 
@@ -281,8 +285,13 @@ function Volume() {
         setEstadoDaPagina("Salvando");
         setContextLoading({ visible: true });
 
+        const volume = {
+            formDataVolume: formDataVolume,
+            usuario: usuario
+        }
+
         try {
-            const response = await api.post(`/volume`, formDataVolume);
+            const response = await api.post(`/volume`, volume);
             setIdVolumeSave(response.data.idVolume);
 
             setFormDataVolume({
@@ -319,18 +328,27 @@ function Volume() {
         if (volumeCriado && idVolumeSave) {
             setEstadoDaPagina("Salvando");
             setContextLoading({ visible: true });
-            const salvarVolumeProduto = async () => {
-                try {
-                    await api.post(`/volume-produto`, {
-                        id: {
-                            idPackinglist: id,
-                            idProduto: idProduto,
-                            seq: seq,
-                            idVolume: idVolumeSave
-                        },
-                        qrCodeVolumeProduto: `${id}-${idProduto}-${seq}-${idVolumeSave}`
 
-                    });
+            const salvarVolumeProduto = async () => {
+
+                const volumeProduto = {
+                    id: {
+                        idPackinglist: id,
+                        idProduto: idProduto,
+                        seq: seq,
+                        idVolume: idVolumeSave
+                    },
+                    qrCodeVolumeProduto: `${id}-${idProduto}-${seq}-${idVolumeSave}`
+                }
+
+                const volumeProdutoAndUsuario = {
+                    volumeProduto: volumeProduto,
+                    usuario: usuario
+                }
+
+                try {
+
+                    await api.post(`/volume-produto`, volumeProdutoAndUsuario);
 
                     fetchVolumes();
                     fetchProdutoSelecionado();
