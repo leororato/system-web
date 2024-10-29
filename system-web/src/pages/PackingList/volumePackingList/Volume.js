@@ -278,6 +278,7 @@ function Volume() {
         fetchTipoDeVolume();
     }, []);
 
+
     // SALVANDO O VOLUME 
     const handleSalvarVolume = async (e) => {
         e.preventDefault();
@@ -285,13 +286,20 @@ function Volume() {
         setEstadoDaPagina("Salvando");
         setContextLoading({ visible: true });
 
-        const volume = {
-            formDataVolume: formDataVolume,
-            usuario: usuario
+        const volumeProduto = {
+            idPackinglist: id,
+            idProduto: idProduto,
+            seq: seq,
+        }
+
+        const volumeRequest = {
+            volume: formDataVolume,
+            usuario: usuario,
+            volumeProdutoDTO: volumeProduto
         }
 
         try {
-            const response = await api.post(`/volume`, volume);
+            const response = await api.post(`/volume`, volumeRequest);
             setIdVolumeSave(response.data.idVolume);
 
             setFormDataVolume({
@@ -312,6 +320,8 @@ function Volume() {
             setTimeout(() => setSucessMessage(null), 5000);
             setVolumeCriado(true);
 
+            fetchVolumes();
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Volume";
             setErrorMessage(errorMessage);
@@ -323,53 +333,6 @@ function Volume() {
     };
 
 
-    // SALVANDO ITEM VOLUME CRIADO NO VOLUME PRODUTO
-    useEffect(() => {
-        if (volumeCriado && idVolumeSave) {
-            setEstadoDaPagina("Salvando");
-            setContextLoading({ visible: true });
-
-            const salvarVolumeProduto = async () => {
-
-                const volumeProduto = {
-                    id: {
-                        idPackinglist: id,
-                        idProduto: idProduto,
-                        seq: seq,
-                        idVolume: idVolumeSave
-                    },
-                    qrCodeVolumeProduto: `${id}-${idProduto}-${seq}-${idVolumeSave}`
-                }
-
-                const volumeProdutoAndUsuario = {
-                    volumeProduto: volumeProduto,
-                    usuario: usuario
-                }
-
-                try {
-
-                    await api.post(`/volume-produto`, volumeProdutoAndUsuario);
-
-                    fetchVolumes();
-                    fetchProdutoSelecionado();
-
-                    setVolumeCriado(false);
-
-                } catch (error) {
-                    const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Volume Produto";
-                    setErrorMessage(errorMessage);
-                    setTimeout(() => setErrorMessage(null), 5000);
-                } finally {
-                    setContextLoading({ visible: false });
-                }
-
-            };
-
-            salvarVolumeProduto();
-        }
-    }, [volumeCriado, idVolumeSave, id, idProduto, seq]);
-
-
     //ATUALIZANDO O VOLUME
     const handleAtualizarVolume = async (e) => {
         e.preventDefault();
@@ -377,11 +340,25 @@ function Volume() {
         setEstadoDaPagina("Atualizando");
         setContextLoading({ visible: true });
 
+        const volumeProduto = {
+            idPackinglist: id,
+            idProduto: idProduto,
+            seq: seq,
+            idVolume: salvarIdVolume.idVolume,
+            qrCodeVolumeProduto: `${id}-${idProduto}-${seq}-${salvarIdVolume.idVolume}`
+        }
+
+        const volumeRequest = {
+            volume: volumeEdicao,
+            usuario: usuario,
+            volumeProdutoDTO: volumeProduto
+        }
+
         try {
-            await api.put(`/volume/${salvarIdVolume.idVolume}`, volumeEdicao)
+            await api.put(`/volume/atualizar-volume/${salvarIdVolume.idVolume}`, volumeRequest)
 
             setFormDataVolume({
-                idTipoVolumeId: '16',
+                idTipoVolumeId: '1',
                 quantidadeItens: '1',
                 descricao: '',
                 altura: '',
@@ -472,7 +449,7 @@ function Volume() {
         setContextLoading({ visible: true });
 
         try {
-            await api.delete(`/volume/${idVolumeSelecionado}`);
+            await api.put(`/volume/excluir-volume/${idVolumeSelecionado}`, usuario);
 
             setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
 
@@ -515,9 +492,12 @@ function Volume() {
         setEstadoDaPagina("Carregando");
         setContextLoading({ visible: true });
 
+
+
         try {
-            await api.delete(`/volume/deletar-itens-checkbox/${permissaoSegundoFator}`, {
-                data: volumesCheckeds
+            await api.put(`/volume/deletar-itens-checkbox/${permissaoSegundoFator}`, {
+                data: volumesCheckeds,
+                usuario: usuario
             });
 
             setSucessMessage(volumesCheckeds.length > 1 ? `Volumes excluídos com sucesso!` : `Volume excluído com sucesso!`);
@@ -564,10 +544,13 @@ function Volume() {
 
         const permissaoParaExcluir = (inputDeleteSegundoFator === "Excluir") ? "comPermissao" : "semPermissao";
 
+        const volumes = {
+            ids: volumesCheckeds,
+            usuario: usuario
+        }
+
         try {
-            await api.delete(`/volume/deletar-itens-checkbox/${permissaoParaExcluir}`, {
-                data: volumesCheckeds
-            });
+            await api.put(`/volume/deletar-itens-checkbox/${permissaoParaExcluir}`, volumes);
 
             setSucessMessage("Produtos excluídos com sucesso!");
 
@@ -684,8 +667,13 @@ function Volume() {
         setEstadoDaPagina('Salvando');
         setContextLoading({ visible: true });
 
+        const subVolumeRequest = {
+            subVolume: formDataSubVolume,
+            usuario: usuario
+        }
+
         try {
-            await api.post(`/subvolume`, formDataSubVolume);
+            await api.post(`/subvolume`, subVolumeRequest);
 
             setSucessMessage('Subvolume adicionado com sucesso');
 
@@ -731,8 +719,13 @@ function Volume() {
             return;
         }
 
+        const subVolumeAndUsuario = {
+            subVolume: formDataEditarSubVolume,
+            usuario: usuario
+        }
+
         try {
-            await api.put(`/subvolume/${idVolume}/${idSubVolume}`, formDataEditarSubVolume);
+            await api.put(`/subvolume/atualizar-sub-volume/${idVolume}/${idSubVolume}`, subVolumeAndUsuario);
 
             setSucessMessage('Subvolume atualizado com sucesso');
 
@@ -774,7 +767,7 @@ function Volume() {
         const descricao = subVolumesIds.descricao;
 
         try {
-            await api.delete(`/subvolume/${idVolume}/${idSubVolume}`);
+            await api.put(`/subvolume/deletar-sub-volume/${idVolume}/${idSubVolume}`, usuario);
 
             setSucessMessage(`Subvolume '${descricao}' deletado com sucesso!`);
             setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });

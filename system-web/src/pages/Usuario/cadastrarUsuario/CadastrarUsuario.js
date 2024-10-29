@@ -56,7 +56,6 @@ function CadastrarUsuario() {
             ...formDataUsuario,
             [name]: value
         })
-        console.log("valor: ", formDataUsuario)
     }
 
     return (
@@ -82,7 +81,7 @@ function CadastrarUsuario() {
 
                             <div>
                                 <label>Senha:</label>
-                                <div className="input-password-wrapper">
+                                <div className="input-password-wrapper" style={{width: '200px'}}>
                                     <Input
                                         type={mostrarSenha ? "text" : "password"}
                                         title={"Digite a senha do usuário"}

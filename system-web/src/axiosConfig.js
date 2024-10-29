@@ -33,6 +33,20 @@ api.interceptors.request.use(
 //     }
 // );
 
+
+// Interceptor para verificar roles
+api.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 403) {
+            const errorMessage = encodeURIComponent("Acesso negado.");
+            window.location.href = `/access-denied?error=${errorMessage}`;
+        }
+        return Promise.reject(error);
+    }
+);
+
+
 export default api;
 
 

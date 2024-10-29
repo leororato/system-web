@@ -37,7 +37,7 @@ function Login() {
             // Faz a requisição de login
             const response = await axios.post('http://localhost:8080/auth/login', {
                 login: login,
-                // senha: senha
+                senha: senha
             });
 
             console.log('Resposta do login: ', response)
@@ -68,7 +68,7 @@ function Login() {
 
                 const errorMessage = error.response?.data || "Erro desconhecido ao fazer Login";
                 setErrorMessage(errorMessage);
-
+                console.log("senha errada: ", error.response)
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000);
