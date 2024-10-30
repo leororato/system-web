@@ -17,7 +17,10 @@ function Conta() {
     const [nomeUsuario, setNomeUsuario] = useState('');
 
     const handleLogoff = () => {
-        Cookies.remove('jwt');
+        Cookies.remove('token');
+        Cookies.remove('nomeUsuario');
+        Cookies.remove('userId');
+        Cookies.remove('nivelAcesso');
         setContextLoading({ visible: true });
         setTimeout(() => {
             navigate('/login');
@@ -26,7 +29,7 @@ function Conta() {
     }
 
     useEffect(() => {
-        const storedUserName = localStorage.getItem('nomeUsuario');
+        const storedUserName = Cookies.get('nomeUsuario');
 
         if (storedUserName) {
             setNomeUsuario(storedUserName);
@@ -50,7 +53,7 @@ function Conta() {
                     />
                     <div id="text-minha-conta">
                         <Text
-                            text={'Está é uma conta vinculada ao sistema NOMUS, portanto se deseja alterar alguma informação em sua conta, acesse o NOMUS para altera-lá.'}
+                            text={'Está é uma conta privada do Sistema de Carregamento Cofama, caso queira alterar alguma informação, contate um adminstrador'}
                         />
                     </div>
 

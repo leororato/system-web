@@ -15,7 +15,7 @@ import Cookies from 'js-cookie';
 const Header = () => {
 
   const [nomeUsuario, setNomeUsuario] = useState('');
-  const userRole  = Cookies.get('nivelAcesso');
+  const userRole = Cookies.get('nivelAcesso');
   const id = Cookies.get('userId');
   const usuario = { id }
   const navigate = useNavigate();
@@ -65,7 +65,7 @@ const Header = () => {
   }
 
   useEffect(() => {
-    const storedUserName = localStorage.getItem('nomeUsuario');
+    const storedUserName = Cookies.get('nomeUsuario');
     if (storedUserName) {
       setNomeUsuario(storedUserName);
     }
@@ -139,20 +139,25 @@ const Header = () => {
         </div>
 
         <div id="container-logo-header">
-          <img src={logo} id="logo-header" alt="Logo da empresa"/>
+          <img src={logo} id="logo-header" alt="Logo da empresa" />
         </div>
       </div>
 
 
       {contextHeaderMenu && (
         <div className="container-header-menu" ref={menuRef}>
-          <div id="tipo-de-volume-header">
-            <Text text={'Cadastrar tipo de volume'} onClick={handleFuncaoTipoVolume} />
-          </div>
 
-          <div id="criar-packinglist-header">
-            <Text text={'Criar novo packingList'} onClick={() => navigate('/cadastrar-packing-list')} />
-          </div>
+          {(userRole === "A" || userRole === "G") && (
+            <div id="tipo-de-volume-header">
+              <Text text={'Cadastrar tipo de volume'} onClick={handleFuncaoTipoVolume} />
+            </div>
+          )}
+
+          {(userRole === "A" || userRole === "G") && (
+            <div id="criar-packinglist-header">
+              <Text text={'Criar novo packingList'} onClick={() => navigate('/cadastrar-packing-list')} />
+            </div>
+          )}
 
           <div id="encontrar-clientes-header">
             <Text text={'Encontrar clientes'} onClick={() => navigate('/clientes')} />
@@ -205,7 +210,7 @@ const Header = () => {
             </div>
           </div>
         </>
-      )} 
+      )}
       {/* FIM CRIAR TIPO DE VOLUME */}
 
       {contextLoading.visible ? (

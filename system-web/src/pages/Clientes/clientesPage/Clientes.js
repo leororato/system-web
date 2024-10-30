@@ -6,10 +6,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import ErrorNotification from '../../../components/ErrorNotification/ErrorNotification';
 import SucessNotification from '../../../components/SucessNotification/SucessNotification';
 import api from '../../../axiosConfig';
+import Cookies from 'js-cookie';
 
 function Clientes() {
 
     const navigate = useNavigate();
+
+    const userRole = Cookies.get('nivelAcesso');
 
     // Variáveis de notificações
     const location = useLocation();
@@ -57,8 +60,10 @@ function Clientes() {
 
     // Ações para serem executadas quando o usuário clicar em cima de algum cliente após busca
     const handleClickCliente = (event, cliente) => {
-        event.preventDefault();
-        navigate(`/editar-cliente/${cliente.id}`);
+        if ((userRole === "A" || userRole === "G")) {
+            event.preventDefault();
+            navigate(`/editar-cliente/${cliente.id}`);
+        }
     };
 
     // Atualiza a visibilidade da pesquisa com base nos valores dos campos de busca

@@ -20,6 +20,9 @@ function EditarCliente() {
     const [errorMessage, setErrorMessage] = useState(null);
 
     const userId = Cookies.get('userId');
+    const usuario = {
+        id: userId
+    }
     const [clienteExiste, setClienteExiste] = useState();
     const [containerNomus, setContainerNomus] = useState([]);
     const [formData, setFormData] = useState({
@@ -100,44 +103,25 @@ function EditarCliente() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        const nome = containerNomus.nome;
 
-        if (clienteExiste === true) {
-            // Se o cliente já existe no banco App é realizado um PUT
-            const nome = containerNomus.nome;
-            try {
-                await api.put(`/clienteApp/${id}`, formData);
+        const clienteAppRequest = {
+            clienteApp: formData,
+            usuario: usuario
+        }
+        try {
+            await api.post(`/clienteApp`, clienteAppRequest);
+            navigate('/clientes', { state: { sucessMessage: `O cliente '${nome}' foi atualizado com sucesso!` } });
 
-                navigate('/clientes', { state: { sucessMessage: `O cliente '${nome}' foi atualizado com sucesso!` } });
+        } catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar o Cliente!";
+            setErrorMessage(errorMessage);
 
-            } catch (error) {
-
-                const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar o Cliente!";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
-            }
-
-        } // Fim do IF
-        else {
-            // Se o cliente não existe no banco App é realizado um POST
-            const nome = containerNomus.nome;
-            try {
-                await api.post(`/clienteApp`, formData);
-                navigate('/clientes', { state: { sucessMessage: `O cliente '${nome}' foi atualizado com sucesso!` } });
-
-            } catch (error) {
-                const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar o Cliente!";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
-            }
-        } // Fim do Else
-
-    } // Fim do handleSubmit
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+        }
+    }
 
 
 

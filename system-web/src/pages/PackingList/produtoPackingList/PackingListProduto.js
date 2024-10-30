@@ -23,6 +23,8 @@ function PackingListProduto() {
 
     const { id } = useParams();
     const navigate = useNavigate();
+
+    const userRole = Cookies.get('nivelAcesso');
     const userId = Cookies.get('userId');
     const usuario = { id: userId };
 
@@ -280,7 +282,7 @@ function PackingListProduto() {
         }
 
         const produtoRequest = {
-            produto: payload, 
+            produto: payload,
             usuario: usuario
         }
 
@@ -624,18 +626,21 @@ function PackingListProduto() {
 
             <div className={tipoPackinglist === "maquina" ? "produto-container-prod" : "produto-container-prod-maior"}>
                 <div className="lista-produto">
-                    {botaoAdicionar.visible && (
-                        <div className="container-button-adicionar-produto">
-                            <Button
-                                className={'button-adicionar-produto'}
-                                text={'Adicionar Produto'}
-                                padding={10}
-                                fontSize={12}
-                                borderRadius={5}
-                                onClick={handleAddProduto}
-                            />
-                        </div>
-                    )}
+
+                    {(userRole === "A" || userRole === "G") &&
+                        botaoAdicionar.visible && (
+                            <div className="container-button-adicionar-produto">
+                                <Button
+                                    className={'button-adicionar-produto'}
+                                    text={'Adicionar Produto'}
+                                    padding={10}
+                                    fontSize={12}
+                                    borderRadius={5}
+                                    onClick={handleAddProduto}
+                                />
+                            </div>
+                        )
+                    }
 
                     {contextAdicionar.visible && (
                         <div className="container-adicionar-produtos">
@@ -731,7 +736,7 @@ function PackingListProduto() {
                 <div className='context-menu' style={{
                     top: `${contextMenu.y}px`, left: `${contextMenu.x}px`
                 }}>
-                    {tipoPackinglist === "reposicao" && (
+                    {(userRole === "A" || userRole === "G") && tipoPackinglist === "reposicao" && (
                         <div id='container-icon-menu' onClick={handleEdit}>
                             <Icon icon="mdi:edit" id='icone-menu' />
                             <p>Editar</p>
@@ -745,10 +750,12 @@ function PackingListProduto() {
                         <Icon icon="vaadin:qrcode" id='icone-menu' />
                         <p>Gerar QR Code</p>
                     </div>
-                    <div id='container-icon-menu-excluir' onClick={handleDelete} >
-                        <Icon icon="material-symbols:delete-outline" id='icone-menu' />
-                        <p>Excluir</p>
-                    </div>
+                    {(userRole === "A" || userRole === "G") && (
+                        <div id='container-icon-menu-excluir' onClick={handleDelete} >
+                            <Icon icon="material-symbols:delete-outline" id='icone-menu' />
+                            <p>Excluir</p>
+                        </div>
+                    )}
                 </div>
 
 

@@ -26,6 +26,8 @@ function Volume() {
     // CHAVES COMPOSTAS DO PRODUTO SELECIONADO NA PAGINA ANTERIOR
     const { id, idProduto, seq } = useParams();
 
+    // CARREGA OS DADOS DO USUARIO
+    const userRole = Cookies.get('nivelAcesso');
     const userId = Cookies.get('userId');
     const usuario = { id: userId };
 
@@ -454,7 +456,7 @@ function Volume() {
             setSucessMessage(`Volume ${idVolumeSelecionado} deletado com sucesso!`);
 
             setContextDelete({ visible: false, x: 0, y: 0, selectedIdVolume: null });
-
+            setTodosVolumesCheckeds(false)
             setTimeout(() => {
                 setSucessMessage(null);
             }, 5000);
@@ -489,14 +491,12 @@ function Volume() {
     }
 
     const deleteVolumesCheckeds = async (e) => {
-        setEstadoDaPagina("Carregando");
+        setEstadoDaPagina("Excluindo");
         setContextLoading({ visible: true });
-
-
 
         try {
             await api.put(`/volume/deletar-itens-checkbox/${permissaoSegundoFator}`, {
-                data: volumesCheckeds,
+                ids: volumesCheckeds,
                 usuario: usuario
             });
 
@@ -504,12 +504,14 @@ function Volume() {
 
             setTimeout(() => {
                 setSucessMessage(null);
-            }, 5000);
+                navigate(0);
+            }, 2000);
 
             setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
             await fetchVolumes();
             await fetchProdutoSelecionado();
 
+            setTodosVolumesCheckeds(false);
             setPermissaoSegundoFator("semPermissao");
 
         } catch (error) {
@@ -522,6 +524,7 @@ function Volume() {
                 });
                 const errorMessage = error.response?.data || "Erro desconhecido ao excluir Produto";
                 setErrorMessage(errorMessage);
+                setContextLoading({ visible: false });
 
                 setTimeout(() => {
                     setErrorMessage(null);
@@ -531,8 +534,6 @@ function Volume() {
                 setErrorMessage(errorMessage);
                 setTimeout(() => setErrorMessage(null), 5000);
             }
-        } finally {
-            setContextLoading({ visible: false });
         }
     }
 
@@ -553,16 +554,18 @@ function Volume() {
             await api.put(`/volume/deletar-itens-checkbox/${permissaoParaExcluir}`, volumes);
 
             setSucessMessage("Produtos excluídos com sucesso!");
-
             setTimeout(() => {
                 setSucessMessage(null);
-            }, 5000);
+                navigate(0);
+            }, 2000);
 
-            setPermissaoSegundoFator("semPermissao");
             setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
             await fetchVolumes();
             await fetchProdutoSelecionado();
             setContextDeleteSegundoFator({ visible: false });
+
+            setTodosVolumesCheckeds(false);
+            setPermissaoSegundoFator("semPermissao");
 
         } catch (error) {
 
@@ -574,8 +577,6 @@ function Volume() {
                 setErrorMessage(errorMessage);
             }
             setTimeout(() => setErrorMessage(null), 5000);
-        } finally {
-            setContextLoading({ visible: false });
         }
     }
 
@@ -1297,14 +1298,16 @@ function Volume() {
                 <div className="org-lista-2">
 
                     <div id="container-botao-add-busca-volume" >
-                        <div title="Não há volumes selecionados para a exclusão" className={contextBotaoExcluirVolumes ? "container-botao-excluir-volume" : "container-botao-excluir-volume-false"} onClick={contextBotaoExcluirVolumes ? (e) => handleDeletarVolumesCheckbox(e) : null}>
-                            <Icon icon="material-symbols:delete-outline" id='icone-menu' />
-                            <Button
-                                className={"button-excluir-volume"}
-                                text={'Excluir'}
-                                onClick={contextBotaoExcluirVolumes ? (e) => handleDeletarVolumesCheckbox(e) : null}
-                            />
-                        </div>
+                        {(userRole === "A" || userRole === "G") && (
+                            <div title="Não há volumes selecionados para a exclusão" className={contextBotaoExcluirVolumes ? "container-botao-excluir-volume" : "container-botao-excluir-volume-false"} onClick={contextBotaoExcluirVolumes ? (e) => handleDeletarVolumesCheckbox(e) : null}>
+                                <Icon icon="material-symbols:delete-outline" id='icone-menu' />
+                                <Button
+                                    className={"button-excluir-volume"}
+                                    text={'Excluir'}
+                                    onClick={contextBotaoExcluirVolumes ? (e) => handleDeletarVolumesCheckbox(e) : null}
+                                />
+                            </div>
+                        )}
                         <div id="subcontainer-botao-add-busca-volume">
                             <div className='busca-descricao-input'>
                                 <Input
@@ -1315,24 +1318,28 @@ function Volume() {
                                     onChange={(e) => setBuscaVolume(e.target.value)}
                                 />
                             </div>
-                            <div>
-                                <Button
-                                    className={'button-adicionar-volume'}
-                                    text={'Adicionar Volume'}
-                                    padding={10}
-                                    borderRadius={3}
-                                    onClick={handleAddVolume}
-                                />
-                            </div>
+                            {(userRole === "A" || userRole === "G") && (
+                                <div>
+                                    <Button
+                                        className={'button-adicionar-volume'}
+                                        text={'Adicionar Volume'}
+                                        padding={10}
+                                        borderRadius={3}
+                                        onClick={handleAddVolume}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     <div className='container-listagem-volume'>
                         <ul>
                             <li className="header-volume">
-                                <div style={{ width: '40px' }}>
-                                    <input type="checkbox" style={{ marginRight: '10px', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onChange={gerenciarCheckboxTodosVolumes} />
-                                </div>
+                                {(userRole === "A" || userRole === "G") && (
+                                    <div style={{ width: '40px' }}>
+                                        <input type="checkbox" style={{ marginRight: '10px', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onChange={gerenciarCheckboxTodosVolumes} />
+                                    </div>
+                                )}
                                 <div id="list-vol">ID Volume</div>
                                 <div id="list-vol">Tipo do Volume</div>
                                 <div id="list-vol">Quantidade Itens</div>
@@ -1374,15 +1381,16 @@ function Volume() {
                                             <li key={v.idVolume} className='li-listagem-volume'>
                                                 <div id="container-list-vol">
 
-                                                    <div className="checkbox-volumes" style={{ width: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                        <input
-                                                            style={{ marginRight: '13px', width: '15px', height: '15px' }}
-                                                            type="checkbox"
-                                                            checked={volumesCheckeds.includes(v.idVolume)}
-                                                            onChange={() => handleCheckbox(v.idVolume)}
-                                                        />
-                                                    </div>
-
+                                                    {(userRole === "A" || userRole === "G") && (
+                                                        <div className="checkbox-volumes" style={{ width: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <input
+                                                                style={{ marginRight: '13px', width: '15px', height: '15px' }}
+                                                                type="checkbox"
+                                                                checked={volumesCheckeds.includes(v.idVolume)}
+                                                                onChange={() => handleCheckbox(v.idVolume)}
+                                                            />
+                                                        </div>
+                                                    )}
 
                                                     <div id="list-vol-divs" onContextMenu={(e) => handleRightClick(e, v.idVolume, v.idTipoVolumeId, v.nomeTipoVolume,
                                                         v.quantidadeItens, v.descricao, v.altura, v.largura, v.comprimento, v.pesoLiquido, v.pesoBruto, v.observacao)}>
@@ -1921,27 +1929,33 @@ function Volume() {
                     <div className='context-menu' style={{
                         top: `${contextMenu.y}px`, left: `${contextMenu.x}px`, width: '190px'
                     }} ref={contextMenuRef}>
-                        <div id='container-icon-menu' onClick={handleEdit}>
-                            <Icon icon="mdi:edit" id='icone-menu' />
-                            <p>Editar</p>
-                        </div>
-                        <div id='container-icon-menu' onClick={handleSubVolumes} >
-                            <Icon icon="ci:list-add" id='icone-menu' />
-                            <p>Adicionar Subvolume</p>
-                        </div>
+                        {(userRole === "A" || userRole === "G") && (
+                            <div id='container-icon-menu' onClick={handleEdit}>
+                                <Icon icon="mdi:edit" id='icone-menu' />
+                                <p>Editar</p>
+                            </div>
+                        )}
+                        {(userRole === "A" || userRole === "G") && (
+                            <div id='container-icon-menu' onClick={handleSubVolumes} >
+                                <Icon icon="ci:list-add" id='icone-menu' />
+                                <p>Adicionar Subvolume</p>
+                            </div>
+                        )}
                         <div id='container-icon-menu' onClick={gerarQrCode}>
                             <Icon icon="vaadin:qrcode" id='icone-menu' />
                             <p>Gerar QR Code</p>
                         </div>
-                        <div id='container-icon-menu-excluir' onClick={handleDelete} >
-                            <Icon icon="material-symbols:delete-outline" id='icone-menu' />
-                            <p>Excluir</p>
-                        </div>
+                        {(userRole === "A" || userRole === "G") && (
+                            <div id='container-icon-menu-excluir' onClick={handleDelete} >
+                                <Icon icon="material-symbols:delete-outline" id='icone-menu' />
+                                <p>Excluir</p>
+                            </div>
+                        )}
                     </div>
                 )}
 
 
-            {
+            {(userRole === "A" || userRole === "G") &&
                 contextMenuSubVolume.visible && (
                     <div className='context-menu' style={{
                         top: `${contextMenuSubVolume.y}px`, left: `${contextMenuSubVolume.x}px`, width: '230px'

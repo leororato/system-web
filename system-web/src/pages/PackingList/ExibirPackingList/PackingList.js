@@ -22,6 +22,7 @@ function PackingList() {
 
 
     const navigate = useNavigate();
+    const userRole = Cookies.get('nivelAcesso');
     const userId = Cookies.get('userId');
     const usuario = { id: userId };
     const location = useLocation();
@@ -363,17 +364,20 @@ function PackingList() {
 
             <div className='container-listagem'>
                 <div className='buttons'>
-                    <div className='button-container-listagem'>
-                        <Button
-                            className={'button-item'}
-                            text={'Novo Packing List'}
-                            title={'Clique aqui para adicionar um novo PackingList...'}
-                            padding={10}
-                            borderRadius={2}
-                            fontSize={15}
-                            onClick={() => navigate('/cadastrar-packing-list')}
-                        />
-                    </div>
+                    {(userRole === "A" || userRole === "G") && (
+                        <div className='button-container-listagem'>
+
+                            <Button
+                                className={'button-item'}
+                                text={'Novo Packing List'}
+                                title={'Clique aqui para adicionar um novo PackingList...'}
+                                padding={10}
+                                borderRadius={2}
+                                fontSize={15}
+                                onClick={() => navigate('/cadastrar-packing-list')}
+                            />
+                        </div>
+                    )}
 
                     <div className='busca-invoice-input'>
                         <Input
@@ -398,7 +402,7 @@ function PackingList() {
                                 <div className="filter-item-data">
                                     <div id='label-filtro-data'>
                                         <label htmlFor="filter-date">Data Início</label>
-                                        <label id='label-limpar-data' onClick={() => { setFiltrosDeListagem(filtrosDeListagem => ({ ...filtrosDeListagem, dataInicio: null})) }}>Limpar</label>
+                                        <label id='label-limpar-data' onClick={() => { setFiltrosDeListagem(filtrosDeListagem => ({ ...filtrosDeListagem, dataInicio: null })) }}>Limpar</label>
                                     </div>
                                     <Input
                                         id="filter-date"
@@ -410,7 +414,7 @@ function PackingList() {
                                 <div className="filter-item-data">
                                     <div id='label-filtro-data'>
                                         <label htmlFor="filter-date">Data Fim</label>
-                                        <label id='label-limpar-data' onClick={() => { setFiltrosDeListagem(filtrosDeListagem => ({ ...filtrosDeListagem, dataFim: null})) }} >Limpar</label>
+                                        <label id='label-limpar-data' onClick={() => { setFiltrosDeListagem(filtrosDeListagem => ({ ...filtrosDeListagem, dataFim: null })) }} >Limpar</label>
                                     </div>
                                     <Input
                                         id="filter-date"
@@ -516,9 +520,9 @@ function PackingList() {
                                             <div>{p.pesoBrutoTotal}</div>
                                             <div>{p.idioma}</div>
                                             {p.finalizado == 0 ? (
-                                                <div>Em andamento</div>
+                                                <div><Icon icon="pajamas:status-active" style={{color: 'green', fontSize: '10px'}} /> Em andamento</div>
                                             ) : (
-                                                <div>Finalizado</div>
+                                                <div><Icon icon="octicon:feed-issue-closed-16" style={{color: 'brown', fontSize: '11px'}} /> Finalizado</div>
                                             )}
                                         </li>
                                     );
@@ -537,10 +541,12 @@ function PackingList() {
                     <div className='context-menu' style={{
                         top: `${contextMenu.y}px`, left: `${contextMenu.x}px`
                     }}>
-                        <div id='container-icon-menu' onClick={handleEdit}>
-                            <Icon icon="mdi:edit" id='icone-menu' />
-                            <p>Editar</p>
-                        </div>
+                        {(userRole === "A" || userRole === "G") && (
+                            <div id='container-icon-menu' onClick={handleEdit}>
+                                <Icon icon="mdi:edit" id='icone-menu' />
+                                <p>Editar</p>
+                            </div>
+                        )}
                         <div id='container-icon-menu' onClick={handleList}>
                             <Icon icon="ci:list-add" id='icone-menu' />
                             <p>Listar Produto</p>
@@ -553,10 +559,12 @@ function PackingList() {
                             <Icon icon="tdesign:file-pdf" id='icone-menu' />
                             <p>Gerar PDF</p>
                         </div>
-                        <div id='container-icon-menu-excluir' onClick={handleDelete} >
-                            <Icon icon="material-symbols:delete-outline" id='icone-menu' />
-                            <p>Excluir</p>
-                        </div>
+                        {(userRole === "A" || userRole === "G") && (
+                            <div id='container-icon-menu-excluir' onClick={handleDelete} >
+                                <Icon icon="material-symbols:delete-outline" id='icone-menu' />
+                                <p>Excluir</p>
+                            </div>
+                        )}
                     </div>
                 )}
 
