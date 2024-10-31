@@ -114,15 +114,35 @@
 .ul-lista-usuarios {
     cursor: pointer;
     font-size: 12px;
+    margin-top: 100px;
     margin-bottom: 200px;
+}
+
+.ul-lista-usuarios li {
+    grid-template-columns: repeat(6, 1fr);
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+#header-lista-usuarios {
+    background-color: #1780e2;
+    color: white;
+}
+
+#lista-user-1 {
+    color: black;
+}
+
+#lista-user-1 div {
+    border-right: 1px solid #ddd;
+    padding: 10px;
 }
 
 #header-lista-usuarios,
 #lista-user-1 {
     display: grid;
     border-top: none;
-    background-color: #1780e2;
-    color: white;
     font-weight: bold;
     text-align: center;
 }

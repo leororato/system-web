@@ -187,7 +187,7 @@ function PackingListProduto() {
     }
 
 
-    const handleClickOutside = (event) => {
+    const handleClickOutside = () => {
         setContextMenu({
             visible: false,
             x: 0,

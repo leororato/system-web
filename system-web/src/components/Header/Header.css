@@ -83,7 +83,8 @@
 
 .container-header-menu {
     position: absolute;
-    top: 60px; /* Altura do header */
+    top: 60px;
+    /* Altura do header */
     left: 0;
     width: 15%;
     background-color: #f0f0f0;
@@ -100,7 +101,7 @@
     display: flex;
     justify-content: flex-end;
     width: 100%;
-    transition: 0.5ms ease ;
+    transition: 0.5ms ease;
 }
 
 #icone-fechar-criacao-tipo-volume {
@@ -142,26 +143,34 @@
     position: relative;
 }
 
-.header-inicio, .header-final {
+.header-inicio,
+.header-final {
     display: flex;
     align-items: center;
     gap: 30px;
 }
 
-.container-menu, .container-voltar {
+.container-menu,
+.container-voltar {
     display: flex;
     align-items: center;
     cursor: pointer;
 }
 
-#icon-menu, #icon-voltar, #icon-home, #icon-conta {
+#icon-menu,
+#icon-voltar,
+#icon-home,
+#icon-conta {
     width: 30px;
     height: 30px;
     color: #fff;
     transition: color 0.3s ease;
 }
 
-#icon-menu:hover, #icon-voltar:hover, #icon-home:hover, #icon-conta:hover {
+#icon-menu:hover,
+#icon-voltar:hover,
+#icon-home:hover,
+#icon-conta:hover {
     color: #114f8a;
 }
 
@@ -230,7 +239,8 @@
     margin-top: 20px;
 }
 
-.button-cancelar-volume, .button-criar-volume {
+.button-cancelar-volume,
+.button-criar-volume {
     width: 45%;
     padding: 10px;
     border-radius: 3px;
@@ -254,4 +264,82 @@
 
 .button-criar-volume:hover {
     background-color: #114b81;
+}
+
+/* lista de tipos de volume  */
+
+.container-lista-tipos-volume {
+    position: fixed;
+    top: 30%;
+    left: 70%;
+    z-index: 1000;
+    padding: 20px;
+    background-color: #ccccccab;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.308);
+    cursor: move;
+    border-radius: 10px;
+}
+
+.subcontainer-lista-tipos-volume {
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.308);
+
+}
+
+.container-tipo-volume {
+    display: flex;
+    gap: 20px;
+    /* espaço entre os elementos */
+    padding: 20px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.ul-listagem-tipos-volume li {
+    grid-template-columns: repeat(2, 1fr);
+
+}
+
+.header-lista-tipos-volume,
+.li-listagem-tipo-volume {
+    display: grid;
+    border-top: none;
+    font-weight: bold;
+    text-align: center;
+}
+
+.header-lista-tipos-volume {
+    background-color: #1780e2;
+    color: white;
+}
+
+.header-lista-tipos-volume div {
+    padding: 10px;
+    border-right: 1px solid #ddd;
+}
+
+.header-lista-tipos-volume div:last-child {
+    border-right: none
+}
+
+.li-listagem-tipo-volume {
+    color: black;
+    transition: 0.5ms ease-in;
+}
+
+.li-listagem-tipo-volume:hover {
+    background-color: #dddddd5b;
+    cursor: pointer;
+}
+
+.li-listagem-tipo-volume div {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.li-listagem-tipo-volume div:last-child {
+    border-left: none;
 }

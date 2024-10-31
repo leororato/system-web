@@ -11,20 +11,25 @@ import logo from '../../assets/logo.png';
 import api from "../../axiosConfig";
 import Loading from "../Loading/Loading";
 import Cookies from 'js-cookie';
+import ExcluirItem from "../ExcluirItem/ExcluirItem";
 
 const Header = () => {
 
   const [nomeUsuario, setNomeUsuario] = useState('');
   const userRole = Cookies.get('nivelAcesso');
   const id = Cookies.get('userId');
-  const usuario = { id }
+  const usuario = { id: id };
+
+
   const navigate = useNavigate();
+  const containerRef = useRef(null);
 
   const location = useLocation();
   const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
   const [errorMessage, setErrorMessage] = useState(null);
 
   const [estadoDaPagina, setEstadoDaPagina] = useState("Salvando");
+  const [estadoDoCadastro, setEstadoDoCadastro] = useState("Cadastro");
   const [contextLoading, setContextLoading] = useState({ visible: false });
 
   const [contextVolume, setContextVolume] = useState({
@@ -32,6 +37,12 @@ const Header = () => {
   });
 
   const [contextHeaderMenu, setContextHeaderMenu] = useState(false);
+  const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
+  const [contextDelete, setContextDelete] = useState({ visible: false, selectedId: null });
+  const [salvarTipoSelected, setSalvarTipoSelected] = useState(null)
+
+  const [formDataEdicaoTipoVolume, setFormDataEdicaoTipoVolume] = useState({ idTipoVolume: null, descricao: null })
+  const [listaTiposDeVolume, setListaTiposDeVolume] = useState([]);
   const [tipoDeVolume, setTipoDeVolume] = useState({
     descricao: ''
   });
@@ -46,30 +57,40 @@ const Header = () => {
     setContextHeaderMenu(!contextHeaderMenu);
   };
 
-  const handleClickOutside = (event) => {
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
-      setContextHeaderMenu(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleFuncaoTipoVolume = (e) => {
-    setContextVolume({ visible: true, x: e.pageX, y: e.pageY });
-    setContextHeaderMenu(false);
-  }
-
   useEffect(() => {
     const storedUserName = Cookies.get('nomeUsuario');
     if (storedUserName) {
       setNomeUsuario(storedUserName);
     }
   }, []);
+
+  const handleFuncaoTipoVolume = (e) => {
+    setContextVolume({ visible: true, x: e.pageX, y: e.pageY });
+    setContextHeaderMenu(false);
+    fetchTiposDeVolume();
+  }
+
+  const fetchTiposDeVolume = async () => {
+    setEstadoDaPagina("Carregando");
+    setContextLoading({ visible: true });
+
+    try {
+      const response = await api.get(`/tipo-de-volume/listar-todos`);
+      setListaTiposDeVolume(response.data);
+      console.log(response.data)
+
+    } catch (error) {
+      const errorMessage = error.response?.data || "Erro desconhecido ao buscar tipos de volume";
+      setErrorMessage(errorMessage);
+
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+
+    } finally {
+      setContextLoading({ visible: false });
+    }
+  }
 
   const handleCreateTipoDeVolume = async (e) => {
     e.preventDefault();
@@ -85,8 +106,12 @@ const Header = () => {
       const response = await api.post(`/tipo-de-volume`, tipoVolume);
 
       setSucessMessage(`Tipo de Volume '${response.data.descricao}' criado com sucesso`);
+      fetchTiposDeVolume();
 
-      setContextVolume({ visible: false });
+      setTipoDeVolume({ descricao: null });
+      setTimeout(() => {
+        setSucessMessage(null);
+      }, 5000);
 
     } catch (error) {
       const errorMessage = error.response?.data || "Erro desconhecido ao criar o Tipo de Volume";
@@ -101,9 +126,149 @@ const Header = () => {
     }
   }
 
+  // parte da aba arrastavel
   const handleCloseContextVolume = () => {
     setContextVolume({ visible: false });
     setTipoDeVolume({ descricao: '' });
+  }
+
+  const handleMouseDown = (event) => {
+    const container = containerRef.current;
+    let shiftX = event.clientX - container.getBoundingClientRect().left;
+    let shiftY = event.clientY - container.getBoundingClientRect().top;
+
+    const moveAt = (pageX, pageY) => {
+      container.style.left = pageX - shiftX + 'px';
+      container.style.top = pageY - shiftY + 'px';
+    };
+
+    const onMouseMove = (event) => {
+      moveAt(event.pageX, event.pageY);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+
+    document.onmouseup = function () {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.onmouseup = null;
+    };
+  };
+
+  // edicao
+
+  const atualizarTipoDeVolume = async () => {
+    setEstadoDaPagina("Atualizando");
+    setContextLoading({ visible: true });
+
+    const tipoVolumeRequest = {
+      tipoDeVolume: formDataEdicaoTipoVolume,
+      usuario: usuario
+    }
+
+    try {
+      await api.put(`/tipo-de-volume/atualizar-tipo-volume/${formDataEdicaoTipoVolume.idTipoVolume}`, tipoVolumeRequest);
+
+      setSucessMessage(`Tipo de Volume atualizado com sucesso`);
+      setTimeout(() => {
+        setSucessMessage(null);
+      }, 5000)
+
+      setFormDataEdicaoTipoVolume({ idTipoVolume: null, descricao: null });
+      setSalvarTipoSelected(null);
+      await fetchTiposDeVolume();
+      console.log('lista: ', listaTiposDeVolume)
+
+    } catch (error) {
+      const errorMessage = error.response?.data || "Erro desconhecido ao atualizar o tipo de volume";
+      setErrorMessage(errorMessage);
+
+      setFormDataEdicaoTipoVolume({ idTipoVolume: null, descricao: null });
+
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    } finally {
+      setContextLoading({ visible: false });
+    }
+  }
+
+  const handleExcluirTipoVolume = async () => {
+    setEstadoDaPagina("Excluindo");
+    setContextLoading({ visible: true });
+
+    try {
+      await api.put(`/tipo-de-volume/excluir-tipo-volume/${salvarTipoSelected.idTipoVolume}`, usuario);
+      setEstadoDaPagina("Cadastro");
+
+      setSucessMessage("O tipo de volume foi deletado com sucesso");
+      setTimeout(() => {
+        setSucessMessage(null);
+      }, 5000);
+
+      setSalvarTipoSelected(null);
+      await fetchTiposDeVolume();
+      setContextDelete({ visible: false });
+    } catch (error) {
+      const errorMessage = error.response?.data || "Erro desconhecido ao excluir o tipo de volume";
+      setErrorMessage(errorMessage);
+
+      setEstadoDaPagina("Cadastro");
+      setFormDataEdicaoTipoVolume({ idTipoVolume: null, descricao: null });
+
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+
+    } finally {
+      setContextLoading({ visible: false });
+    }
+  }
+
+  const handleRightClick = (e, idTipoVolume, descricao) => {
+    e.preventDefault();
+    setContextMenu({
+      visible: true, x: e.pageX, y: e.pageY
+    })
+    setSalvarTipoSelected({ idTipoVolume: idTipoVolume, descricao: descricao })
+    setFormDataEdicaoTipoVolume({ idTipoVolume: idTipoVolume, descricao: descricao });
+  }
+
+  const handleEditarTipoDeVolume = () => {
+    setEstadoDoCadastro("Editar");
+  }
+
+  const handleExcluirTipoDeVolume = (e) => {
+    setContextDelete({ visible: true, x: e.pageX, y: e.pageY });
+  }
+
+  const handleChangeFormDataTipoVolume = (e) => {
+    setFormDataEdicaoTipoVolume({
+      ...formDataEdicaoTipoVolume,
+      descricao: e.target.value
+    })
+    console.log("a:", formDataEdicaoTipoVolume)
+  }
+
+  const handleClickOutside = () => {
+    setContextMenu({
+      visible: false,
+      x: 0,
+      y: 0,
+      selectedId: null,
+      selectedSeq: null,
+      selectedDesc: null
+    });
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  const handleCancelarVolume = () => {
+    navigate(0);
   }
 
   return (
@@ -172,54 +337,109 @@ const Header = () => {
       )}
 
       {/* CRIAR TIPO DE VOLUME INICIO */}
-      {contextVolume.visible && (
+      {contextVolume.visible && !contextDelete.visible && (
         <>
-          <div className='overlay'></div>
-          <div className='context-volume'>
-            <div className="container-icone-fechar"><Icon icon="ep:close-bold" id="icone-fechar-criacao-tipo-volume" onClick={handleCloseContextVolume} /></div>
-            <div className='container-text-input'>
-              <div className='container-text-cv'>
-                <Text
-                  text={'Criar tipo de volume:'}
-                  fontSize={15}
-                />
+          <div className="overlay"></div>
+          <div className='container-tipo-volume'>
+            {/* Seção de criação do tipo de volume */}
+            <div className='context-volume'>
+              <div className="container-icone-fechar">
+                <Icon icon="ep:close-bold" id="icone-fechar-criacao-tipo-volume" onClick={handleCloseContextVolume} />
               </div>
-              <div className='container-input-criar-volume'>
-                <Input
-                  className={"input-tipo-volume"}
-                  placeholder={'Ex: Pallet...'}
-                  padding={7}
-                  onChange={(e) => setTipoDeVolume({ descricao: e.target.value })}
-                />
+              <div className='container-text-input'>
+                <div className='container-text-cv'>
+                  <Text text={estadoDoCadastro === "Cadastro" ? 'Criar tipo de volume:' : 'Editar tipo de volume'} fontSize={15} />
+                </div>
+                <div className='container-input-criar-volume'>
+                  <Input
+                    className={"input-tipo-volume"}
+                    placeholder={'Ex: Pallet...'}
+                    padding={7}
+                    name={'descricao'}
+                    value={estadoDoCadastro === "Cadastro" ? tipoDeVolume.descricao || "" : formDataEdicaoTipoVolume.descricao || ""}
+                    onChange={estadoDoCadastro === "Cadastro" ? (e) => setTipoDeVolume({ descricao: e.target.value }) : (e) => handleChangeFormDataTipoVolume(e)}
+                  />
+                </div>
+              </div>
+
+              <div className='buttons-create'>
+                <Button className={'botao-cancelar'} text={'Cancelar'} fontSize={15} onClick={handleCancelarVolume} />
+                {estadoDoCadastro === "Cadastro" ? (
+                  <Button className={'botao-salvar'} text={'Criar'} fontSize={15} onClick={handleCreateTipoDeVolume} />
+
+                ) : (
+                  <Button className={'botao-salvar'} text={'Salvar'} fontSize={15} onClick={atualizarTipoDeVolume} />
+
+                )}
               </div>
             </div>
 
-            <div className='buttons-create'>
-              <Button
-                className={'botao-cancelar'}
-                text={'Cancelar'}
-                fontSize={15}
-                onClick={() => setContextVolume({ visible: false })}
-              />
-              <Button
-                className={'botao-salvar'}
-                text={'Criar'}
-                fontSize={15}
-                onClick={handleCreateTipoDeVolume}
-              />
+            {/* Lista de tipos de volumes */}
+            <div className='container-lista-tipos-volume' ref={containerRef} onMouseDown={handleMouseDown}>
+              <div className="subcontainer-lista-tipos-volume">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+                  <Text
+                    text={"Tipos de volumes"}
+                  />
+                </div>
+
+                <ul className="ul-listagem-tipos-volume">
+                  <li className="header-lista-tipos-volume">
+                    <div>ID</div>
+                    <div>Descrição</div>
+                  </li>
+                  {listaTiposDeVolume && (
+                    listaTiposDeVolume.map((user) => (
+                      <li key={user.idTipoVolume} onContextMenu={(e) => handleRightClick(e, user.idTipoVolume, user.descricao)} className="li-listagem-tipo-volume">
+                        <div>{user.idTipoVolume}</div>
+                        <div>{user.descricao}</div>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
         </>
       )}
+
       {/* FIM CRIAR TIPO DE VOLUME */}
 
-      {contextLoading.visible ? (
-        <Loading message={estadoDaPagina === "Salvando" ? "Salvando..." : "Carregando..."} />
-      ) : (
-        <></>
+      {contextMenu.visible && (
+        <div className='context-menu' style={{
+          top: `${contextMenu.y}px`, left: `${contextMenu.x}px`
+        }}>
+          <div id='container-icon-menu' onClick={handleEditarTipoDeVolume}>
+            <Icon icon="mdi:edit" id='icone-menu' />
+            <p>Editar</p>
+          </div>
+          <div id='container-icon-menu-excluir' onClick={(e) => handleExcluirTipoDeVolume(e)}>
+            <Icon icon="material-symbols:delete-outline" id='icone-menu' />
+            <p>Excluir</p>
+          </div>
+        </div>
       )}
 
-    </div>
+      {contextDelete.visible && (
+        <>
+          <div style={{ position: 'fixed' }}></div>
+          <ExcluirItem
+            descricao={'Tem certeza que deseja excluir o tipo de volume?'}
+            onClickBotaoCancelar={() => { setContextDelete({ visible: false }); }}
+            onClickBotaoExcluir={handleExcluirTipoVolume}
+          />
+        </>
+      )}
+
+      {
+        contextLoading.visible ? (
+          <Loading message={estadoDaPagina === "Salvando" ? "Salvando..." : "Carregando..."} />
+        ) : (
+          <></>
+        )
+      }
+
+    </div >
   );
 };
 

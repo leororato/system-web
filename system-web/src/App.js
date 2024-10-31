@@ -29,13 +29,13 @@ function App() {
                 <Route path="/exibir-qrcodes/:idPackinglist/:idProduto/:seq/:idVolume?" element={<ExibirQRCodes />} />
                 <Route path="/exibir-qrcode/:idVolume" element={<ExibirQRCodes />} />
                 <Route path='/exibir-qrcode-packinglist/:idPackinglist' element={<ExibirQRCodes />} />
-                <Route path='/cadastrar-packing-list' element={<CadastroItem />} />
+                <Route path={ userRole === 'A' ? '/cadastrar-packing-list' : '/unauthorized'} element={<CadastroItem />} />
                 <Route path='/clientes' element={<Clientes />} />
-                <Route path='/editar-packing-list/:id' element={<EditarPL />} />
+                <Route path={ userRole === 'A' ? '/editar-packing-list/:id' : '/unauthorized'}element={<EditarPL />} />
                 <Route path='/packing-list-produto/:id' element={<PackingListProduto />} />
-                <Route path='/editar-cliente/:id' element={<EditarCliente />} />
+                <Route path={ userRole === 'A' ? '/editar-cliente/:id' : '/unauthorized'} element={<EditarCliente />} />
                 <Route path='/volumes/:id/:idProduto/:seq' element={<Volume />} />
-                <Route path={ userRole === 'A' ? '/cadastrar-usuario' : '/unauthorized'} element={<CadastrarUsuario /> } />
+                <Route path={ userRole === 'A' ? '/cadastrar-usuario' : '/cadastrar-usuario'} element={<CadastrarUsuario /> } />
             </Routes>
         </Router>
     );

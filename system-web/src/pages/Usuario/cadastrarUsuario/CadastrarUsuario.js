@@ -19,11 +19,19 @@ function CadastrarUsuario() {
     const [sucessMessage, setSucessMessage] = useState("");
     const [contextLoading, setContextLoading] = useState({ visible: false });
     const [estadoDaPagina, setEstadoDaPagina] = useState("Carregando");
+    const [estadoDoCadastro, setEstadoDoCadastro] = useState("Cadastro")
 
     // listagem
     const [usuarios, setUsuarios] = useState([]);
     const [filteredUsuarios, setFilteredUsuarios] = useState([]);
     const [buscaLogin, setBuscaLogin] = useState('');
+    const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedId: null });
+    const nivelAcessoLabels = {
+        A: "Admin",
+        G: "Geral",
+        V: "Visualização",
+        C: "Coleta", // Presumo que "C" seja para "Coleta"
+    };
 
 
     // cadastro
@@ -33,6 +41,16 @@ function CadastrarUsuario() {
         login: "",
         senha: "",
         nivelAcesso: ""
+    });
+
+    // ediçao
+    const [formDataEdicaoUsuario, setFormDataEdicaoUsuario] = useState({
+        id: null,
+        nome: "",
+        login: "",
+        senha: null,
+        nivelAcesso: "",
+        ativo: ""
     });
 
     // cadastro usuarios
@@ -46,7 +64,7 @@ function CadastrarUsuario() {
     };
 
     const cadastrarUsuario = async () => {
-        setEstadoDaPagina("Carregando");
+        setEstadoDaPagina("Salvando");
         setContextLoading({ visible: true });
         console.log("form: ", formDataUsuario);
 
@@ -88,6 +106,32 @@ function CadastrarUsuario() {
         })
     }
 
+    const handleChangeFormDataEdicao = (e) => {
+        const { name, value } = e.target;
+        setFormDataEdicaoUsuario({
+            ...formDataEdicaoUsuario,
+            [name]: value
+        })
+    }
+
+    const handleCancelarCadastroOuEdicao = () => {
+        setFormDataUsuario({
+            nome: "",
+            login: "",
+            senha: "",
+            nivelAcesso: ""
+        });
+        setFormDataEdicaoUsuario({
+            id: null,
+            nome: "",
+            login: "",
+            senha: null,
+            nivelAcesso: "",
+            ativo: ""
+        });
+        setEstadoDoCadastro("Cadastro");
+    }
+
     // lista usuarios
 
     useEffect(() => {
@@ -122,16 +166,105 @@ function CadastrarUsuario() {
         }
     }
 
-    const handleRightClick = (e) => {
-
+    const handleRightClick = (e, id, nome, login, nivelAcesso, ativo) => {
+        e.preventDefault();
+        setContextMenu({
+            visible: true,
+            x: e.pageX,
+            y: e.pageY,
+            selectedId: id,
+            selectedNome: nome,
+            selectedLogin: login,
+            selectedNivelAcesso: nivelAcesso,
+            selectedAtivo: ativo,
+        })
+        setFormDataEdicaoUsuario({
+            id: id,
+            nome: nome,
+            login: login,
+            senha: "",
+            nivelAcesso: nivelAcesso,
+            ativo: ativo
+        })
     }
 
+    const handleClickOutside = () => {
+        setContextMenu({
+            visible: false,
+            x: 0,
+            y: 0,
+            selectedId: null,
+            selectedSeq: null,
+            selectedDesc: null
+        });
+
+    };
 
     const formatarData = (dtCriacao) => {
         if (!dtCriacao) return 'Data inválida';
         return format(new Date(dtCriacao), 'dd/MM/yyyy - HH:mm');
     };
 
+    // Atualizar usuario
+
+    const handleAtualizarUsuario = () => {
+        setEstadoDoCadastro("Editar");
+    }
+
+    const atualizarUsuario = async () => {
+        setEstadoDaPagina("Atualizando");
+        setContextLoading({ visible: true });
+
+        try {
+            await api.put(`/usuario/atualizar-usuario/${formDataEdicaoUsuario.id}`, formDataEdicaoUsuario);
+
+            setSucessMessage("Usuário atualizado com sucesso");
+            setTimeout(() => {
+                setSucessMessage(null);
+            }, 5000);
+
+            setEstadoDoCadastro("Cadastro");
+            await setFormDataEdicaoUsuario({
+                id: null,
+                nome: "",
+                login: "",
+                senha: "",
+                nivelAcesso: "",
+                ativo: ""
+            });
+
+            await fetchUsuarios();
+
+        } catch (error) {
+            const errorMessage = error.response?.data || "Erro desconhecido ao atualizar usuário";
+            setErrorMessage(errorMessage);
+            console.log("erro: ", error)
+
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 5000);
+
+            setFormDataEdicaoUsuario({
+                id: null,
+                nome: "",
+                login: "",
+                senha: null,
+                nivelAcesso: "",
+                ativo: ""
+            });
+
+        } finally {
+            setContextLoading({ visible: false });
+
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
 
     return (
         <div>
@@ -142,16 +275,51 @@ function CadastrarUsuario() {
             <div className="container-cadastro-usuario">
 
                 <div className="itens-cadastro-usuario">
-                    <Title text={"Cadastrar novo usuário"} />
-                    <form>
+                    <Title text={estadoDoCadastro === "Cadastro" ? "Cadastrar novo usuário" : "Editar usuário"} />
+                    <form onSubmit={atualizarUsuario}>
                         <div className="container-form-cadastro-usuario">
                             <div>
                                 <label>Nome:</label>
-                                <Input title={"Digite o nome do usuário"} placeholder={"Digite o nome do usuário"} type={"text"} onChange={handleChangeFormData} name={"nome"} value={formDataUsuario.nome || ""} />
+                                {estadoDoCadastro === "Cadastro" ?
+                                    <Input
+                                        title={"Digite o nome do usuário"}
+                                        placeholder={"Digite o nome do usuário"}
+                                        type={"text"}
+                                        onChange={handleChangeFormData}
+                                        name={"nome"}
+                                        value={formDataUsuario.nome || ""}
+                                    />
+                                    :
+                                    <Input
+                                        title={"Digite o nome do usuário"}
+                                        placeholder={"Atualize o nome do usuário"}
+                                        type={"text"}
+                                        onChange={handleChangeFormDataEdicao}
+                                        name={"nome"}
+                                        value={formDataEdicaoUsuario.nome || ""}
+                                    />}
+
                             </div>
                             <div>
                                 <label>Login:</label>
-                                <Input title={"Digite o login do usuário"} placeholder={"Digite o login do usuário"} type={"text"} onChange={handleChangeFormData} name={"login"} value={formDataUsuario.login || ""} />
+                                {estadoDoCadastro === "Cadastro" ?
+                                    <Input
+                                        title={"Digite o login do usuário"}
+                                        placeholder={"Digite o login do usuário"}
+                                        type={"text"}
+                                        onChange={handleChangeFormData}
+                                        name={"login"}
+                                        value={formDataUsuario.login || ""}
+                                    />
+                                    :
+                                    <Input
+                                        title={"Digite o login do usuário"}
+                                        placeholder={"Atualize o login do usuário"}
+                                        type={"text"}
+                                        onChange={handleChangeFormDataEdicao}
+                                        name={"login"}
+                                        value={formDataEdicaoUsuario.login || ""}
+                                    />}
                             </div>
 
                             <div>
@@ -160,11 +328,11 @@ function CadastrarUsuario() {
                                     <Input
                                         type={mostrarSenha ? "text" : "password"}
                                         title={"Digite a senha do usuário"}
-                                        placeholder={"Digite a senha do usuário"}
+                                        placeholder={estadoDoCadastro === "Cadastro" ? "Digite a senha do usuário" : "Atualizar senha do usuário"}
                                         className="input-password"
-                                        onChange={handleChangeFormData}
+                                        onChange={estadoDoCadastro === "Cadastro" ? handleChangeFormData : handleChangeFormDataEdicao}
                                         name={"senha"}
-                                        value={formDataUsuario.senha || ""}
+                                        value={estadoDoCadastro === "Cadastro" ? formDataUsuario.senha || "" : formDataEdicaoUsuario.senha}
                                     />
                                     <Icon
                                         icon={mostrarSenha ? "mdi:eye-off" : "mdi:eye"}
@@ -177,7 +345,7 @@ function CadastrarUsuario() {
 
                             <div>
                                 <label>Tipo de acesso:</label>
-                                <select onChange={handleChangeFormData} name="nivelAcesso" value={formDataUsuario.nivelAcesso || ""}>
+                                <select onChange={estadoDoCadastro === "Cadastro" ? handleChangeFormData : handleChangeFormDataEdicao} name="nivelAcesso" value={estadoDoCadastro === "Cadastro" ? formDataUsuario.nivelAcesso || "" : formDataEdicaoUsuario.nivelAcesso || ""}>
                                     <option value={""}>Selecione</option>
                                     <option value={"A"}>Administrador</option>
                                     <option value={"G"}>Geral</option>
@@ -185,37 +353,48 @@ function CadastrarUsuario() {
                                     <option value={"C"}>Coleta</option>
                                 </select>
                             </div>
+
+                            {estadoDoCadastro !== "Cadastro" && (
+                                <div>
+                                    <label>Status:</label>
+                                    <select onChange={estadoDoCadastro === "Cadastro" ? handleChangeFormData : handleChangeFormDataEdicao} name="ativo" value={estadoDoCadastro === "Cadastro" ? formDataUsuario.ativo || "" : formDataEdicaoUsuario.ativo || ""}>
+                                        <option value={""}>Selecione</option>
+                                        <option value={"A"}>Ativo</option>
+                                        <option value={"I"}>Inativo</option>
+                                    </select>
+                                </div>
+                            )}
                         </div>
                     </form>
 
                     <div className="buttons-criar-novo-usuario">
                         <div id="botao-criar-usuario">
                             <Button
-                                text={"Cadastrar"}
-                                onClick={cadastrarUsuario}
+                                text={estadoDoCadastro === "Cadastro" ? "Cadastrar" : "Atualizar"}
+                                onClick={estadoDoCadastro === "Cadastro" ? cadastrarUsuario : atualizarUsuario}
                             />
                         </div>
                         <div id='botao-cancelar-criar-usuario'>
                             <Button
                                 text={"Cancelar"}
-                                onClick={() => { navigate("/inicio") }}
+                                onClick={handleCancelarCadastroOuEdicao}
                             />
                         </div>
                     </div>
                 </div>
 
 
-                <div className='busca-invoice-input'>
-                    <Input
-                        type={'text'}
-                        placeholder={'Invoice'}
-                        title={'Pesquise pelo INVOICE da packinglist...'}
-                        value={buscaLogin}
-                        onChange={(e) => setBuscaLogin(e.target.value)}
-                    />
-                </div>
-                
                 <div className="ul-lista-usuarios">
+                    <div className='busca-invoice-input' style={{ marginBottom: "10px" }}>
+                        <Input
+                            type={'text'}
+                            placeholder={'Nome'}
+                            title={'Pesquise pelo NOME do usuário...'}
+                            value={buscaLogin}
+                            onChange={(e) => setBuscaLogin(e.target.value)}
+                        />
+                    </div>
+
                     <ul>
                         <li id="header-lista-usuarios">
                             <div>ID</div>
@@ -231,13 +410,13 @@ function CadastrarUsuario() {
                                 filteredUsuarios.map((user) => {
 
                                     return (
-                                        <li key={user.id} onContextMenu={(event) => handleRightClick(event, user.id)} id="lista-user-1">
-                                            <div>{user.idPackinglist}</div>
-                                            <div>{formatarData(user.dtCriacao)}</div>
+                                        <li key={user.id} onContextMenu={(e) => handleRightClick(e, user.id, user.nome, user.login, user.nivelAcesso, user.ativo)} id="lista-user-1">
+                                            <div>{user.id}</div>
                                             <div>{user.nome}</div>
                                             <div>{user.login}</div>
-                                            <div>{user.nivelAcesso}</div>
-                                            <div>{user.ativo}</div>
+                                            <div>{nivelAcessoLabels[user.nivelAcesso] || "Não encontrado"}</div>
+                                            <div>{user.ativo === "A" ? "Ativo" : "Inativo"}</div>
+                                            <div>{formatarData(user.dtCriacao)}</div>
                                         </li>
                                     );
                                 })
@@ -251,6 +430,18 @@ function CadastrarUsuario() {
                 </div>
 
             </div>
+
+
+            {contextMenu.visible && (
+                <div className='context-menu' style={{
+                    top: `${contextMenu.y}px`, left: `${contextMenu.x}px`
+                }}>
+                    <div id='container-icon-menu' onClick={handleAtualizarUsuario}>
+                        <Icon icon="mdi:edit" id='icone-menu' />
+                        <p>Editar usuário</p>
+                    </div>
+                </div>
+            )}
 
             {contextLoading.visible ? (
                 <Loading message={estadoDaPagina === "Carregando" ? "Carregando..." : estadoDaPagina === "Atualizando" ? "Atualizando..." : estadoDaPagina === "Salvando" ? "Salvando..." : "Excluindo..."} />

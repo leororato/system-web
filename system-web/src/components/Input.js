@@ -58,7 +58,7 @@ const Input = ({
                     style={{
                         position: 'fixed',
                         top: tooltipPosition.y + 'px',
-                        left: tooltipPosition.x + 15 + 'px', // 15px à direita do cursor
+                        left: tooltipPosition.x + 15 + 'px',
                         backgroundColor: '#1780e2',
                         color: '#fff',
                         padding: '4px 10px',
