@@ -2,13 +2,14 @@ import "./Login.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
-import axios from "axios";
 import ErrorNotification from "../../../../components/ErrorNotification/ErrorNotification";
 import SucessNotification from "../../../../components/SucessNotification/SucessNotification";
 import Text from "../../../../components/Text";
 import Input from "../../../../components/Input";
 import Button from "../../../../components/Button";
 import Logo from "../../../../assets/logo.png"
+import api from "../../../../axiosConfig";
+import axios from "axios";
 
 function Login() {
     const navigate = useNavigate();
@@ -43,23 +44,23 @@ function Login() {
             console.log('Resposta do login: ', response)
 
             Cookies.set('token', response.data.token, { 
-                expires: 7,               // Expira em 7 dias
-                sameSite: 'Lax',        // Impede o envio do cookie em solicitações de terceiros
+                expires: 7,               // expira em 7 dias
+                sameSite: 'Lax',        // impede o envio do cookie em solicitações de terceiros
             });
 
             Cookies.set('nomeUsuario', response.data.nome, {
-                expires: 7,               // Expira em 7 dias
-                sameSite: 'Lax',        // Impede o envio do cookie em solicitações de terceiros
+                expires: 7,               // expira em 7 dias
+                sameSite: 'Lax',        // impede o envio do cookie em solicitações de terceiros
             });
 
             Cookies.set('userId', response.data.id, {
-                expires: 7,               // Expira em 7 dias
-                sameSite: 'Lax',        // Impede o envio do cookie em solicitações de terceiros
+                expires: 7,               // expira em 7 dias
+                sameSite: 'Lax',        // impede o envio do cookie em solicitações de terceiros
             })
 
             Cookies.set('nivelAcesso', response.data.nivelAcesso, {
-                expires: 7,               // Expira em 7 dias
-                sameSite: 'Lax',        // Impede o envio do cookie em solicitações de terceiros
+                expires: 7,               // expira em 7 dias
+                sameSite: 'Lax',        // impede o envio do cookie em solicitações de terceiros
             })
 
             navigate('/inicio');

@@ -254,31 +254,31 @@ function Volume() {
 
     // BUSCANDO TODOS OS TIPOS DE VOLUME E ARMAZENANDO CADA UM EM UM OBJETO E SALVANDO UMA VARIAVEL OBJETO COMUM
     useEffect(() => {
-
-        const fetchTipoDeVolume = async () => {
-            setEstadoDaPagina("Carregando");
-            setContextLoading({ visible: true });
-
-            try {
-                const response = await api.get(`/tipo-de-volume`);
-
-                setTiposDeVolumeArray(response.data); // Armazena o array original
-
-            } catch (error) {
-                const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar tipo de volume";
-                setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
-
-            } finally {
-                setContextLoading({ visible: false });
-            }
-        }
-
         fetchTipoDeVolume();
     }, []);
+
+    const fetchTipoDeVolume = async () => {
+        setEstadoDaPagina("Carregando");
+        setContextLoading({ visible: true });
+
+        try {
+            const response = await api.get(`/tipo-de-volume/listar-todos`);
+
+            setTiposDeVolumeArray(response.data); // Armazena o array original
+
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar tipo de volume";
+            setErrorMessage(errorMessage);
+
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+
+        } finally {
+            setContextLoading({ visible: false });
+        }
+    }
+
 
 
     // SALVANDO O VOLUME 
@@ -325,7 +325,7 @@ function Volume() {
             fetchVolumes();
 
         } catch (error) {
-            const errorMessage = error.response?.data?.message || "Erro desconhecido ao adicionar Volume";
+            const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume";
             setErrorMessage(errorMessage);
             setTimeout(() => setErrorMessage(null), 5000);
         } finally {
@@ -379,7 +379,7 @@ function Volume() {
             fetchProdutoSelecionado();
 
         } catch (error) {
-            const errorMessage = error.response?.data?.message || "Erro desconhecido ao atualizar Volume";
+            const errorMessage = error.response?.data || "Erro desconhecido ao atualizar Volume";
             setErrorMessage(errorMessage);
             setTimeout(() => setErrorMessage(null), 5000);
         } finally {

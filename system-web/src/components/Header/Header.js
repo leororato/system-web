@@ -320,7 +320,13 @@ const Header = () => {
 
           {(userRole === "A" || userRole === "G") && (
             <div id="criar-packinglist-header">
-              <Text text={'Criar novo packingList'} onClick={() => navigate('/cadastrar-packing-list')} />
+              <Text text={'Criar packingList exportação'} onClick={() => navigate('/cadastrar-packing-list')} />
+            </div>
+          )}
+
+          {(userRole === "A" || userRole === "G") && (
+            <div id="criar-packinglist-header">
+              <Text text={'Criar packingList nacional'} onClick={() => navigate('/cadastrar-packing-list-nacional')} />
             </div>
           )}
 

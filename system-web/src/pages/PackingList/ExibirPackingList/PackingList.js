@@ -45,7 +45,7 @@ function PackingList() {
     })
 
     const [contextMenu, setContextMenu] = useState({
-        visible: false, x: 0, y: 0, selectedId: null
+        visible: false, x: 0, y: 0, selectedId: null, selectedIdioma: null
     });
 
     const [inputDeleteSegundoFator, setInputDeleteSegundoFator] = useState("");
@@ -132,13 +132,14 @@ function PackingList() {
         return format(new Date(dtCriacao), 'dd/MM/yyyy - HH:mm');
     };
 
-    const handleRightClick = (event, id) => {
+    const handleRightClick = (event, id, idioma) => {
         event.preventDefault();
         setContextMenu({
             visible: true,
             x: event.pageX,
             y: event.pageY,
-            selectedId: id
+            selectedId: id,
+            selectedIdioma: idioma
         });
     };
 
@@ -147,8 +148,11 @@ function PackingList() {
     };
 
     const handleEdit = () => {
-        setContextMenu({ visible: false, x: 0, y: 0, selectedId: null });
-        navigate(`/editar-packing-list/${contextMenu.selectedId}`);
+        if (contextMenu.selectedIdioma === 'Português') {
+            navigate(`/editar-packing-list-nacional/${contextMenu.selectedId}`);
+        } else {
+            navigate(`/editar-packing-list/${contextMenu.selectedId}`);
+        }
     };
 
 
@@ -231,7 +235,7 @@ function PackingList() {
         const permissaoParaExcluir = (inputDeleteSegundoFator === "Excluir") ? "comPermissao" : "palavraChaveErrada";
 
         try {
-            await api.delete(`/packinglist/${itemDeletado}/${permissaoParaExcluir}`);
+            await api.put(`/packinglist/deletar-packinglist/${itemDeletado}/${permissaoParaExcluir}`, usuario);
 
             setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
             setTimeout(() => {
@@ -462,15 +466,7 @@ function PackingList() {
                             <div>ID</div>
                             <div>Data Criação</div>
                             <div>Importador</div>
-                            <div>Consignatário</div>
-                            <div>Notificado</div>
-                            <div>País Origem</div>
-                            <div>Fronteira</div>
-                            <div>Local Embarque</div>
                             <div>Local Destino</div>
-                            <div>Termos Pagamento</div>
-                            <div>Dados Bancários</div>
-                            <div>Incoterm</div>
                             <div>Invoice</div>
                             <div>Tipo Transporte</div>
                             <div>Peso Líquido Total</div>
@@ -488,41 +484,20 @@ function PackingList() {
                                     }
 
                                     return (
-                                        <li key={p.idPackinglist} onContextMenu={(event) => handleRightClick(event, p.idPackinglist)} className='li-listagem'>
+                                        <li key={p.idPackinglist} onContextMenu={(event) => handleRightClick(event, p.idPackinglist, p.idioma)} className='li-listagem'>
                                             <div>{p.idPackinglist}</div>
                                             <div>{formatarData(p.dtCriacao)}</div>
                                             <div>{p.nomeClienteImportador}</div>
-                                            <div>{p.nomeClienteConsignatario}</div>
-                                            <div>{p.nomeClienteNotificado}</div>
-                                            <div>{p.paisOrigem}</div>
-                                            <div>{p.fronteira}</div>
-                                            <div>{p.localEmbarque}</div>
                                             <div>{p.localDestino}</div>
-                                            <div>{p.termosPagamento}</div>
-
-                                            {p.dadosBancarios != null ? (
-                                                <div>
-                                                    {dadosSeparados[0] + '\n'
-                                                        + 'Agência: ' + dadosSeparados[1] + '\n'
-                                                        + 'Conta: ' + dadosSeparados[2] + '\n'
-                                                        + 'Swift: ' + dadosSeparados[3] + '\n'
-                                                        + 'Iban: ' + dadosSeparados[4] + '\n'}
-                                                </div>
-
-                                            ) : (
-                                                <div></div>
-                                            )}
-
-                                            <div>{p.incoterm}</div>
                                             <div>{p.invoice}</div>
                                             <div>{p.tipoTransporte}</div>
                                             <div>{p.pesoLiquidoTotal}</div>
                                             <div>{p.pesoBrutoTotal}</div>
                                             <div>{p.idioma}</div>
                                             {p.finalizado == 0 ? (
-                                                <div><Icon icon="pajamas:status-active" style={{color: 'green', fontSize: '10px'}} /> Em andamento</div>
+                                                <div><Icon icon="pajamas:status-active" style={{ color: 'green', fontSize: '10px' }} /> Em andamento</div>
                                             ) : (
-                                                <div><Icon icon="octicon:feed-issue-closed-16" style={{color: 'brown', fontSize: '11px'}} /> Finalizado</div>
+                                                <div><Icon icon="octicon:feed-issue-closed-16" style={{ color: 'brown', fontSize: '11px' }} /> Finalizado</div>
                                             )}
                                         </li>
                                     );

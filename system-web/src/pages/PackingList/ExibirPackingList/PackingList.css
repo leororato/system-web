@@ -172,6 +172,7 @@ body {
     padding: 5px;
     text-align: left;
     border-right: 1px solid #ddd;
+    min-width: 100px;
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
