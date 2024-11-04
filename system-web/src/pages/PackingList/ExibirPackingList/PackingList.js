@@ -465,7 +465,7 @@ function PackingList() {
                         <li className="header">
                             <div>ID</div>
                             <div>Data Criação</div>
-                            <div>Importador</div>
+                            <div>Cliente / Importador</div>
                             <div>Local Destino</div>
                             <div>Invoice</div>
                             <div>Tipo Transporte</div>

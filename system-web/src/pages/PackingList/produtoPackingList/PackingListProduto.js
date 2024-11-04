@@ -538,6 +538,11 @@ function PackingListProduto() {
                         <li className="header">
                             <div>ID</div>
                             <div>Data Criação</div>
+                            {packingList.idioma === "Português" ? (
+                                <div>Cliente</div>
+                            ) : (
+                                <div>Importador</div>
+                            )}
                             <div>País Origem</div>
                             <div>Fronteira</div>
                             <div>Local Embarque</div>
@@ -558,6 +563,7 @@ function PackingListProduto() {
                             <li key={packingList.idPackinglist} className='li-listagem-produto'>
                                 <div>{packingList.idPackinglist}</div>
                                 <div>{formatarData(packingList.dtCriacao)}</div>
+                                <div>{packingList.nomeClienteImportador}</div>
                                 <div>{packingList.paisOrigem}</div>
                                 <div>{packingList.fronteira}</div>
                                 <div>{packingList.localEmbarque}</div>

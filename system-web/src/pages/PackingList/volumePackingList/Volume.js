@@ -323,6 +323,7 @@ function Volume() {
             setVolumeCriado(true);
 
             fetchVolumes();
+            fetchProdutoSelecionado();
 
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao adicionar Volume";

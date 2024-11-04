@@ -171,7 +171,7 @@
 }
 
 .container-listagem-prod li {
-    grid-template-columns: repeat(15, 1fr);
+    grid-template-columns: repeat(16, 1fr);
     border-bottom: none;
     border-left: 1px solid #ddd;
 }

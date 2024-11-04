@@ -14,6 +14,7 @@ import CadastrarUsuario from './pages/Usuario/cadastrarUsuario/CadastrarUsuario'
 import Cookies from 'js-cookie';
 import CadastroPackingListNacional from './pages/PackingList/cadastroPackingListNacional/CadastroPackingListNacional';
 import EditarPackingListNacional from './pages/PackingList/EditarPackingListNacional/EditarPackingListNacional';
+import Unauthorized from './pages/Unauthorized/Unauthorized';
 
 
 
@@ -39,7 +40,8 @@ function App() {
                 <Route path='/packing-list-produto/:id' element={<PackingListProduto />} />
                 <Route path={ userRole === 'A' || 'G' ? '/editar-cliente/:id' : '/unauthorized'} element={<EditarCliente />} />
                 <Route path='/volumes/:id/:idProduto/:seq' element={<Volume />} />
-                <Route path={ userRole === 'A' || 'G' ? '/cadastrar-usuario' : '/cadastrar-usuario'} element={<CadastrarUsuario /> } />
+                <Route path={ userRole === 'A' || 'G' ? '/cadastrar-usuario' : '/unauthorized'} element={<CadastrarUsuario />} />
+                <Route path='/unauthorized' element={<Unauthorized />} />
             </Routes>
         </Router>
     );
