@@ -5,6 +5,10 @@ body {
 }
 
 .container-listagem {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     overflow-x: auto;
     padding: 20px;
     max-width: 100%;
@@ -155,8 +159,21 @@ body {
     transition: 0.5ms ease-in;
 }
 
+.li-listagem-sem-cor{
+    background-color: #FFFFFF;
+}
+
+.li-listagem-com-cor {
+    background-color: #dddddd5b;
+}
+
 .li-listagem:hover {
-    background-color: #dddddd5b !important;
+    background-color: #dddddd5b;
+}
+
+.button-container-listagem {
+    display: flex;
+    gap: 10px;
 }
 
 .header {
@@ -169,7 +186,7 @@ body {
 
 .container-listagem-inicio li div {
     display: table-cell;
-    padding: 5px;
+    padding: 15px;
     text-align: left;
     border-right: 1px solid #ddd;
     min-width: 100px;
@@ -210,8 +227,6 @@ body {
     border-radius: 5px;
     transition: 0.3s ease;
 }
-
-#container-icon-menu {}
 
 #container-icon-menu:hover {
     background-color: #d8d8d8;

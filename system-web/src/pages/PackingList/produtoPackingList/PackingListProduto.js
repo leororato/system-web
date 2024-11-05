@@ -53,6 +53,8 @@ function PackingListProduto() {
     const [botaoAdicionar, setBotaoAdicionar] = useState({ visible: true });
     const [contextAdicionar, setContextAdicionar] = useState({ visible: false });
 
+    const [selectedItemId, setSelectedItemId] = useState(null);
+
     const [infoProdutoParaExibirNoModoEdicao, setInfoProdutoParaExibirNoModoEdicao] = useState({
         idPackinglist: id,
         seq: "",
@@ -196,6 +198,7 @@ function PackingListProduto() {
             selectedSeq: null,
             selectedDesc: null
         });
+        setSelectedItemId(null);
 
     };
 
@@ -223,6 +226,8 @@ function PackingListProduto() {
             largura: largura,
             altura: altura
         })
+
+        setSelectedItemId(idProduto)
     };
 
     const handleEdit = () => {
@@ -708,7 +713,11 @@ function PackingListProduto() {
                             </li>
                             {filteredProdutos.length > 0 ? (
                                 filteredProdutos.map((p) => (
-                                    <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) => handleRightClick(e, p.id.idProduto, p.id.seq, p.produto, p.descricaoProduto, p.ordemProducao, p.totalPesoLiquido, p.totalPesoBruto, p.comprimento, p.largura, p.altura)} id="lista-prod-1">
+                                    <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) =>
+                                        handleRightClick(e, p.id.idProduto, p.id.seq, p.produto, p.descricaoProduto, p.ordemProducao, p.totalPesoLiquido, p.totalPesoBruto, p.comprimento, p.largura, p.altura)}
+                                        className={`lista-prod-1 ${selectedItemId === p.id.idProduto ? 'lista-prod-1-com-cor' : 'lista-prod-1-sem-cor'}`}
+                                        id='lista-prod-1'>
+                                            
                                         <div>{packingList.idPackinglist}</div>
                                         <div>{p.id.idProduto}</div>
                                         <div>{p.id.seq}</div>

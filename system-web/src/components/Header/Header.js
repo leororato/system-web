@@ -40,6 +40,7 @@ const Header = () => {
   const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
   const [contextDelete, setContextDelete] = useState({ visible: false, selectedId: null });
   const [salvarTipoSelected, setSalvarTipoSelected] = useState(null)
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
   const [formDataEdicaoTipoVolume, setFormDataEdicaoTipoVolume] = useState({ idTipoVolume: null, descricao: null })
   const [listaTiposDeVolume, setListaTiposDeVolume] = useState([]);
@@ -77,7 +78,6 @@ const Header = () => {
     try {
       const response = await api.get(`/tipo-de-volume/listar-todos`);
       setListaTiposDeVolume(response.data);
-      console.log(response.data)
 
     } catch (error) {
       const errorMessage = error.response?.data || "Erro desconhecido ao buscar tipos de volume";
@@ -176,7 +176,6 @@ const Header = () => {
       setFormDataEdicaoTipoVolume({ idTipoVolume: null, descricao: null });
       setSalvarTipoSelected(null);
       await fetchTiposDeVolume();
-      console.log('lista: ', listaTiposDeVolume)
 
     } catch (error) {
       const errorMessage = error.response?.data || "Erro desconhecido ao atualizar o tipo de volume";
@@ -231,6 +230,7 @@ const Header = () => {
     })
     setSalvarTipoSelected({ idTipoVolume: idTipoVolume, descricao: descricao })
     setFormDataEdicaoTipoVolume({ idTipoVolume: idTipoVolume, descricao: descricao });
+    setSelectedItemId(idTipoVolume);
   }
 
   const handleEditarTipoDeVolume = () => {
@@ -245,8 +245,7 @@ const Header = () => {
     setFormDataEdicaoTipoVolume({
       ...formDataEdicaoTipoVolume,
       descricao: e.target.value
-    })
-    console.log("a:", formDataEdicaoTipoVolume)
+    });
   }
 
   const handleClickOutside = () => {
@@ -258,6 +257,7 @@ const Header = () => {
       selectedSeq: null,
       selectedDesc: null
     });
+    setSelectedItemId(null);
   };
 
   useEffect(() => {
@@ -295,7 +295,7 @@ const Header = () => {
         <div className="header-conta" title="Configurações da conta">
           <Text
             text={nomeUsuario}
-            color={'#ccc'}
+            color={'rgb(231 227 227)'}
             fontSize={'15px'}
           />
           <Link to="/minha-conta">
@@ -396,7 +396,8 @@ const Header = () => {
                   </li>
                   {listaTiposDeVolume && (
                     listaTiposDeVolume.map((user) => (
-                      <li key={user.idTipoVolume} onContextMenu={(e) => handleRightClick(e, user.idTipoVolume, user.descricao)} className="li-listagem-tipo-volume">
+                      <li key={user.idTipoVolume} onContextMenu={(e) => handleRightClick(e, user.idTipoVolume, user.descricao)}
+                        className={`li-listagem-tipo-volume ${selectedItemId === user.idTipoVolume ? 'li-listagem-tipo-volume-com-cor' : 'li-listagem-tipo-volume-sem-cor'}`}>
                         <div>{user.idTipoVolume}</div>
                         <div>{user.descricao}</div>
                       </li>

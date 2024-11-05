@@ -105,6 +105,9 @@ function Volume() {
     const [volumesCheckeds, setVolumesCheckeds] = useState([]);
     const [todosVolumesCheckeds, setTodosVolumesCheckeds] = useState(false);
     const [permissaoSegundoFator, setPermissaoSegundoFator] = useState("semPermissao");
+    const [selectedItemId, setSelectedItemId] = useState(null);
+    const [selectedItemIdSubvolume, setSelectedItemIdSubvolume] = useState(null);
+
 
 
     // ------------------------------------- ^VOLUMES^ ------------------------------------- //              
@@ -422,6 +425,7 @@ function Volume() {
             y: 0,
             selectedIdVolume: null
         });
+        setSelectedItemId(null);
         setContextEditar({ visible: true, selectedIdVolume: contextMenu.selectedIdVolume });
     }
 
@@ -441,6 +445,8 @@ function Volume() {
             selectedIdVolume: contextMenu.selectedIdVolume
         })
         setEstadoExcluirOverlay('volume');
+        setSelectedItemId(null);
+        setSelectedItemIdSubvolume(null);
     }
 
 
@@ -878,6 +884,8 @@ function Volume() {
             selectedIdVolume: contextMenu.selectedIdVolume
         });
         setEstadoSubVolumeOverlay('adicionar');
+        setSelectedItemId(null);
+        setSelectedItemIdSubvolume(null);
     }
 
 
@@ -942,6 +950,8 @@ function Volume() {
         )
         setEstadoSubVolumeOverlay('editar');
         fetchSubVolumesContexto(salvarIdVolume.idVolume);
+        setSelectedItemId(null);
+        setSelectedItemIdSubvolume(null);
     }
 
 
@@ -961,6 +971,8 @@ function Volume() {
             selectedIdSubVolume: contextMenuSubVolume.idSubVolume
         })
         setEstadoExcluirOverlay('subvolume');
+        setSelectedItemId(null);
+        setSelectedItemIdSubvolume(null);
     }
 
 
@@ -992,6 +1004,7 @@ function Volume() {
             return newState;
         });
 
+        setSelectedItemIdSubvolume(idSubVolume);
     };
 
 
@@ -1137,6 +1150,7 @@ function Volume() {
     const handleClickOutside = (event) => {
         if (overlayRef.current && !overlayRef.current.contains(event.target)) {
             setOverlayVisible(false);
+            setSelectedItemId(null);
 
             setFormDataVolume({
                 idTipoVolumeId: '16',
@@ -1153,18 +1167,26 @@ function Volume() {
 
         if (contextMenuRef.current && !contextMenuRef.current.contains(event.target)) {
             setContextMenu({ visible: false, selectedIdVolume: '' });
+            setSelectedItemId(null);
+            setSelectedItemIdSubvolume(null);
         }
 
         if (contextMenuSubVolumeRef.current && !contextMenuSubVolumeRef.current.contains(event.target)) {
             setContextMenuSubVolume({ visible: false, selectedIdVolume: '', selectedIdSubVolume: '' })
+            setSelectedItemIdSubvolume(null);
+            setSelectedItemId(null);
+
         }
 
         if (contextEditarRef.current && !contextEditarRef.current.contains(event.target)) {
             setContextEditar({ visible: false, selectedIdVolume: '' });
+            setSelectedItemId(null);
         }
 
         if (contextSubVolumesRef.current && !contextSubVolumesRef.current.contains(event.target)) {
             setContextSubVolumes({ visible: false, selectedIdVolume: '' });
+            setSelectedItemIdSubvolume(null);
+            setSelectedItemId(null);
             setSubVolumeSelecionado({})
             setFormDataSubVolume({});
         }
@@ -1201,6 +1223,7 @@ function Volume() {
             observacao: observacao,
         })
 
+        setSelectedItemId(idVolume);
     };
 
 
@@ -1393,8 +1416,10 @@ function Volume() {
                                                         </div>
                                                     )}
 
-                                                    <div id="list-vol-divs" onContextMenu={(e) => handleRightClick(e, v.idVolume, v.idTipoVolumeId, v.nomeTipoVolume,
-                                                        v.quantidadeItens, v.descricao, v.altura, v.largura, v.comprimento, v.pesoLiquido, v.pesoBruto, v.observacao)}>
+                                                    <div id='list-vol-divs' onContextMenu={(e) => handleRightClick(e, v.idVolume, v.idTipoVolumeId, v.nomeTipoVolume,
+                                                        v.quantidadeItens, v.descricao, v.altura, v.largura, v.comprimento, v.pesoLiquido, v.pesoBruto, v.observacao)}
+                                                        className={`list-vol-divs ${selectedItemId === v.idVolume ? 'list-vol-divs-com-cor' : 'list-vol-divs-sem-cor'}`}>
+
                                                         <div id="list-vol">{v.idVolume}</div>
                                                         <div id="list-vol">{v.nomeTipoVolume}</div>
                                                         <div id="list-vol">{v.quantidadeItens}</div>
@@ -1455,7 +1480,8 @@ function Volume() {
                                                                         <>
                                                                             {subVolumesPorVolume[v.idVolume] && subVolumesPorVolume[v.idVolume].length > 0 ? (
                                                                                 subVolumesPorVolume[v.idVolume].map((subVolume) => (
-                                                                                    <li key={subVolume.id.idSubVolume} className='li-listagem-produto-subvolume' id="grid-lista"
+                                                                                    <li key={subVolume.id.idSubVolume} id="grid-lista"
+                                                                                        className={`li-listagem-produto-subvolume ${selectedItemIdSubvolume === subVolume.id.idSubVolume ? 'li-listagem-produto-subvolume-com-cor' : 'li-listagem-produto-subvolume-sem-cor'}`}
                                                                                         onContextMenu={(e) => handleRightClickSubVolume(
                                                                                             e, subVolume.id.idVolume, subVolume.id.idSubVolume, subVolume.descricao, subVolume.quantidade
                                                                                         )}>
@@ -1898,7 +1924,9 @@ function Volume() {
                                             </li>
                                             {subVolumeSelecionado.length > 0 ? (
                                                 subVolumeSelecionado.map((subVolume) => (
-                                                    <li key={subVolume.id.idSubVolume} className='li-listagem-produto-subvolume-overlay' id="grid-lista"
+                                                    <li key={subVolume.id.idSubVolume} id="grid-lista"
+                                                        className={`li-listagem-produto-subvolume-overlay ${selectedItemIdSubvolume === subVolume.id.idSubVolume ? 'li-listagem-produto-subvolume-overlay-com-cor' : 'li-listagem-produto-subvolume-overlay-sem-cor'}`}
+
                                                         onContextMenu={(e) => handleRightClickSubVolume(
                                                             e, subVolume.id.idVolume, subVolume.id.idSubVolume, subVolume.descricao, subVolume.quantidade
                                                         )}>

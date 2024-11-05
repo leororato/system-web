@@ -79,7 +79,6 @@ function CadastroPackingList() {
         }
 
         fetchClienteNomus();
-        console.log("usuario id: ", userId)
     }, []);
 
     const handleChange = (e) => {
@@ -145,7 +144,7 @@ function CadastroPackingList() {
             setTimeout(() => {
                 setErrorMessage(null);
             }, 5000);
-            console.log("formdata> ", formData)
+
         } finally {
             setContextLoading({ visible: false });
         }

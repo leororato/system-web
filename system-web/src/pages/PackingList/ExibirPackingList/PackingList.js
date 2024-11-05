@@ -29,10 +29,13 @@ function PackingList() {
     const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
     const [errorMessage, setErrorMessage] = useState(null);
 
+    const [selectedItemId, setSelectedItemId] = useState(null);
+
     const [estadoDaPagina, setEstadoDaPagina] = useState('Carregando');
     const [contextLoading, setContextLoading] = useState({ visible: false });
     const [packingLists, setPackingLists] = useState([]);
 
+    const [buscaCliente, setBuscaCliente] = useState('');
     const [buscaInvoice, setBuscaInvoice] = useState('');
     const [filteredPackinglist, setFilteredPackinglist] = useState([]);
     const [contextFiltro, setContextFiltro] = useState({ visible: false, x: 0, y: 0 })
@@ -56,10 +59,11 @@ function PackingList() {
 
     useEffect(() => {
         const filterPackinglist = packingLists.filter(p =>
-            (p.invoice ? p.invoice.toLowerCase() : '').includes(buscaInvoice.toLowerCase())
+            (p.invoice ? p.invoice.toLowerCase() : '').includes(buscaInvoice.toLowerCase()) &&
+            (p.nomeClienteImportador ? p.nomeClienteImportador.toLowerCase() : '').includes(buscaCliente.toLowerCase())
         );
         setFilteredPackinglist(filterPackinglist);
-    }, [buscaInvoice, packingLists]);
+    }, [buscaCliente, buscaInvoice, packingLists]);
 
     useEffect(() => {
         fetchListaPackinglist();
@@ -68,15 +72,12 @@ function PackingList() {
     const fetchListaPackinglist = async () => {
         setEstadoDaPagina('Carregando');
         setContextLoading({ visible: true });
-        console.log("Enviando filtros: ", filtrosDeListagem);
 
         try {
             const response = await api.post('/packinglist/listagem-packinglist-inicio', filtrosDeListagem);
             setPackingLists(response.data);
-            console.log("Dados recebidos:", response.data);
 
         } catch (error) {
-            console.error("Erro ao buscar packinglists:", error);
             setErrorMessage(error.response?.data || "Erro desconhecido ao buscar as packinglists");
             setTimeout(() => setErrorMessage(null), 5000);
 
@@ -141,10 +142,13 @@ function PackingList() {
             selectedId: id,
             selectedIdioma: idioma
         });
+
+        setSelectedItemId(id);
     };
 
     const handleClickOutside = () => {
         setContextMenu({ visible: false, x: 0, y: 0, selectedId: null });
+        setSelectedItemId(null);
     };
 
     const handleEdit = () => {
@@ -342,11 +346,6 @@ function PackingList() {
         }
     };
 
-    useEffect(() => {
-        console.log('data inicio', filtrosDeListagem)
-    }, filtrosDeListagem)
-
-
     return (
         <div>
             <Header />
@@ -367,149 +366,175 @@ function PackingList() {
             </div>
 
             <div className='container-listagem'>
-                <div className='buttons'>
-                    {(userRole === "A" || userRole === "G") && (
-                        <div className='button-container-listagem'>
-
-                            <Button
-                                className={'button-item'}
-                                text={'Novo Packing List'}
-                                title={'Clique aqui para adicionar um novo PackingList...'}
-                                padding={10}
-                                borderRadius={2}
-                                fontSize={15}
-                                onClick={() => navigate('/cadastrar-packing-list')}
-                            />
-                        </div>
-                    )}
-
-                    <div className='busca-invoice-input'>
-                        <Input
-                            type={'text'}
-                            placeholder={'Invoice'}
-                            title={'Pesquise pelo INVOICE da packinglist...'}
-                            value={buscaInvoice}
-                            onChange={(e) => setBuscaInvoice(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="botao-filtros-inicio"
-                        onClick={handleMenuFiltros} title='Filtros' style={{ position: 'relative' }}>
-                        <Button
-                            text={"Filtros"}
-                            className={'button-filtro'}
-                        />
-                        <Icon icon="eva:arrow-down-fill" id='icon-arrow-down' />
-
-                        {contextFiltro.visible && (
-                            <div ref={filtroRef} className="filter-container" onClick={(e) => e.stopPropagation()}>
-                                <div className="filter-item-data">
-                                    <div id='label-filtro-data'>
-                                        <label htmlFor="filter-date">Data Início</label>
-                                        <label id='label-limpar-data' onClick={() => { setFiltrosDeListagem(filtrosDeListagem => ({ ...filtrosDeListagem, dataInicio: null })) }}>Limpar</label>
-                                    </div>
-                                    <Input
-                                        id="filter-date"
-                                        type={'date'}
-                                        value={filtrosDeListagem.dataInicio || ""}
-                                        onChange={(e) => salvarDataFiltro(e, 'dataInicio')}
-                                    />
-                                </div>
-                                <div className="filter-item-data">
-                                    <div id='label-filtro-data'>
-                                        <label htmlFor="filter-date">Data Fim</label>
-                                        <label id='label-limpar-data' onClick={() => { setFiltrosDeListagem(filtrosDeListagem => ({ ...filtrosDeListagem, dataFim: null })) }} >Limpar</label>
-                                    </div>
-                                    <Input
-                                        id="filter-date"
-                                        type={'date'}
-                                        value={filtrosDeListagem.dataFim || ""}
-                                        onChange={(e) => salvarDataFiltro(e, 'dataFim')}
-                                    />
-                                </div>
-                                <div className="filter-item">
-                                    <div>
-                                        <Input
-                                            id="filter-in-progress"
-                                            type={'checkbox'}
-                                            name={'filtroAndamento'}
-                                            value={filtrosDeListagem.filtroAndamento || ""}
-                                            onChange={() => checkboxIsChecked('emAndamento')}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="filter-in-progress">Em andamento</label>
-                                    </div>
-                                </div>
-                                <div className="filter-item">
-                                    <div>
-                                        <Input
-                                            id="filter-completed"
-                                            type={'checkbox'}
-                                            value={filtrosDeListagem.filtroFinalizado || ""}
-                                            onChange={() => checkboxIsChecked('finalizado')}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="filter-completed">Finalizados</label>
-                                    </div>
-                                </div>
+                <div>
+                    <div className='buttons'>
+                        {(userRole === "A" || userRole === "G") && (
+                            <div className='button-container-listagem'>
+                                <Button
+                                    className={'button-item'}
+                                    text={'Novo Packinglist Exportação'}
+                                    title={'Clique aqui para adicionar um novo PackingList de Exportação...'}
+                                    padding={10}
+                                    borderRadius={2}
+                                    fontSize={15}
+                                    onClick={() => navigate('/cadastrar-packing-list')}
+                                />
                             </div>
                         )}
-                    </div>
 
+                        {(userRole === "A" || userRole === "G") && (
+                            <div className='button-container-listagem'>
+                                <Button
+                                    className={'button-item'}
+                                    text={'Novo Packinglist Nacional'}
+                                    title={'Clique aqui para adicionar um novo PackingList Nacional...'}
+                                    padding={10}
+                                    borderRadius={2}
+                                    fontSize={15}
+                                    onClick={() => navigate('/cadastrar-packing-list-nacional')}
+                                />
+                            </div>
+                        )}
 
-                </div>
-                <div className='container-listagem-inicio'>
-                    <ul>
-                        <li className="header">
-                            <div>ID</div>
-                            <div>Data Criação</div>
-                            <div>Cliente / Importador</div>
-                            <div>Local Destino</div>
-                            <div>Invoice</div>
-                            <div>Tipo Transporte</div>
-                            <div>Peso Líquido Total</div>
-                            <div>Peso Bruto Total</div>
-                            <div>Idioma</div>
-                            <div>Status</div>
-                        </li>
+                        <div className='busca-invoice-input'>
+                            <Input
+                                type={'text'}
+                                placeholder={'Cliente'}
+                                title={'Pesquise pelo Cliente...'}
+                                value={buscaCliente}
+                                onChange={(e) => setBuscaCliente(e.target.value)}
+                            />
+                        </div>
+                        <div className='busca-invoice-input'>
+                            <Input
+                                type={'text'}
+                                placeholder={'Invoice'}
+                                title={'Pesquise pelo INVOICE da packinglist...'}
+                                value={buscaInvoice}
+                                onChange={(e) => setBuscaInvoice(e.target.value)}
+                            />
+                        </div>
 
-                        <>
-                            {filteredPackinglist && filteredPackinglist.length > 0 ? (
-                                filteredPackinglist.map((p) => {
-                                    let dadosSeparados = [];
-                                    if (p.dadosBancarios != null) {
-                                        dadosSeparados = p.dadosBancarios.split('$');
-                                    }
+                        <div className="botao-filtros-inicio"
+                            onClick={handleMenuFiltros} title='Filtros' style={{ position: 'relative' }}>
+                            <Button
+                                text={"Filtros"}
+                                className={'button-filtro'}
+                            />
+                            <Icon icon="eva:arrow-down-fill" id='icon-arrow-down' />
 
-                                    return (
-                                        <li key={p.idPackinglist} onContextMenu={(event) => handleRightClick(event, p.idPackinglist, p.idioma)} className='li-listagem'>
-                                            <div>{p.idPackinglist}</div>
-                                            <div>{formatarData(p.dtCriacao)}</div>
-                                            <div>{p.nomeClienteImportador}</div>
-                                            <div>{p.localDestino}</div>
-                                            <div>{p.invoice}</div>
-                                            <div>{p.tipoTransporte}</div>
-                                            <div>{p.pesoLiquidoTotal}</div>
-                                            <div>{p.pesoBrutoTotal}</div>
-                                            <div>{p.idioma}</div>
-                                            {p.finalizado == 0 ? (
-                                                <div><Icon icon="pajamas:status-active" style={{ color: 'green', fontSize: '10px' }} /> Em andamento</div>
-                                            ) : (
-                                                <div><Icon icon="octicon:feed-issue-closed-16" style={{ color: 'brown', fontSize: '11px' }} /> Finalizado</div>
-                                            )}
-                                        </li>
-                                    );
-                                })
-                            ) : (
-                                <div id="nao-existe-packinglist">
-                                    <li>Não há nada para exibir, adicione uma PackingList...</li>
+                            {contextFiltro.visible && (
+                                <div ref={filtroRef} className="filter-container" onClick={(e) => e.stopPropagation()}>
+                                    <div className="filter-item-data">
+                                        <div id='label-filtro-data'>
+                                            <label htmlFor="filter-date">Data Início</label>
+                                            <label id='label-limpar-data' onClick={() => { setFiltrosDeListagem(filtrosDeListagem => ({ ...filtrosDeListagem, dataInicio: null })) }}>Limpar</label>
+                                        </div>
+                                        <Input
+                                            id="filter-date"
+                                            type={'date'}
+                                            value={filtrosDeListagem.dataInicio || ""}
+                                            onChange={(e) => salvarDataFiltro(e, 'dataInicio')}
+                                        />
+                                    </div>
+                                    <div className="filter-item-data">
+                                        <div id='label-filtro-data'>
+                                            <label htmlFor="filter-date">Data Fim</label>
+                                            <label id='label-limpar-data' onClick={() => { setFiltrosDeListagem(filtrosDeListagem => ({ ...filtrosDeListagem, dataFim: null })) }} >Limpar</label>
+                                        </div>
+                                        <Input
+                                            id="filter-date"
+                                            type={'date'}
+                                            value={filtrosDeListagem.dataFim || ""}
+                                            onChange={(e) => salvarDataFiltro(e, 'dataFim')}
+                                        />
+                                    </div>
+                                    <div className="filter-item">
+                                        <div>
+                                            <Input
+                                                id="filter-in-progress"
+                                                type={'checkbox'}
+                                                name={'filtroAndamento'}
+                                                value={filtrosDeListagem.filtroAndamento || ""}
+                                                onChange={() => checkboxIsChecked('emAndamento')}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="filter-in-progress">Em andamento</label>
+                                        </div>
+                                    </div>
+                                    <div className="filter-item">
+                                        <div>
+                                            <Input
+                                                id="filter-completed"
+                                                type={'checkbox'}
+                                                value={filtrosDeListagem.filtroFinalizado || ""}
+                                                onChange={() => checkboxIsChecked('finalizado')}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="filter-completed">Finalizados</label>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
-                        </>
+                        </div>
 
-                    </ul>
+
+                    </div>
+                    <div className='container-listagem-inicio'>
+                        <ul>
+                            <li className="header">
+                                <div>ID</div>
+                                <div>Data Criação</div>
+                                <div>Cliente / Importador</div>
+                                <div>Local Destino</div>
+                                <div>Invoice</div>
+                                <div>Tipo Transporte</div>
+                                <div>Peso Líquido Total</div>
+                                <div>Peso Bruto Total</div>
+                                <div>Idioma</div>
+                                <div>Status</div>
+                            </li>
+
+                            <>
+                                {filteredPackinglist && filteredPackinglist.length > 0 ? (
+                                    filteredPackinglist.map((p) => {
+                                        let dadosSeparados = [];
+                                        if (p.dadosBancarios != null) {
+                                            dadosSeparados = p.dadosBancarios.split('$');
+                                        }
+
+                                        return (
+                                            <li
+                                                key={p.idPackinglist} onContextMenu={(event) => handleRightClick(event, p.idPackinglist, p.idioma)}
+                                                className={`li-listagem ${selectedItemId === p.idPackinglist ? 'li-listagem-com-cor' : 'li-listagem-sem-cor'}`}>
+                                                <div>{p.idPackinglist}</div>
+                                                <div>{formatarData(p.dtCriacao)}</div>
+                                                <div>{p.nomeClienteImportador}</div>
+                                                <div>{p.localDestino}</div>
+                                                <div>{p.invoice}</div>
+                                                <div>{p.tipoTransporte}</div>
+                                                <div>{p.pesoLiquidoTotal}</div>
+                                                <div>{p.pesoBrutoTotal}</div>
+                                                <div>{p.idioma}</div>
+                                                {p.finalizado == 0 ? (
+                                                    <div><Icon icon="pajamas:status-active" style={{ color: 'green', fontSize: '10px' }} /> Em andamento</div>
+                                                ) : (
+                                                    <div><Icon icon="octicon:feed-issue-closed-16" style={{ color: 'brown', fontSize: '11px' }} /> Finalizado</div>
+                                                )}
+                                            </li>
+                                        );
+                                    })
+                                ) : (
+                                    <div id="nao-existe-packinglist">
+                                        <li>Não há nada para exibir, adicione uma PackingList...</li>
+                                    </div>
+                                )}
+                            </>
+
+                        </ul>
+                    </div>
                 </div>
                 {contextMenu.visible && (
 

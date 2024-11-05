@@ -35,6 +35,7 @@ function EditarPL() {
     const [clientesNomus, setClientesNomus] = useState([]);
 
     const userId = Cookies.get('userId');
+    const usuario = { id: userId }
     const [formData, setFormData] = useState({});
 
 
@@ -48,7 +49,7 @@ function EditarPL() {
         try {
             const response = await api.get(`/packinglist/listar-packinglist-edicao/${id}`);
             setFormData(response.data);
-
+            console.log('resp>', response.data)
             setFormData(formData => ({
                 ...formData,
                 registro_alterado_por: userId
@@ -111,8 +112,13 @@ function EditarPL() {
         setEstadoDaPagina("Salvando...")
         setContextLoading({ visible: true });
 
+        const packingListRequest = {
+            packingList: formData,
+            usuario: usuario
+        }
+
         try {
-            await api.put(`/packinglist/${id}`, formData);
+            await api.put(`/packinglist/${id}`, packingListRequest);
 
             navigate('/inicio', { state: { sucessMessage: `PackingList ${id} atualizado com sucesso!` } }, setTimeout(() => setSucessMessage(null), 5000));
 
@@ -271,6 +277,17 @@ function EditarPL() {
                                 name="localDestino"
                                 placeholder={'Digite o local de destino...'}
                                 value={formData.localDestino}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div>
+                            <label>Termos de Pagamento:</label>
+                            <Input
+                                type="text"
+                                name="termosPagamento"
+                                placeholder={'Digite os termos de pagamento...'}
+                                value={formData.termosPagamento}
                                 onChange={handleChange}
                             />
                         </div>

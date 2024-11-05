@@ -66,7 +66,6 @@ function CadastrarUsuario() {
     const cadastrarUsuario = async () => {
         setEstadoDaPagina("Salvando");
         setContextLoading({ visible: true });
-        console.log("form: ", formDataUsuario);
 
         try {
             await api.post('/usuario/cadastrar-usuario', formDataUsuario);
@@ -81,7 +80,6 @@ function CadastrarUsuario() {
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao criar usuário";
             setErrorMessage(errorMessage);
-            console.log("erro: ", error)
             setTimeout(() => {
                 setErrorMessage(null)
             }, 5000);
@@ -152,11 +150,9 @@ function CadastrarUsuario() {
         try {
             const response = await api.get(`/usuario/buscar-todos-usuarios`);
             setUsuarios(response.data);
-            console.log('usuarios: ', response.data);
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao criar usuário";
             setErrorMessage(errorMessage);
-            console.log("erro: ", error)
             setTimeout(() => {
                 setErrorMessage(null)
             }, 5000);
@@ -238,7 +234,6 @@ function CadastrarUsuario() {
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao atualizar usuário";
             setErrorMessage(errorMessage);
-            console.log("erro: ", error)
 
             setTimeout(() => {
                 setErrorMessage(null)

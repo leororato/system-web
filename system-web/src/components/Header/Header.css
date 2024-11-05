@@ -328,6 +328,14 @@
     transition: 0.5ms ease-in;
 }
 
+.li-listagem-tipo-volume-com-cor {
+    background-color: #dddddd5b;
+}
+
+.li-listagem-tipo-volume-sem-cor {
+    background-color: #FFFFFF;
+}
+
 .li-listagem-tipo-volume:hover {
     background-color: #dddddd5b;
     cursor: pointer;
@@ -343,3 +351,4 @@
 .li-listagem-tipo-volume div:last-child {
     border-left: none;
 }
+

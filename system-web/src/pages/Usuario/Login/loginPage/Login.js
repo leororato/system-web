@@ -36,13 +36,11 @@ function Login() {
         e.preventDefault();
         try {
             // Faz a requisição de login
-//            const response = await axios.post('http://192.168.1.238:8080/auth/login', {
-            const response = await axios.post('http://localhost:8080/auth/login', {
+            const response = await axios.post('http://192.168.1.238:8080/auth/login', {
+            // const response = await axios.post('http://localhost:8080/auth/login', {
                 login: login,
                 senha: senha
             });
-
-            console.log('Resposta do login: ', response)
 
             Cookies.set('token', response.data.token, { 
                 expires: 7,               // expira em 7 dias
@@ -70,7 +68,6 @@ function Login() {
 
                 const errorMessage = error.response?.data || "Erro desconhecido ao fazer Login";
                 setErrorMessage(errorMessage);
-                console.log("senha errada: ", error.response)
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 5000);

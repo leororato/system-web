@@ -205,6 +205,14 @@
     background-color: #dddddd5b;
 }
 
+.list-vol-divs-sem-cor, #list-vol-divs-sem-cor {
+    background-color: #FFFFFF;
+}
+
+.list-vol-divs-com-cor, #list-vol-divs-com-cor {
+    background-color: #dddddd5b;
+}
+
 .li-listagem-volume div {
     cursor: pointer;
     display: table-row;
@@ -267,6 +275,14 @@
     border: 1px solid #ddd;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
     margin-top: 10px;
+}
+
+.li-listagem-produto-subvolume-sem-cor {
+    background-color: #FFFFFF;
+}
+
+.li-listagem-produto-subvolume-com-cor {
+    background-color: #dddddd5b !important;
 }
 
 #title-subvolumes-overlay {
@@ -349,7 +365,7 @@
 
 #nao-existe-volume,
 #nao-existe-subvolume,
-#nao-existe-subvolume-ovl{
+#nao-existe-subvolume-ovl {
     color: #6c757d;
     text-align: center;
 
@@ -440,7 +456,7 @@
     border-radius: 5px;
 }
 
-.busca-descricao-input input{
+.busca-descricao-input input {
     width: 200px;
     padding: 10px;
     border: 1px solid #ddd;
@@ -556,6 +572,14 @@
     border: 1px solid #ddd;
     cursor: pointer;
     transition: 0.5ms ease-in;
+}
+
+.li-listagem-produto-subvolume-overlay-com-cor {
+background-color: #dddddd5b;
+}
+
+.li-listagem-produto-subvolume-overlay-sem-cor {
+background-color: #FFFFFF;
 }
 
 #listagem-subvolume-ovl {
@@ -700,7 +724,7 @@
     padding: 5px;
     position: absolute;
     z-index: 1;
-    bottom: 125%; 
+    bottom: 125%;
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
@@ -760,5 +784,3 @@
     cursor: not-allowed !important;
     transition: 1s ease;
 }
-
-

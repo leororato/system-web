@@ -194,6 +194,14 @@
     transition: 0.5ms ease-in;
 }
 
+.lista-prod-1-sem-cor{
+    background-color: #FFFFFF;
+}
+
+.lista-prod-1-com-cor {
+    background-color: #dddddd5b;
+}
+
 #lista-prod-1:hover {
     background-color: #dddddd5b;
 }
@@ -249,9 +257,13 @@
     border-right: none; /* Remova a borda da última coluna */
 }
 
-.li-listagem-produto div{
+.li-listagem-produto div {
     border-bottom: 1px solid #ddd;
     border-right: 1px solid #ddd;
+}
+
+.li-listagem-produto div {
+    min-height: 100px !important;
 }
 
 .overlay {

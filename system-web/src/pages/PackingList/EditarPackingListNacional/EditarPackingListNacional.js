@@ -76,7 +76,7 @@ function EditarPackingListNacional() {
             try {
                 const response = await api.get(`/packinglist/listar-packinglist-edicao/${id}`);
                 setFormData(response.data);
-                console.log('resp: ', (await response).data)
+
             } catch (error) {
                 const errorMessage = error.response?.data || "Erro desconhecido ao buscar Packinglist";
                 setErrorMessage(errorMessage);
@@ -184,6 +184,8 @@ function EditarPackingListNacional() {
                                 required
                                 options={[
                                     { value: 'Português', label: 'Português' },
+                                    { value: 'Espanhol', label: 'Espanhol' },
+                                    { value: 'Inglês', label: 'Inglês' },
                                 ]}
                                 onChange={handleSelectChangeIdioma}
                                 value={formData.idioma}

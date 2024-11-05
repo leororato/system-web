@@ -51,13 +51,12 @@ function CadastroPackingListNacional() {
             navigate('/inicio', { state: { sucessMessage: 'Packinglist criado com sucesso!' } });
             
         } catch (error) {
-            console.log("Dados enviados no submit:", packingListRequest);
             const errorMessage = error.response?.data || "Erro desconhecido ao criar Packinglist";
             setErrorMessage(errorMessage);
             setTimeout(() => {
                 setErrorMessage(null);
             }, 5000);
-            console.log("formdata> ", formData)
+
         } finally {
             setContextLoading({ visible: false });
         }
@@ -86,7 +85,6 @@ function CadastroPackingListNacional() {
         }
 
         fetchClienteNomus();
-        console.log("usuario id: ", userId)
     }, []);
 
 
