@@ -79,7 +79,7 @@ function PackingListProduto() {
             const response = await api.get(`/packinglist/listar-packinglist-produto/${id}`);
             setContextLoading({ visible: true });
             setPackingList(response.data);
-
+            console.log('resp', response.data)
             const dadosBancarios = response.data.dadosBancarios;
 
             if (dadosBancarios != null) {
@@ -160,9 +160,6 @@ function PackingListProduto() {
             document.removeEventListener('click', handleClickOutside);
         };
     }, []);
-
-
-
 
     useEffect(() => {
         fetchProdutoNomus();
@@ -595,9 +592,9 @@ function PackingListProduto() {
                                 <div>{packingList.pesoBrutoTotal}</div>
                                 <div>{packingList.idioma}</div>
                                 {packingList.finalizado == 0 ? (
-                                    <div>Em andamento</div>
+                                    <div><Icon icon="pajamas:status-active" style={{ color: 'green', fontSize: '10px' }} /> Em andamento</div>
                                 ) : (
-                                    <div>Finalizado</div>
+                                    <div><Icon icon="octicon:feed-issue-closed-16" style={{ color: 'brown', fontSize: '11px' }} /> Finalizado</div>
                                 )}
                             </li>
                         )}
@@ -733,7 +730,7 @@ function PackingListProduto() {
                                 ))
                             ) : (
                                 <div id="nao-existe-produto">
-                                    <li>
+                                    <li style={{padding: '20px'}}>
                                         <Text
                                             text={"Nenhum produto encontrado"}
                                             fontSize={'14px'}

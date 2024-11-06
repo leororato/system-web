@@ -11,6 +11,7 @@ const Input = ({
     title,
     value,
     readOnly,
+    defaultValue,
     min,
     className
 }) => {
@@ -40,6 +41,7 @@ const Input = ({
                 onChange={onChange}
                 readOnly={readOnly}
                 className={className}
+                defaultValue={defaultValue}
                 style={{
                     backgroundColor: backgroundColor,
                     fontSize: fontSize,

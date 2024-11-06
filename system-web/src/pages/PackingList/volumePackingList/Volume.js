@@ -46,11 +46,6 @@ function Volume() {
 
     // ------------------------------------- VOLUMES ------------------------------------- //
 
-    const [idVolumeSave, setIdVolumeSave] = useState();
-
-    // FAZ A VALIDAÇAO DE QUANDO UM VOLUME É CRIADO PARA ENVIAR O VOLUME PRODUTO
-    const [volumeCriado, setVolumeCriado] = useState(false);
-
     const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedIdVolume: '' });
 
     const [inputDeleteSegundoFator, setInputDeleteSegundoFator] = useState("");
@@ -305,8 +300,6 @@ function Volume() {
 
         try {
             const response = await api.post(`/volume`, volumeRequest);
-            setIdVolumeSave(response.data.idVolume);
-
             setFormDataVolume({
                 idTipoVolumeId: '16',
                 quantidadeItens: '1',
@@ -323,7 +316,6 @@ function Volume() {
             setOverlayVisible(false);
             setSucessMessage('Volume adicionado com sucesso!');
             setTimeout(() => setSucessMessage(null), 5000);
-            setVolumeCriado(true);
 
             fetchVolumes();
             fetchProdutoSelecionado();

@@ -34,6 +34,9 @@ function CadastroPackingList() {
     const [clientesNomus, setClientesNomus] = useState([]);
 
     const userId = Cookies.get('userId');
+    const usuario = { 
+        id: userId
+    }
     const [formData, setFormData] = useState({
         idImportador: "",
         idConsignatario: "",
@@ -50,11 +53,7 @@ function CadastroPackingList() {
         pesoLiquidoTotal: "",
         pesoBrutoTotal: "",
         idioma: "",
-        finalizado: "",
-        registro_criado_por: userId,
-        registro_alterado_por: "",
-        registro_alterado: "",
-        registro_deletado: ""
+        finalizado: ""
     });
 
     useEffect(() => {
@@ -131,11 +130,16 @@ function CadastroPackingList() {
         e.preventDefault();
         setEstadoDaPagina('Salvando');
         setContextLoading({ visible: true });
+        console.log('formdata: ', formData)
+
+        const packingListRequest = {
+            packingList: formData,
+            usuario: usuario
+        }
 
         try {
-            await api.post('/packinglist', formData);
+            await api.post('/packinglist', packingListRequest);
             setSucessMessage('PackingList criado com sucesso!');
-
             navigate('/inicio', { state: { sucessMessage: 'Packinglist criado com sucesso!' } });
 
         } catch (error) {

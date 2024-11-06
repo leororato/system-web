@@ -8,7 +8,6 @@ import Text from "../../../../components/Text";
 import Input from "../../../../components/Input";
 import Button from "../../../../components/Button";
 import Logo from "../../../../assets/logo.png"
-import api from "../../../../axiosConfig";
 import axios from "axios";
 
 function Login() {
@@ -36,8 +35,8 @@ function Login() {
         e.preventDefault();
         try {
             // Faz a requisição de login
-            const response = await axios.post('http://192.168.1.238:8080/auth/login', {
-            // const response = await axios.post('http://localhost:8080/auth/login', {
+                 const response = await axios.post('http://192.168.1.238:8080/auth/login', {
+                // const response = await axios.post('http://localhost:8080/auth/login', {
                 login: login,
                 senha: senha
             });
