@@ -82,11 +82,12 @@
     width: 100%;
     height: 100%;
     margin-left: 5px;
+    padding: 0;
     border-left: 1px solid #ccc;
 }
 
 .texto-etiqueta p {
-    margin: 5px 0;
+    margin:  0;
     color: #333;
 }
 
@@ -99,14 +100,20 @@
 }
 
 #textos-etiqueta-div p {
-    font-size: 10px;
+    font-size: 14px;
+}
+
+#subdiv-texto-etiqueta {
+    display: flex;
+    justify-content: center;
+    height: 70%;
 }
 
 #subdiv-id-qrcode {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 #id-qr-code {
@@ -119,9 +126,13 @@
     padding: 0;
 }
 
+#id-qr-code p {
+    font-size: 25px;
+}
+
 #logo-para-etiquetas {
-    width: 50px;
-    height: 20px;
+    width: 60px;
+    height: 30px;
     margin: 0;
     padding: 0;
 }
@@ -152,6 +163,10 @@
         gap: 0;
     }
 
+    #id-qr-code {
+        border: 1px solid black;
+    }
+
     .qr-code-item {
         border-radius: none;
         box-shadow: none;
@@ -166,6 +181,7 @@
         padding: 0;
         min-width: 30mm;
         min-height: 30mm;
+        margin-left: 8px;
     }
 
     .sub-qr-code-item {
@@ -175,6 +191,7 @@
 
     .texto-etiqueta {
         margin-left: 5px;
+        border-left: 1px solid black;
     }
 
     .texto-etiqueta p {

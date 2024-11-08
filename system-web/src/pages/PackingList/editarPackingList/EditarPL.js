@@ -49,7 +49,6 @@ function EditarPL() {
         try {
             const response = await api.get(`/packinglist/listar-packinglist-edicao/${id}`);
             setFormData(response.data);
-            console.log('resp>', response.data)
             setFormData(formData => ({
                 ...formData,
                 registro_alterado_por: userId

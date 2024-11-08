@@ -130,7 +130,6 @@ function CadastroPackingList() {
         e.preventDefault();
         setEstadoDaPagina('Salvando');
         setContextLoading({ visible: true });
-        console.log('formdata: ', formData)
 
         const packingListRequest = {
             packingList: formData,

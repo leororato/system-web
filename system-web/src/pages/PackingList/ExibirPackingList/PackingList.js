@@ -528,7 +528,7 @@ function PackingList() {
                                     })
                                 ) : (
                                     <div id="nao-existe-packinglist">
-                                        <li>Não há nada para exibir, adicione uma PackingList...</li>
+                                        <li>Não há nada para exibir...</li>
                                     </div>
                                 )}
                             </>

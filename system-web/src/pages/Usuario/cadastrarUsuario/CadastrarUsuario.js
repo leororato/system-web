@@ -89,9 +89,11 @@ function CadastrarUsuario() {
                 login: "",
                 senha: "",
                 nivelAcesso: ""
-            })
+            });
+
         } finally {
             setContextLoading({ visible: false });
+            setMostrarSenha(false);
 
         }
     }
@@ -247,9 +249,11 @@ function CadastrarUsuario() {
                 nivelAcesso: "",
                 ativo: ""
             });
+            setMostrarSenha(false);
 
         } finally {
             setContextLoading({ visible: false });
+            setMostrarSenha(false);
 
         }
     }

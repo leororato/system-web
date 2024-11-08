@@ -297,6 +297,7 @@ function Volume() {
             usuario: usuario,
             volumeProdutoDTO: volumeProduto
         }
+        console.log('volume: ', formDataVolume)
 
         try {
             const response = await api.post(`/volume`, volumeRequest);
@@ -351,12 +352,11 @@ function Volume() {
             usuario: usuario,
             volumeProdutoDTO: volumeProduto
         }
-
         try {
             await api.put(`/volume/atualizar-volume/${salvarIdVolume.idVolume}`, volumeRequest)
 
             setFormDataVolume({
-                idTipoVolumeId: '1',
+                idTipoVolumeId: '',
                 quantidadeItens: '1',
                 descricao: '',
                 altura: '',

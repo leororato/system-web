@@ -171,9 +171,10 @@ const Header = () => {
       setSucessMessage(`Tipo de Volume atualizado com sucesso`);
       setTimeout(() => {
         setSucessMessage(null);
-      }, 5000)
+      }, 5000);
 
       setFormDataEdicaoTipoVolume({ idTipoVolume: null, descricao: null });
+
       setSalvarTipoSelected(null);
       await fetchTiposDeVolume();
 
@@ -182,6 +183,7 @@ const Header = () => {
       setErrorMessage(errorMessage);
 
       setFormDataEdicaoTipoVolume({ idTipoVolume: null, descricao: null });
+      setEstadoDoCadastro("Cadastro");
 
       setTimeout(() => {
         setErrorMessage(null);
@@ -205,8 +207,13 @@ const Header = () => {
       }, 5000);
 
       setSalvarTipoSelected(null);
+
       await fetchTiposDeVolume();
       setContextDelete({ visible: false });
+
+      setEstadoDoCadastro("Cadastro");
+      setFormDataEdicaoTipoVolume({ idTipoVolume: null, descricao: null });
+
     } catch (error) {
       const errorMessage = error.response?.data || "Erro desconhecido ao excluir o tipo de volume";
       setErrorMessage(errorMessage);

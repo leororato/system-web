@@ -223,11 +223,13 @@ const ExibirQRCodes = () => {
                                                         <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                                     </div>
                                                 </div>
-                                                <div id="textos-etiqueta-div">
-                                                    <p><strong>{item.descricaoProduto} </strong></p>
-                                                    <p><strong>Para: {item.nomeCliente} </strong></p>
-                                                    <p><strong>Desc: {item.descricaoVolume}</strong></p>
-                                                    <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
+                                                <div id='subdiv-texto-etiqueta'>
+                                                    <div id="textos-etiqueta-div">
+                                                        <p><strong>{item.descricaoProduto} </strong></p>
+                                                        <p><strong>Para: {item.nomeCliente} </strong></p>
+                                                        <p><strong>Desc: {item.descricaoVolume}</strong></p>
+                                                        <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -254,11 +256,13 @@ const ExibirQRCodes = () => {
                                                         <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                                     </div>
                                                 </div>
-                                                <div id="textos-etiqueta-div">
-                                                    <p><strong>{item.descricaoProduto} </strong></p>
-                                                    <p><strong>Para: {item.nomeCliente} </strong></p>
-                                                    <p><strong>Desc: {item.descricaoVolume}</strong></p>
-                                                    <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
+                                                <div id='subdiv-texto-etiqueta'>
+                                                    <div id="textos-etiqueta-div">
+                                                        <p><strong>{item.descricaoProduto} </strong></p>
+                                                        <p><strong>Para: {item.nomeCliente} </strong></p>
+                                                        <p><strong>Desc: {item.descricaoVolume}</strong></p>
+                                                        <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -285,11 +289,13 @@ const ExibirQRCodes = () => {
                                                         <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                                     </div>
                                                 </div>
-                                                <div id="textos-etiqueta-div">
-                                                    <p><strong>{item.descricaoProduto} </strong></p>
-                                                    <p><strong>Para: {item.nomeCliente} </strong></p>
-                                                    <p><strong>Desc: {item.descricaoVolume}</strong></p>
-                                                    <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
+                                                <div id='subdiv-texto-etiqueta'>
+                                                    <div id="textos-etiqueta-div">
+                                                        <p><strong>{item.descricaoProduto} </strong></p>
+                                                        <p><strong>Para: {item.nomeCliente} </strong></p>
+                                                        <p><strong>Desc: {item.descricaoVolume}</strong></p>
+                                                        <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
