@@ -87,9 +87,6 @@ function Clientes() {
                 const errorMessage = error.response?.data || "Erro desconhecido ao buscar clientes";
                 setErrorMessage(errorMessage);
 
-                        setTimeout(() => {
-                            setErrorMessage(null)
-                        }, 5000);
             }
         };
 

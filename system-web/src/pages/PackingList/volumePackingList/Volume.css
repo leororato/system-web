@@ -202,7 +202,7 @@
 
 #list-vol-divs:hover {
     cursor: pointer;
-    background-color: #dddddd5b;
+    background-color: #dddddda2;
 }
 
 .list-vol-divs-sem-cor, #list-vol-divs-sem-cor {
@@ -210,7 +210,7 @@
 }
 
 .list-vol-divs-com-cor, #list-vol-divs-com-cor {
-    background-color: #dddddd5b;
+    background-color: #dddddda2;
 }
 
 .li-listagem-volume div {
@@ -223,7 +223,7 @@
 }
 
 #list-vol-divs:hover {
-    background-color: #dddddd5b;
+    background-color: #dddddda2;
 }
 
 #container-icon-plus {
@@ -282,7 +282,7 @@
 }
 
 .li-listagem-produto-subvolume-com-cor {
-    background-color: #dddddd5b !important;
+    background-color: #dddddda2 !important;
 }
 
 #title-subvolumes-overlay {
@@ -350,7 +350,7 @@
 }
 
 .li-listagem-produto-subvolume:hover {
-    background-color: #dddddd5b;
+    background-color: #dddddda2;
 }
 
 .button-adicionar-subvolume {
@@ -575,7 +575,7 @@
 }
 
 .li-listagem-produto-subvolume-overlay-com-cor {
-background-color: #dddddd5b;
+background-color: #dddddda2;
 }
 
 .li-listagem-produto-subvolume-overlay-sem-cor {
@@ -637,7 +637,7 @@ background-color: #FFFFFF;
 }
 
 .li-listagem-produto-subvolume-overlay:hover {
-    background-color: #dddddd5b;
+    background-color: #dddddda2;
 }
 
 .container-input-adicionar-subvolume input {

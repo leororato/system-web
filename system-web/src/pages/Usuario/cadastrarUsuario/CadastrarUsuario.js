@@ -20,6 +20,7 @@ function CadastrarUsuario() {
     const [contextLoading, setContextLoading] = useState({ visible: false });
     const [estadoDaPagina, setEstadoDaPagina] = useState("Carregando");
     const [estadoDoCadastro, setEstadoDoCadastro] = useState("Cadastro")
+    const [selectedItemId, setSelectedItemId] = useState(null);
 
     // listagem
     const [usuarios, setUsuarios] = useState([]);
@@ -71,18 +72,18 @@ function CadastrarUsuario() {
             await api.post('/usuario/cadastrar-usuario', formDataUsuario);
             setSucessMessage("Usuário criado com sucesso");
 
-            setTimeout(() => {
-                setSucessMessage(null);
-            }, 5000);
+            setFormDataUsuario({
+                nome: "",
+                login: "",
+                senha: "",
+                nivelAcesso: ""
+            })
 
             await fetchUsuarios();
 
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao criar usuário";
             setErrorMessage(errorMessage);
-            setTimeout(() => {
-                setErrorMessage(null)
-            }, 5000);
 
             setFormDataUsuario({
                 nome: "",
@@ -155,9 +156,6 @@ function CadastrarUsuario() {
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao criar usuário";
             setErrorMessage(errorMessage);
-            setTimeout(() => {
-                setErrorMessage(null)
-            }, 5000);
 
         } finally {
             setContextLoading({ visible: false });
@@ -175,7 +173,7 @@ function CadastrarUsuario() {
             selectedLogin: login,
             selectedNivelAcesso: nivelAcesso,
             selectedAtivo: ativo,
-        })
+        });
         setFormDataEdicaoUsuario({
             id: id,
             nome: nome,
@@ -183,7 +181,9 @@ function CadastrarUsuario() {
             senha: "",
             nivelAcesso: nivelAcesso,
             ativo: ativo
-        })
+        });
+
+        setSelectedItemId(id);
     }
 
     const handleClickOutside = () => {
@@ -196,6 +196,7 @@ function CadastrarUsuario() {
             selectedDesc: null
         });
 
+        setSelectedItemId(null);
     };
 
     const formatarData = (dtCriacao) => {
@@ -217,9 +218,6 @@ function CadastrarUsuario() {
             await api.put(`/usuario/atualizar-usuario/${formDataEdicaoUsuario.id}`, formDataEdicaoUsuario);
 
             setSucessMessage("Usuário atualizado com sucesso");
-            setTimeout(() => {
-                setSucessMessage(null);
-            }, 5000);
 
             setEstadoDoCadastro("Cadastro");
             await setFormDataEdicaoUsuario({
@@ -236,10 +234,6 @@ function CadastrarUsuario() {
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao atualizar usuário";
             setErrorMessage(errorMessage);
-
-            setTimeout(() => {
-                setErrorMessage(null)
-            }, 5000);
 
             setFormDataEdicaoUsuario({
                 id: null,
@@ -409,7 +403,9 @@ function CadastrarUsuario() {
                                 filteredUsuarios.map((user) => {
 
                                     return (
-                                        <li key={user.id} onContextMenu={(e) => handleRightClick(e, user.id, user.nome, user.login, user.nivelAcesso, user.ativo)} id="lista-user-1">
+                                        <li key={user.id} onContextMenu={(e) => handleRightClick(e, user.id, user.nome, user.login, user.nivelAcesso, user.ativo)}
+                                            className={`lista-user-1 ${selectedItemId === user.id ? 'lista-user-1-com-cor' : 'lista-user-1-sem-cor'}`}
+                                        >
                                             <div>{user.id}</div>
                                             <div>{user.nome}</div>
                                             <div>{user.login}</div>

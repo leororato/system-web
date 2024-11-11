@@ -115,7 +115,6 @@ const ExibirQRCodes = () => {
             } catch (error) {
                 const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar os QRCodes do produto";
                 setErrorMessage(errorMessage);
-                setTimeout(() => setErrorMessage(null), 5000);
                 setTodosQrCodesDoProduto([]);
 
             } finally {
@@ -152,7 +151,6 @@ const ExibirQRCodes = () => {
                 catch (error) {
                     const errorMessage = error.response?.data?.message || "Erro desconhecido ao ir para a página 'Gerar QR Code'";
                     setErrorMessage(errorMessage);
-                    setTimeout(() => setErrorMessage(null), 5000);
 
                     setQrCodeDeUmVolume([]);
 

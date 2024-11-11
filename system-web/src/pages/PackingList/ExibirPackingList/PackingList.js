@@ -26,6 +26,7 @@ function PackingList() {
     const userId = Cookies.get('userId');
     const usuario = { id: userId };
     const location = useLocation();
+
     const [sucessMessage, setSucessMessage] = useState(location.state?.sucessMessage || null);
     const [errorMessage, setErrorMessage] = useState(null);
 
@@ -79,7 +80,6 @@ function PackingList() {
 
         } catch (error) {
             setErrorMessage(error.response?.data || "Erro desconhecido ao buscar as packinglists");
-            setTimeout(() => setErrorMessage(null), 5000);
 
         } finally {
             setContextLoading({ visible: false });
@@ -118,16 +118,6 @@ function PackingList() {
             document.removeEventListener('click', handleClickOutside);
         };
     }, []);
-
-    useEffect(() => {
-        if (sucessMessage) {
-            const timer = setTimeout(() => {
-                setSucessMessage(null);
-                navigate(location.state, { replace: true, state: {} });
-            }, 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [sucessMessage, navigate]);
 
     const formatarData = (dtCriacao) => {
         return format(new Date(dtCriacao), 'dd/MM/yyyy - HH:mm');
@@ -199,7 +189,6 @@ function PackingList() {
 
             setContextDelete({ visible: false, x: 0, y: 0, selectedId: null });
             setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
-            setTimeout(() => setSucessMessage(null), 5000);
 
             await fetchListaPackinglist();
 
@@ -211,17 +200,10 @@ function PackingList() {
                 const errorMessage = error.response?.data || "Erro desconhecido ao excluir Packinglist";
                 setErrorMessage(errorMessage);
 
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
             }
 
             const errorMessage = error.response?.data || "Erro desconhecido ao excluir Packinglist";
             setErrorMessage(errorMessage);
-
-            setTimeout(() => {
-                setErrorMessage(null);
-            }, 5000)
 
         } finally {
             setContextLoading({ visible: false });
@@ -242,9 +224,6 @@ function PackingList() {
             await api.put(`/packinglist/deletar-packinglist/${itemDeletado}/${permissaoParaExcluir}`, usuario);
 
             setSucessMessage(`Packinglist ${itemDeletado} deletado com sucesso`);
-            setTimeout(() => {
-                setSucessMessage(null);
-            }, 5000);
 
             setContextDeleteSegundoFator({ visible: false, selectedId: null, x: 0, y: 0 });
             await fetchListaPackinglist();
@@ -258,10 +237,6 @@ function PackingList() {
                 setErrorMessage(errorMessage);
 
             }
-
-            setTimeout(() => {
-                setErrorMessage(null);
-            }, 5000);
 
             setContextDeleteSegundoFator({ visible: false, selectedId: null });
 
@@ -291,7 +266,6 @@ function PackingList() {
         catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao ir para a página 'Gerar QR Code da Packinglist'";
             setErrorMessage(errorMessage);
-            setTimeout(() => setErrorMessage(null), 5000);
         }
     }
 
@@ -315,7 +289,6 @@ function PackingList() {
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao gerar o PDF";
             setErrorMessage(errorMessage);
-            setTimeout(() => setErrorMessage(null), 5000);
         }
     };
 
@@ -331,7 +304,6 @@ function PackingList() {
     };
 
     const salvarDataFiltro = (e, name) => {
-        const dataSelecionada = e.target.value;
 
         if (filtrosDeListagem[name]) {
             setFiltrosDeListagem(filtrosDeListagem => ({
@@ -345,6 +317,7 @@ function PackingList() {
             }));
         }
     };
+
 
     return (
         <div>
@@ -455,7 +428,7 @@ function PackingList() {
                                                 id="filter-in-progress"
                                                 type={'checkbox'}
                                                 name={'filtroAndamento'}
-                                                value={filtrosDeListagem.filtroAndamento || ""}
+                                                checked={filtrosDeListagem.emAndamento}
                                                 onChange={() => checkboxIsChecked('emAndamento')}
                                             />
                                         </div>
@@ -468,7 +441,7 @@ function PackingList() {
                                             <Input
                                                 id="filter-completed"
                                                 type={'checkbox'}
-                                                value={filtrosDeListagem.filtroFinalizado || ""}
+                                                checked={filtrosDeListagem.finalizado}
                                                 onChange={() => checkboxIsChecked('finalizado')}
                                             />
                                         </div>

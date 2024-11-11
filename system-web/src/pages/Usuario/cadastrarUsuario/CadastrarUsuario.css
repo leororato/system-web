@@ -130,17 +130,26 @@
     color: white;
 }
 
-#lista-user-1 {
+.lista-user-1 {
     color: black;
 }
 
-#lista-user-1 div {
+.lista-user-1 div {
     border-right: 1px solid #ddd;
     padding: 10px;
 }
 
+.lista-user-1-sem-cor {
+    background-color: #FFFFFF;
+}
+
+.lista-user-1-com-cor {
+    background-color: #dddddda2;
+}
+
+
 #header-lista-usuarios,
-#lista-user-1 {
+.lista-user-1 {
     display: grid;
     border-top: none;
     font-weight: bold;
@@ -156,12 +165,12 @@
     border-right: none
 }
 
-#lista-user-1 {
+.lista-user-1 {
     transition: 0.5ms ease-in;
 }
 
-#lista-user-1:hover {
-    background-color: #dddddd5b;
+.lista-user-1:hover {
+    background-color: #dddddda2;
 }
 
 #nao-existe-usuario {

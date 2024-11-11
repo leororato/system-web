@@ -24,8 +24,6 @@ function Login() {
     useEffect(() => {
         if (errorTokenMessage != null) {
             setErrorMessage(errorTokenMessage);
-
-            setTimeout(() => { setErrorMessage(null) }, 10000)
         }
     }, [errorTokenMessage])
 
@@ -35,8 +33,8 @@ function Login() {
         e.preventDefault();
         try {
             // Faz a requisição de login
-                // const response = await axios.post('http://192.168.1.238:8080/auth/login', {
-                 const response = await axios.post('http://localhost:8080/auth/login', {
+                 const response = await axios.post('http://192.168.1.238:8080/auth/login', {
+                // const response = await axios.post('http://localhost:8080/auth/login', {
                 login: login,
                 senha: senha
             });
@@ -67,10 +65,7 @@ function Login() {
 
                 const errorMessage = error.response?.data || "Erro desconhecido ao fazer Login";
                 setErrorMessage(errorMessage);
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
-
+                
             }
         }
     };

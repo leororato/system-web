@@ -69,9 +69,6 @@ function CadastroPackingList() {
                 const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar clientes";
                 setErrorMessage(errorMessage);
 
-                setTimeout(() => {
-                    setErrorMessage(null)
-                }, 5000);
             } finally {
                 setContextLoading({ visible: false })
             }
@@ -144,9 +141,7 @@ function CadastroPackingList() {
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao criar Packinglist";
             setErrorMessage(errorMessage);
-            setTimeout(() => {
-                setErrorMessage(null);
-            }, 5000);
+
 
         } finally {
             setContextLoading({ visible: false });

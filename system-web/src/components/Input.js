@@ -10,6 +10,7 @@ const Input = ({
     onChange,
     title,
     value,
+    checked,
     readOnly,
     defaultValue,
     min,
@@ -37,6 +38,7 @@ const Input = ({
                 placeholder={placeholder}
                 name={name}
                 value={value}
+                checked={checked}
                 min={min}
                 onChange={onChange}
                 readOnly={readOnly}

@@ -58,10 +58,6 @@ function EditarCliente() {
             } catch (error) {
                 const errorMessage = error.response?.data || "Erro ao buscar os containers Nomus(requisição nomus por id)";
                 setErrorMessage(errorMessage);
-
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
             }
         }
         fetchCliente();
@@ -98,24 +94,8 @@ function EditarCliente() {
             const errorMessage = error.response?.data || "Erro desconhecido ao tentar atualizar o Cliente!";
             setErrorMessage(errorMessage);
 
-            setTimeout(() => {
-                setErrorMessage(null);
-            }, 5000);
         }
     }
-
-    useEffect(() => {
-        if (sucessMessage) {
-            const timer = setTimeout(() => {
-                setSucessMessage(null);
-                // Limpa o estado de navegação para evitar que a mensagem apareça ao recarregar a página
-                navigate('/inicio', { replace: true, state: {} });
-            }, 5000);
-
-            // Limpar o timeout caso o componente seja desmontado antes dos 5 segundos
-            return () => clearTimeout(timer);
-        }
-    }, [sucessMessage, navigate]);
 
     return (
         <div>

@@ -83,10 +83,6 @@ const Header = () => {
       const errorMessage = error.response?.data || "Erro desconhecido ao buscar tipos de volume";
       setErrorMessage(errorMessage);
 
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-
     } finally {
       setContextLoading({ visible: false });
     }
@@ -109,17 +105,10 @@ const Header = () => {
       fetchTiposDeVolume();
 
       setTipoDeVolume({ descricao: null });
-      setTimeout(() => {
-        setSucessMessage(null);
-      }, 5000);
 
     } catch (error) {
       const errorMessage = error.response?.data || "Erro desconhecido ao criar o Tipo de Volume";
       setErrorMessage(errorMessage);
-
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
 
     } finally {
       setContextLoading({ visible: false });
@@ -169,10 +158,6 @@ const Header = () => {
       await api.put(`/tipo-de-volume/atualizar-tipo-volume/${formDataEdicaoTipoVolume.idTipoVolume}`, tipoVolumeRequest);
 
       setSucessMessage(`Tipo de Volume atualizado com sucesso`);
-      setTimeout(() => {
-        setSucessMessage(null);
-      }, 5000);
-
       setFormDataEdicaoTipoVolume({ idTipoVolume: null, descricao: null });
 
       setSalvarTipoSelected(null);
@@ -185,9 +170,6 @@ const Header = () => {
       setFormDataEdicaoTipoVolume({ idTipoVolume: null, descricao: null });
       setEstadoDoCadastro("Cadastro");
 
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
     } finally {
       setContextLoading({ visible: false });
     }
@@ -202,10 +184,6 @@ const Header = () => {
       setEstadoDaPagina("Cadastro");
 
       setSucessMessage("O tipo de volume foi deletado com sucesso");
-      setTimeout(() => {
-        setSucessMessage(null);
-      }, 5000);
-
       setSalvarTipoSelected(null);
 
       await fetchTiposDeVolume();
@@ -220,10 +198,6 @@ const Header = () => {
 
       setEstadoDaPagina("Cadastro");
       setFormDataEdicaoTipoVolume({ idTipoVolume: null, descricao: null });
-
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
 
     } finally {
       setContextLoading({ visible: false });
@@ -255,7 +229,7 @@ const Header = () => {
     });
   }
 
-  const handleClickOutside = () => {
+  const handleClickOutside = (e) => {
     setContextMenu({
       visible: false,
       x: 0,
@@ -264,11 +238,13 @@ const Header = () => {
       selectedSeq: null,
       selectedDesc: null
     });
+    
     setSelectedItemId(null);
-  };
+  }
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
+
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };

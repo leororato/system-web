@@ -48,14 +48,11 @@ function CadastroPackingListNacional() {
             await api.post('/packinglist/pl-nacional', packingListRequest);
             setSucessMessage('PackingList criado com sucesso!');
 
-            navigate('/inicio', { state: { sucessMessage: 'Packinglist criado com sucesso!' } });
+            navigate('/inicio', { state: { sucessMessage: 'Packinglist criado com sucesso!' }, replace: true});
             
         } catch (error) {
             const errorMessage = error.response?.data || "Erro desconhecido ao criar Packinglist";
             setErrorMessage(errorMessage);
-            setTimeout(() => {
-                setErrorMessage(null);
-            }, 5000);
 
         } finally {
             setContextLoading({ visible: false });
@@ -76,9 +73,6 @@ function CadastroPackingListNacional() {
                 const errorMessage = error.response?.data?.message || "Erro desconhecido ao buscar clientes";
                 setErrorMessage(errorMessage);
 
-                setTimeout(() => {
-                    setErrorMessage(null)
-                }, 5000);
             } finally {
                 setContextLoading({ visible: false })
             }
