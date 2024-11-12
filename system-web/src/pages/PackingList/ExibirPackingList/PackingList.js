@@ -36,6 +36,7 @@ function PackingList() {
     const [contextLoading, setContextLoading] = useState({ visible: false });
     const [packingLists, setPackingLists] = useState([]);
 
+    const [buscaOrdemServico, setBuscaOrdemServico] = useState('');
     const [buscaCliente, setBuscaCliente] = useState('');
     const [buscaInvoice, setBuscaInvoice] = useState('');
     const [filteredPackinglist, setFilteredPackinglist] = useState([]);
@@ -61,10 +62,11 @@ function PackingList() {
     useEffect(() => {
         const filterPackinglist = packingLists.filter(p =>
             (p.invoice ? p.invoice.toLowerCase() : '').includes(buscaInvoice.toLowerCase()) &&
-            (p.nomeClienteImportador ? p.nomeClienteImportador.toLowerCase() : '').includes(buscaCliente.toLowerCase())
+            (p.nomeClienteImportador ? p.nomeClienteImportador.toLowerCase() : '').includes(buscaCliente.toLowerCase()) &&
+            (p.ordemServico ? p.ordemServico.toLowerCase() : '').includes(buscaOrdemServico.toLocaleLowerCase())
         );
         setFilteredPackinglist(filterPackinglist);
-    }, [buscaCliente, buscaInvoice, packingLists]);
+    }, [buscaOrdemServico, buscaCliente, buscaInvoice, packingLists]);
 
     useEffect(() => {
         fetchListaPackinglist();
@@ -77,7 +79,7 @@ function PackingList() {
         try {
             const response = await api.post('/packinglist/listagem-packinglist-inicio', filtrosDeListagem);
             setPackingLists(response.data);
-
+            console.log(response.data);
         } catch (error) {
             setErrorMessage(error.response?.data || "Erro desconhecido ao buscar as packinglists");
 
@@ -372,6 +374,15 @@ function PackingList() {
                         <div className='busca-invoice-input'>
                             <Input
                                 type={'text'}
+                                placeholder={'Ordem de Serviço'}
+                                title={'Pesquise pela Ordem de Serviço...'}
+                                value={buscaOrdemServico}
+                                onChange={(e) => setBuscaOrdemServico(e.target.value)}
+                            />
+                        </div>
+                        <div className='busca-invoice-input'>
+                            <Input
+                                type={'text'}
                                 placeholder={'Cliente'}
                                 title={'Pesquise pelo Cliente...'}
                                 value={buscaCliente}
@@ -466,6 +477,7 @@ function PackingList() {
                                 <div>Tipo Transporte</div>
                                 <div>Peso Líquido Total</div>
                                 <div>Peso Bruto Total</div>
+                                <div>Ordem de Serviço</div>
                                 <div>Idioma</div>
                                 <div>Status</div>
                             </li>
@@ -476,6 +488,11 @@ function PackingList() {
                                         let dadosSeparados = [];
                                         if (p.dadosBancarios != null) {
                                             dadosSeparados = p.dadosBancarios.split('$');
+                                        }
+
+                                        let ordemServico = [];
+                                        if (p.ordemServico != null) {
+                                            ordemServico = p.ordemServico.split('$');
                                         }
 
                                         return (
@@ -490,6 +507,15 @@ function PackingList() {
                                                 <div>{p.tipoTransporte}</div>
                                                 <div>{p.pesoLiquidoTotal}</div>
                                                 <div>{p.pesoBrutoTotal}</div>
+                                                <div>
+                                                    {ordemServico.map((item, index) => (
+                                                        <span key={index}>
+                                                            {item}
+                                                            <br />
+                                                        </span>
+                                                    ))}
+                                                </div>
+
                                                 <div>{p.idioma}</div>
                                                 {p.finalizado == 0 ? (
                                                     <div><Icon icon="pajamas:status-active" style={{ color: 'green', fontSize: '10px' }} /> Em andamento</div>
