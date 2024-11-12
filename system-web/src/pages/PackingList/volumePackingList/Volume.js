@@ -16,6 +16,7 @@ import Loading from "../../../components/Loading/Loading";
 import ExcluirItemSegundoFator from "../../../components/ExcluirItemSegundoFator/ExcluirItemSegundoFator";
 import ExcluirItem from "../../../components/ExcluirItem/ExcluirItem";
 import Cookies from 'js-cookie';
+import BotaoAjuda from "../../../components/BotaoAjuda/BotaoAjuda";
 
 
 
@@ -219,7 +220,7 @@ function Volume() {
             if (response.data && Array.isArray(response.data)) {
                 setVolumes(response.data);
 
-            } else {
+            } else { 
                 setVolumes([]);
             }
 
@@ -285,7 +286,6 @@ function Volume() {
             usuario: usuario,
             volumeProdutoDTO: volumeProduto
         }
-        console.log('volume: ', formDataVolume)
 
         try {
             const response = await api.post(`/volume`, volumeRequest);
@@ -1170,25 +1170,36 @@ function Volume() {
 
 
     useEffect(() => {
-        // Função para lidar com o pressionamento da tecla Enter
-
-        if (overlayVisible === false) {
-            const handleKeyDown = (event) => {
-                if (event.key === 'ArrowUp') {
-                    event.preventDefault(); // Impede o comportamento padrão do Enter
-                    setOverlayVisible(true); // Abre o overlay
+        const handleKeyDown = (event) => {
+            if (event.key === 'ArrowUp' && !overlayVisible) {
+                event.preventDefault();
+                setOverlayVisible(true);
+            } else if (event.key === 'Escape') {
+                if (overlayVisible) {
+                    setOverlayVisible(false);
                 }
-            };
+                if (contextEditar.visible) {
+                    setContextEditar(false);
+                }
+                if (contextSubVolumes.visible) {
+                    setContextSubVolumes({ visible: false, selectedIdVolume: '' });
+                }
+            }
+        };
 
-            // Adiciona o manipulador de eventos para o pressionamento da tecla
-            document.addEventListener('keydown', handleKeyDown);
+        // Adiciona o evento keydown
+        document.addEventListener('keydown', handleKeyDown);
 
-            // Remove o manipulador de eventos quando o componente for desmontado
-            return () => {
-                document.removeEventListener('keydown', handleKeyDown);
-            };
-        }
-    }, []);
+        // Remove o evento keydown ao desmontar o componente ou mudar overlayVisible
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [overlayVisible, contextSubVolumes, contextEditar]);
+
+
+
+
+
 
 
 
@@ -1362,7 +1373,7 @@ function Volume() {
                                                         v.quantidadeItens, v.descricao, v.altura, v.largura, v.comprimento, v.pesoLiquido, v.pesoBruto, v.observacao)}
                                                         className={`list-vol-divs ${selectedItemId === v.idVolume ? 'list-vol-divs-com-cor' : 'list-vol-divs-sem-cor'}`}>
 
-                                                        <div id="list-vol">{v.idVolume}</div>
+                                                        <div id="list-vol">{v.seqVolume}</div>
                                                         <div id="list-vol">{v.nomeTipoVolume}</div>
                                                         <div id="list-vol">{v.quantidadeItens}</div>
                                                         <div id="list-vol">{v.descricao}</div>
@@ -1839,6 +1850,9 @@ function Volume() {
 
                             </div>
 
+                            <BotaoAjuda />
+
+
                             {estadoSubVolumeOverlay === 'adicionar' ? <div></div> :
                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                                     <div style={{ width: '557px' }}>
@@ -1993,6 +2007,7 @@ function Volume() {
             ) : (
                 <></>
             )}
+
 
         </div >
     );

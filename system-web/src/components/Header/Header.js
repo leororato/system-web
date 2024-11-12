@@ -238,9 +238,27 @@ const Header = () => {
       selectedSeq: null,
       selectedDesc: null
     });
-    
+
     setSelectedItemId(null);
   }
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        if (contextVolume) {
+          setContextVolume(false);
+        }
+      }
+    };
+
+    // Adiciona o evento keydown
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Remove o evento keydown ao desmontar o componente ou mudar overlayVisible
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [contextVolume.visible]);
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);

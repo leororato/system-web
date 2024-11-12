@@ -109,7 +109,7 @@ const ExibirQRCodes = () => {
                 if (modoDaPagina === 1) {
                     const response = await api.get(`/busca-qrcode/todos-por-produto/${idPackinglist}/${idProduto}/${seq}`);
                     setTodosQrCodesDoProduto(response.data);
-
+                    console.log('resp: ', response.data)
                 } else return;
 
             } catch (error) {
@@ -213,12 +213,15 @@ const ExibirQRCodes = () => {
                                 todosQrCodesDoProduto.map((item) => (
                                     <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'>
                                         <div className='qr-code-item'>
+                                            <div style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
                                             <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
+                                            <p><strong>{item.identificadorVolumeProduto}</strong></p>
+                                            </div>
                                             <div className='texto-etiqueta'>
                                                 <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
                                                         <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
-                                                        <p><strong>{item.identificadorVolumeProduto}</strong></p>
+                                                        <p><strong>{item.seqVolume}</strong></p>
                                                     </div>
                                                 </div>
                                                 <div id='subdiv-texto-etiqueta'>
@@ -246,12 +249,15 @@ const ExibirQRCodes = () => {
                                 qrCodeDeUmVolume.map((item) => (
                                     <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'> {/* Colocando a key aqui */}
                                         <div className='qr-code-item'>
+                                        <div style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
                                             <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
+                                            <p><strong>{item.identificadorVolumeProduto}</strong></p>
+                                            </div>
                                             <div className='texto-etiqueta'>
                                                 <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
                                                         <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
-                                                        <p><strong>{item.identificadorVolumeProduto}</strong></p>
+                                                        <p><strong>{item.seqVolume}</strong></p>
                                                     </div>
                                                 </div>
                                                 <div id='subdiv-texto-etiqueta'>
@@ -279,12 +285,15 @@ const ExibirQRCodes = () => {
                                 todosQrCodesDaPackinglist.map((item) => (
                                     <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'> {/* Colocando a key aqui */}
                                         <div className='qr-code-item'>
+                                        <div style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
                                             <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
+                                            <p><strong>{item.identificadorVolumeProduto}</strong></p>
+                                            </div>
                                             <div className='texto-etiqueta'>
                                                 <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
                                                         <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
-                                                        <p><strong>{item.identificadorVolumeProduto}</strong></p>
+                                                        <p><strong>{item.seqVolume}</strong></p>
                                                     </div>
                                                 </div>
                                                 <div id='subdiv-texto-etiqueta'>
