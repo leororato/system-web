@@ -8,6 +8,7 @@ import Title from "../../../../components/Title";
 import Text from "../../../../components/Text";
 import Loading from "../../../../components/Loading/Loading";
 import Button from "../../../../components/Button";
+import Input from "../../../../components/Input";
 
 
 function Conta() {
@@ -26,6 +27,10 @@ function Conta() {
             navigate('/login');
             setContextLoading({ visible: false })
         }, 5000);
+    }
+
+    const handleTrocarSenha = () => {
+        navigate('/trocar-senha');
     }
 
     useEffect(() => {
@@ -51,16 +56,21 @@ function Conta() {
                         text={"Usuário: " + [nomeUsuario]}
                         fontSize={'20px'}
                     />
-                    <div id="text-minha-conta">
-                        <Text
-                            text={'Está é uma conta privada do Sistema de Carregamento Cofama, caso queira alterar alguma informação, contate um adminstrador'}
-                        />
-                    </div>
 
-                    <Button
-                        text={'Sair da Conta'}
-                        onClick={handleLogoff}
-                    />
+                    <div className="contianer-buttons-usuario">
+                        <div>
+                            <Button
+                                text={'Trocar senha'}
+                                onClick={handleTrocarSenha}
+                            />
+                        </div>
+                        <div>
+                            <Button
+                                text={'Sair da Conta'}
+                                onClick={handleLogoff}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
 

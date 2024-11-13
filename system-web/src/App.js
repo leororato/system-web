@@ -15,6 +15,7 @@ import Cookies from 'js-cookie';
 import CadastroPackingListNacional from './pages/PackingList/cadastroPackingListNacional/CadastroPackingListNacional';
 import EditarPackingListNacional from './pages/PackingList/EditarPackingListNacional/EditarPackingListNacional';
 import Unauthorized from './pages/Unauthorized/Unauthorized';
+import UsuarioTrocarSenha from './pages/Usuario/usuarioTrocarSenha/UsuarioTrocarSenha';
 
 
 
@@ -31,6 +32,7 @@ function App() {
                 <Route path='/minha-conta' element={<Conta />} />
                 <Route path="/exibir-qrcodes/:idPackinglist/:idProduto/:seq/:idVolume?" element={<ExibirQRCodes />} />
                 <Route path="/exibir-qrcode/:idVolume" element={<ExibirQRCodes />} />
+                <Route path='/trocar-senha' element={<UsuarioTrocarSenha /> } />
                 <Route path='/exibir-qrcode-packinglist/:idPackinglist' element={<ExibirQRCodes />} />
                 <Route path={ userRole === 'A' || 'G' ? '/cadastrar-packing-list' : '/unauthorized'} element={<CadastroItem />} />
                 <Route path={ userRole === 'A' || 'G' ? '/cadastrar-packing-list-nacional' : '/unauthorized'} element={<CadastroPackingListNacional />} />
