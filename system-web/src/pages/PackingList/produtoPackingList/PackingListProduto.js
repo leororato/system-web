@@ -79,7 +79,7 @@ function PackingListProduto() {
             const response = await api.get(`/packinglist/listar-packinglist-produto/${id}`);
             setContextLoading({ visible: true });
             setPackingList(response.data);
-            console.log('resp', response.data)
+
             const dadosBancarios = response.data.dadosBancarios;
 
             if (dadosBancarios != null) {

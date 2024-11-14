@@ -79,7 +79,7 @@ function PackingList() {
         try {
             const response = await api.post('/packinglist/listagem-packinglist-inicio', filtrosDeListagem);
             setPackingLists(response.data);
-            console.log(response.data);
+
         } catch (error) {
             setErrorMessage(error.response?.data || "Erro desconhecido ao buscar as packinglists");
 
@@ -334,7 +334,7 @@ function PackingList() {
             <div className='title-container'>
                 <Title
                     classname={'title'}
-                    text={'Listagem de Packing Lists'}
+                    text={'Listagem de Packinglists'}
                     fontSize={30}
                     color={'#1780e2'}
                 />
@@ -374,15 +374,6 @@ function PackingList() {
                         <div className='busca-invoice-input'>
                             <Input
                                 type={'text'}
-                                placeholder={'Ordem de Serviço'}
-                                title={'Pesquise pela Ordem de Serviço...'}
-                                value={buscaOrdemServico}
-                                onChange={(e) => setBuscaOrdemServico(e.target.value)}
-                            />
-                        </div>
-                        <div className='busca-invoice-input'>
-                            <Input
-                                type={'text'}
                                 placeholder={'Cliente'}
                                 title={'Pesquise pelo Cliente...'}
                                 value={buscaCliente}
@@ -396,6 +387,15 @@ function PackingList() {
                                 title={'Pesquise pelo INVOICE da packinglist...'}
                                 value={buscaInvoice}
                                 onChange={(e) => setBuscaInvoice(e.target.value)}
+                            />
+                        </div>
+                        <div className='busca-invoice-input'>
+                            <Input
+                                type={'text'}
+                                placeholder={'Ordem de Serviço'}
+                                title={'Pesquise pela Ordem de Serviço...'}
+                                value={buscaOrdemServico}
+                                onChange={(e) => setBuscaOrdemServico(e.target.value)}
                             />
                         </div>
 

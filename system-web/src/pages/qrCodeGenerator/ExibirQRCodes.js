@@ -109,7 +109,7 @@ const ExibirQRCodes = () => {
                 if (modoDaPagina === 1) {
                     const response = await api.get(`/busca-qrcode/todos-por-produto/${idPackinglist}/${idProduto}/${seq}`);
                     setTodosQrCodesDoProduto(response.data);
-                    console.log('resp: ', response.data)
+
                 } else return;
 
             } catch (error) {
@@ -165,6 +165,7 @@ const ExibirQRCodes = () => {
     }, [idVolume, modoDaPagina])
 
 
+
     //---------------------------- ^FIM QR CODE GERADO DE CADA VOLUME^ ----------------------------//
 
 
@@ -190,7 +191,7 @@ const ExibirQRCodes = () => {
                 <div className='info-qrcode'>
                     <div id='texto-qrcode'>
                         <Text
-                            text={modoDaPagina === 1 ? `Está é a lista dos QRCodes de todos os volumes do Produto: ${todosQrCodesDoProduto.descricaoProduto}` : `Este é o QRCode do Volume '${qrCodeDeUmVolume.descricaoProduto}' `}
+                            text={modoDaPagina === 1 ? `Está é a lista dos QRCodes de todos os volumes do produto` : modoDaPagina === 2 ? `Este é o QRCode de apenas um volume` : 'Está é a lista de todos QRCodes de uma packinglist'}
                         />
                     </div>
 

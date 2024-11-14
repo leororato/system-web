@@ -8,9 +8,11 @@ import ErrorNotification from "../../../components/ErrorNotification/ErrorNotifi
 import SucessNotification from "../../../components/SucessNotification/SucessNotification";
 import Button from "../../../components/Button";
 import Cookies from 'js-cookie';
+import { useNavigate } from "react-router-dom";
+import Loading from "../../../components/Loading/Loading";
 
 function UsuarioTrocarSenha() {
-
+    const navigate = useNavigate();
     const userId = Cookies.get('userId');
 
     const [errorMessage, setErrorMessage] = useState("");
@@ -30,7 +32,7 @@ function UsuarioTrocarSenha() {
 
 
     useEffect(() => {
-         const fetchUsuarioInfo = async () => {
+        const fetchUsuarioInfo = async () => {
             const response = await api.get(`/usuario/buscar-info-meu-usuario/${userId}`);
             setFormDataUsuario({
                 nome: response.data.nome,
@@ -39,10 +41,10 @@ function UsuarioTrocarSenha() {
                 senhaNova: ""
             });
             console.log('RESP: ', response.data)
-    }
+        }
 
 
-         fetchUsuarioInfo();
+        fetchUsuarioInfo();
     }, [])
 
     const handleChangeFormData = (e) => {
@@ -69,19 +71,16 @@ function UsuarioTrocarSenha() {
         }
     };
 
-    const handleCancelarAtualizacao = () => {
-        setFormDataUsuario({
-            nome: formDataUsuario.nome,
-            login: formDataUsuario.login,
-            senhaAtual: null,
-            senhaNova: null
-        });
+    const handleCancelarAtualizacao = (e) => {
+        e.preventDefault();
+
+        navigate('/inicio')
     }
 
     const atualizarUsuario = async (e) => {
         e.preventDefault();
 
-        setEstadoDaPagina("Atualizando");
+        setEstadoDaPagina("Salvando");
         setContextLoading({ visible: true });
 
         const usuarioTrocarSenhaRequest = {
@@ -89,18 +88,15 @@ function UsuarioTrocarSenha() {
             senhaAtual: formDataUsuario.senhaAtual,
             senhaNova: formDataUsuario.senhaNova
         }
-
+        console.log('formdata: ', formDataUsuario)
         try {
             await api.put(`/usuario/trocar-senha`, usuarioTrocarSenhaRequest);
 
             await setSucessMessage("Usuário atualizado com sucesso");
-            await setFormDataUsuario({
-                id: userId,
-                nome: formDataUsuario.nome,
-                login: formDataUsuario.login,
-                senhaAtual: null,
-                senhaNova: null
-            });
+
+            setTimeout(() => {
+                navigate(0);
+            }, 1000)
 
 
         } catch (error) {
@@ -111,8 +107,8 @@ function UsuarioTrocarSenha() {
                 id: userId,
                 nome: formDataUsuario.nome,
                 login: formDataUsuario.login,
-                senhaAtual: null,
-                senhaNova: null,
+                senhaAtual: "",
+                senhaNova: "",
             });
             setMostrarSenha(false);
             setMostrarSenhaNova(false);
@@ -126,6 +122,10 @@ function UsuarioTrocarSenha() {
         }
     }
 
+    useEffect(() => {
+        console.log('formData: ', formDataUsuario)
+    }, [formDataUsuario])
+
 
     return (
         <div>
@@ -136,7 +136,10 @@ function UsuarioTrocarSenha() {
             <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div className="itens-cadastro-usuario" style={{ marginTop: '20vh', width: '40%' }}>
 
-                    <Title text={"Alterar senha"} />
+                    <div style={{ display: 'flex', gap: '15px', alignItems: 'center', justifyContent: 'center' }}>
+                        <Icon icon="mdi:account-cog" style={{ width: '60px', height: '60px' }} />
+                        <Title text={"Alterar senha"} />
+                    </div>
 
                     <form onSubmit={atualizarUsuario}>
                         <div className="container-form-cadastro-usuario">
@@ -149,6 +152,8 @@ function UsuarioTrocarSenha() {
                                     name={"nome"}
                                     value={formDataUsuario.nome || ""}
                                     readOnly
+                                    backgroundColor={'#ccc'}
+                                    cursor={'not-allowed'}
                                 />
                             </div>
                             <div>
@@ -160,6 +165,8 @@ function UsuarioTrocarSenha() {
                                     name={"login"}
                                     value={formDataUsuario.login || ""}
                                     readOnly
+                                    backgroundColor={'#ccc'}
+                                    cursor={'not-allowed'}
                                 />
                             </div>
 
@@ -216,7 +223,7 @@ function UsuarioTrocarSenha() {
                             <div id='botao-cancelar-criar-usuario'>
                                 <Button
                                     text={"Cancelar"}
-                                    onClick={handleCancelarAtualizacao}
+                                    onClick={(e) => handleCancelarAtualizacao(e)}
                                 />
                             </div>
                         </div>
@@ -225,6 +232,14 @@ function UsuarioTrocarSenha() {
 
                 </div>
             </div>
+
+
+
+            {contextLoading.visible ? (
+                <Loading message={estadoDaPagina === "Carregando" ? "Carregando..." : estadoDaPagina === "Atualizando" ? "Atualizando..." : estadoDaPagina === "Salvando" ? "Salvando..." : "Excluindo..."} />
+            ) : (
+                <></>
+            )}
         </div>
     );
 

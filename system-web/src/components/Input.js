@@ -1,3 +1,4 @@
+import { styled } from '@mui/material';
 import React, { useState } from 'react';
 
 const Input = ({
@@ -6,6 +7,7 @@ const Input = ({
     backgroundColor,
     fontSize,
     padding,
+    cursor,
     name,
     onChange,
     title,
@@ -48,6 +50,7 @@ const Input = ({
                     backgroundColor: backgroundColor,
                     fontSize: fontSize,
                     padding: padding,
+                    cursor: cursor,
                     // Estilos para remover as flechinhas
                     appearance: type === 'number' ? 'none' : 'auto',
                     MozAppearance: type === 'number' ? 'textfield' : 'auto',
