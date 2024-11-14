@@ -69,16 +69,18 @@ function UsuarioTrocarSenha() {
         }
     };
 
-    const handleCancelarCadastroOuEdicao = () => {
+    const handleCancelarAtualizacao = () => {
         setFormDataUsuario({
-            nome: "",
-            login: "",
-            senhaAtual: "",
-            senhaNova: ""
+            nome: formDataUsuario.nome,
+            login: formDataUsuario.login,
+            senhaAtual: null,
+            senhaNova: null
         });
     }
 
-    const atualizarUsuario = async () => {
+    const atualizarUsuario = async (e) => {
+        e.preventDefault();
+
         setEstadoDaPagina("Atualizando");
         setContextLoading({ visible: true });
 
@@ -91,11 +93,11 @@ function UsuarioTrocarSenha() {
         try {
             await api.put(`/usuario/trocar-senha`, usuarioTrocarSenhaRequest);
 
-            setSucessMessage("Usuário atualizado com sucesso");
+            await setSucessMessage("Usuário atualizado com sucesso");
             await setFormDataUsuario({
-                id: null,
-                nome: "",
-                login: "",
+                id: userId,
+                nome: formDataUsuario.nome,
+                login: formDataUsuario.login,
                 senhaAtual: null,
                 senhaNova: null
             });
@@ -106,9 +108,9 @@ function UsuarioTrocarSenha() {
             setErrorMessage(errorMessage);
 
             setFormDataUsuario({
-                id: null,
-                nome: "",
-                login: "",
+                id: userId,
+                nome: formDataUsuario.nome,
+                login: formDataUsuario.login,
                 senhaAtual: null,
                 senhaNova: null,
             });
@@ -208,13 +210,13 @@ function UsuarioTrocarSenha() {
                             <div id="botao-criar-usuario">
                                 <Button
                                     text="Atualizar"
-                                    onClick={atualizarUsuario}
+                                    onClick={(e) => atualizarUsuario(e)}
                                 />
                             </div>
                             <div id='botao-cancelar-criar-usuario'>
                                 <Button
                                     text={"Cancelar"}
-                                    onClick={handleCancelarCadastroOuEdicao}
+                                    onClick={handleCancelarAtualizacao}
                                 />
                             </div>
                         </div>
