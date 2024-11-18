@@ -311,8 +311,7 @@ const ExibirQRCodes = () => {
                                                         )} </strong></p>
                                                         <p><strong>Para: {item.nomeCliente} </strong></p>
                                                         <p><strong>Desc: {item.descricaoVolume}</strong></p>
-                                                        <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
-                                                        <p><strong>N° Série:</strong></p>
+                                                        <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')} - N° Série: </strong></p>
                                                     </div>
                                                 </div>
                                             </div>
