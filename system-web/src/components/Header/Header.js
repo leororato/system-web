@@ -321,13 +321,13 @@ const Header = () => {
 
           {(userRole === "A" || userRole === "G") && (
             <div id="criar-packinglist-header">
-              <Text text={'Criar packingList exportação'} onClick={() => navigate('/cadastrar-packing-list')} />
+              <Text text={'Criar packinglist exportação'} onClick={() => navigate('/cadastrar-packing-list')} />
             </div>
           )}
 
           {(userRole === "A" || userRole === "G") && (
             <div id="criar-packinglist-header">
-              <Text text={'Criar packingList nacional'} onClick={() => navigate('/cadastrar-packing-list-nacional')} />
+              <Text text={'Criar packinglist nacional'} onClick={() => navigate('/cadastrar-packing-list-nacional')} />
             </div>
           )}
 

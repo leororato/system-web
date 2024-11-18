@@ -133,8 +133,8 @@ function UsuarioTrocarSenha() {
             <ErrorNotification message={errorMessage} onClose={() => { setErrorMessage(null) }} />
             <SucessNotification message={sucessMessage} onClose={() => { setSucessMessage(null) }} />
 
-            <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div className="itens-cadastro-usuario" style={{ marginTop: '20vh', width: '40%' }}>
+            <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10vh' }}>
+                <div className="itens-cadastro-usuario" style={{ marginTop: '10vh', width: '40%' }}>
 
                     <div style={{ display: 'flex', gap: '15px', alignItems: 'center', justifyContent: 'center' }}>
                         <Icon icon="mdi:account-cog" style={{ width: '60px', height: '60px' }} />

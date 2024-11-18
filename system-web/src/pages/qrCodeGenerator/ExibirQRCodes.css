@@ -127,7 +127,15 @@
 }
 
 #id-qr-code p {
-    font-size: 25px;
+    font-size: 35px;
+}
+
+#container-qrcode {
+    margin-left: 10px;
+}
+
+#container-qrcode p {
+    font-size: 11px;
 }
 
 #logo-para-etiquetas {
