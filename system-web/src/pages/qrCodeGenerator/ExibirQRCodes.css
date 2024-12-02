@@ -108,7 +108,7 @@
     display: flex;
     justify-content: center;
     margin-left: 5px;
-    height: 70%;
+    height: 65%;
 }
 
 #subdiv-id-qrcode {
@@ -128,11 +128,12 @@
     padding: 0;
 }
 
-#id-qr-code p {
-    font-size: 35px;
+#text-seqvolume p {
+    font-size: 37px;
 }
 
 #container-qrcode {
+    justify-content: center;
     margin-left: 5px;
 }
 
@@ -218,6 +219,8 @@
 
     #subdiv-texto-etiqueta {
         margin-left: 5px;
+        margin-top: 0;
+        padding: 0;
     }
 
     body {

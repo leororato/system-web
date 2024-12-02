@@ -216,14 +216,23 @@ const ExibirQRCodes = () => {
                                     <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'>
                                         <div className='qr-code-item'>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }} id='container-qrcode'>
+                                                <div style={{ width: '100%' }}>
+                                                    <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
+                                                </div>
                                                 <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
                                                 <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                             </div>
                                             <div className='texto-etiqueta'>
                                                 <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
-                                                        <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
-                                                        <p><strong>{item.seqVolume}</strong></p>
+                                                        <div>
+                                                            <p><strong>{item.ordemProducao && (
+                                                                <a>{item.ordemProducao}</a>
+                                                            )} </strong></p>
+                                                        </div>
+                                                        <div id='text-seqvolume'>
+                                                            <p><strong>{item.seqVolume}</strong></p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div id='subdiv-texto-etiqueta'>
@@ -233,8 +242,7 @@ const ExibirQRCodes = () => {
                                                         )} </strong></p>
                                                         <p><strong>Para: {item.nomeCliente} </strong></p>
                                                         <p><strong>Desc: {item.descricaoVolume}</strong></p>
-                                                        <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
-                                                        <p><strong>N° Série:</strong></p>
+                                                        <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')} - N° Série: </strong></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -255,14 +263,23 @@ const ExibirQRCodes = () => {
                                     <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'>
                                         <div className='qr-code-item'>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }} id='container-qrcode'>
+                                                <div style={{ width: '100%' }}>
+                                                    <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
+                                                </div>
                                                 <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
                                                 <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                             </div>
                                             <div className='texto-etiqueta'>
                                                 <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
-                                                        <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
-                                                        <p><strong>{item.seqVolume}</strong></p>
+                                                        <div>
+                                                            <p><strong>{item.ordemProducao && (
+                                                                <a>{item.ordemProducao}</a>
+                                                            )} </strong></p>
+                                                        </div>
+                                                        <div id='text-seqvolume'>
+                                                            <p><strong>{item.seqVolume}</strong></p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div id='subdiv-texto-etiqueta'>
@@ -272,8 +289,7 @@ const ExibirQRCodes = () => {
                                                         )} </strong></p>
                                                         <p><strong>Para: {item.nomeCliente} </strong></p>
                                                         <p><strong>Desc: {item.descricaoVolume}</strong></p>
-                                                        <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}      </strong></p>
-                                                        <p><strong>N° Série:</strong></p>
+                                                        <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')} - N° Série: </strong></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -294,21 +310,28 @@ const ExibirQRCodes = () => {
                                     <div key={item.identificadorVolumeProduto} className='sub-qr-code-item'>
                                         <div className='qr-code-item'>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }} id='container-qrcode'>
+                                                <div style={{ width: '100%' }}>
+                                                    <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
+                                                </div>
                                                 <QRCode value={item.qrCodeVolumeProduto} size={100} className='qr-code-img' />
                                                 <p><strong>{item.identificadorVolumeProduto}</strong></p>
                                             </div>
                                             <div className='texto-etiqueta'>
                                                 <div id='subdiv-id-qrcode'>
                                                     <div id='id-qr-code'>
-                                                        <img src={logo} id='logo-para-etiquetas' alt="logo-etiqueta"></img>
-                                                        <p><strong>{item.seqVolume}</strong></p>
+                                                        <div>
+                                                            <p><strong>{item.ordemProducao && (
+                                                                <a>{item.ordemProducao}</a>
+                                                            )} </strong></p>
+                                                        </div>
+                                                        <div id='text-seqvolume'>
+                                                            <p><strong>{item.seqVolume}</strong></p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div id='subdiv-texto-etiqueta'>
                                                     <div id="textos-etiqueta-div">
-                                                        <p><strong>{item.descricaoProduto}{item.ordemProducao && (
-                                                            <a> - {item.ordemProducao}</a>
-                                                        )} </strong></p>
+                                                        <p><strong>{item.descricaoProduto}</strong></p>
                                                         <p><strong>Para: {item.nomeCliente} </strong></p>
                                                         <p><strong>Desc: {item.descricaoVolume}</strong></p>
                                                         <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')} - N° Série: </strong></p>
