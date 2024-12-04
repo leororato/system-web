@@ -175,7 +175,7 @@ function EditarPL() {
 
     const handleCancel = (e) => {
         e.preventDefault();
-        navigate(-1);
+        navigate("/inicio");
     };
 
     return (

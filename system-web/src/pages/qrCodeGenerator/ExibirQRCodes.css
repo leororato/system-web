@@ -148,6 +148,12 @@
     padding: 0;
 }
 
+#div-qtd-nserie {
+    display: flex;
+    width: 95%;
+    justify-content: space-between;
+}
+
 @media print {
 
     @page {

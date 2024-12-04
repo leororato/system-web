@@ -50,7 +50,7 @@ function EditarPackingListNacional() {
 
         try {
             await api.put(`/packinglist/pl-nacional/${id}`, packingListRequest);
-            setSucessMessage('PackingList criado com sucesso!');
+            setSucessMessage('PackingList atualizado com sucesso!');
 
             navigate('/inicio', { state: { sucessMessage: 'Packinglist atualizado com sucesso!' } });
             
@@ -115,7 +115,7 @@ function EditarPackingListNacional() {
 
     const handleCancel = (e) => {
         e.preventDefault();
-        navigate(-1);
+        navigate("/inicio");
     }
 
     return (

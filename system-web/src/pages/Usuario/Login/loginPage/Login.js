@@ -34,7 +34,7 @@ function Login() {
         try {
             // Faz a requisição de login
                 // const response = await axios.post('http://192.168.1.238:8080/auth/login', {
-                 const response = await axios.post('http://localhost:8080/auth/login', {
+                const response = await axios.post('http://localhost:8080/auth/login', {
                 login: login,
                 senha: senha
             });

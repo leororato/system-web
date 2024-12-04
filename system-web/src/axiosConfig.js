@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 
 // Configuração da URL base da API
 const api = axios.create({
-      // baseURL: 'http://192.168.1.238:8080/api',
+     // baseURL: 'http://192.168.1.238:8080/api',
      baseURL: 'http://localhost:8080/api',
 });
 
