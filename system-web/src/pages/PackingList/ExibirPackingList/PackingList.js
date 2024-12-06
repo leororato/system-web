@@ -275,7 +275,7 @@ function PackingList() {
     const handleGerarPdf = async () => {
         try {
             const configHeaderPdf = {
-                responseType: 'arraybuffer',  // Definimos o responseType corretamente
+                responseType: 'arraybuffer',
             };
 
             const response = await api.get(`/packinglist/pdf/${contextMenu.selectedId}`, configHeaderPdf);

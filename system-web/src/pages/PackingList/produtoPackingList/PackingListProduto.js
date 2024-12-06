@@ -46,7 +46,7 @@ function PackingListProduto() {
 
     const contextEditarRef = useRef(null);
     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null, selectedDesc: null });
-    const [contextEditar, setContextEditar] = useState({ visible: false, selectedIdProduto: '', selectedSeq: null });
+    const [contextEditar, setContextEditar] = useState({ visible: false, selectedIdPl: null, selectedIdProduto: '', selectedSeq: null });
     const [contextDelete, setContextDelete] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null, selectedDesc: null });
     const [contextDeleteSegundoFator, setContextDeleteSegundoFator] = useState({ visible: false, x: 0, y: 0, selectedId: null, selectedSeq: null });
     const [inputDeleteSegundoFator, setInputDeleteSegundoFator] = useState("");
@@ -173,12 +173,34 @@ function PackingListProduto() {
         }
     }
 
+    const handleGerarPdf = async () => {
+        try {
+            const configHeaderPdf = {
+                responseType: 'arraybuffer',  // Definimos o responseType corretamente
+            };
+
+            const response = await api.get(`/packinglist/pdf-produto/${contextMenu.selectedIdPl}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`, configHeaderPdf);
+
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `packinglist_${contextMenu.selectedId}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();  // Remover o link após o clique
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao gerar o PDF";
+            setErrorMessage(errorMessage);
+        }
+    };
 
     const handleClickOutside = () => {
         setContextMenu({
             visible: false,
             x: 0,
             y: 0,
+            selectedIdPl: null,
             selectedId: null,
             selectedSeq: null,
             selectedDesc: null
@@ -188,12 +210,13 @@ function PackingListProduto() {
     };
 
 
-    const handleRightClick = (e, idProduto, seq, produto, descricaoProduto, ordemProducao, totalPesoLiquido, totalPesoBruto, comprimento, largura, altura) => {
+    const handleRightClick = (e, selectedIdPl, idProduto, seq, produto, descricaoProduto, ordemProducao, totalPesoLiquido, totalPesoBruto, comprimento, largura, altura) => {
         e.preventDefault();
         setContextMenu({
             visible: true,
             x: e.pageX,
             y: e.pageY,
+            selectedIdPl: selectedIdPl,
             selectedId: idProduto,
             selectedSeq: seq,
             selectedDesc: descricaoProduto
@@ -220,6 +243,7 @@ function PackingListProduto() {
             visible: false,
             x: 0,
             y: 0,
+            selectedIdPl: null,
             selectedIdProduto: null,
             selectedSeq: null
         });
@@ -232,6 +256,7 @@ function PackingListProduto() {
             visible: false,
             x: 0,
             y: 0,
+            selectedIdPl: null,
             selectedId: null,
             selectedSeq: null,
             selectedDesc: null
@@ -313,6 +338,7 @@ function PackingListProduto() {
             visible: false,
             x: 0,
             y: 0,
+            selectedIdPl: null,
             selectedId: null,
             selectedSeq: null,
             selectedDesc: null
@@ -672,10 +698,10 @@ function PackingListProduto() {
                             {filteredProdutos.length > 0 ? (
                                 filteredProdutos.map((p) => (
                                     <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) =>
-                                        handleRightClick(e, p.id.idProduto, p.id.seq, p.produto, p.descricaoProduto, p.ordemProducao, p.totalPesoLiquido, p.totalPesoBruto, p.comprimento, p.largura, p.altura)}
+                                        handleRightClick(e, packingList.idPackinglist, p.id.idProduto, p.id.seq, p.produto, p.descricaoProduto, p.ordemProducao, p.totalPesoLiquido, p.totalPesoBruto, p.comprimento, p.largura, p.altura)}
                                         className={`lista-prod-1 ${selectedItemId === p.id.idProduto ? 'lista-prod-1-com-cor' : 'lista-prod-1-sem-cor'}`}
                                         id='lista-prod-1'>
-                                            
+
                                         <div>{packingList.idPackinglist}</div>
                                         <div>{p.id.idProduto}</div>
                                         <div>{p.id.seq}</div>
@@ -691,7 +717,7 @@ function PackingListProduto() {
                                 ))
                             ) : (
                                 <div id="nao-existe-produto">
-                                    <li style={{padding: '20px'}}>
+                                    <li style={{ padding: '20px' }}>
                                         <Text
                                             text={"Nenhum produto encontrado"}
                                             fontSize={'14px'}
@@ -723,6 +749,12 @@ function PackingListProduto() {
                         <Icon icon="vaadin:qrcode" id='icone-menu' />
                         <p>Gerar QR Code</p>
                     </div>
+                    {(packingList.idioma === "Português" && packingList.tipoTransporte === "Terrestre") && (
+                        <div id='container-icon-menu' onClick={handleGerarPdf}>
+                            <Icon icon="tdesign:file-pdf" id='icone-menu' />
+                            <p>Gerar PDF</p>
+                        </div>
+                    )}
                     {(userRole === "A" || userRole === "G") && (
                         <div id='container-icon-menu-excluir' onClick={handleDelete} >
                             <Icon icon="material-symbols:delete-outline" id='icone-menu' />
