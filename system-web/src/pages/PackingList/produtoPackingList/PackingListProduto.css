@@ -50,12 +50,21 @@
 .container-autocomplete {
     display: flex;
     justify-content: center;
+    align-items: center;
     width: 100%;
 }
 
 .container-autocomplete input {
-    width: 1000px;
+    width: 100%;
     margin-top: 5px;
+}
+
+#div-desc-prod {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
 }
 
 #div-id-prod,
@@ -177,14 +186,14 @@
 }
 
 .produto-container-prod li {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(9, 1fr);
     border-bottom: 1px solid #ddd;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
 }
 
 .produto-container-prod-maior li {
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: repeat(10, 1fr);
     border-bottom: 1px solid #ddd;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;

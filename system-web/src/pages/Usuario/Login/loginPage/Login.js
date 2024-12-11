@@ -9,6 +9,7 @@ import Input from "../../../../components/Input";
 import Button from "../../../../components/Button";
 import Logo from "../../../../assets/logo.png"
 import axios from "axios";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 function Login() {
     const navigate = useNavigate();
@@ -20,6 +21,8 @@ function Login() {
     const errorTokenMessage = query.get('error');
     const [errorMessage, setErrorMessage] = useState(location.state?.errorMessage || null);
     const [sucessMessage, setSucessMessage] = useState(null);
+
+    const [mostrarSenha, setMostrarSenha] = useState(false);
 
     useEffect(() => {
         if (errorTokenMessage != null) {
@@ -33,13 +36,13 @@ function Login() {
         e.preventDefault();
         try {
             // Faz a requisição de login
-                const response = await axios.post('http://192.168.1.238:8080/auth/login', {
-                // const response = await axios.post('http://localhost:8080/auth/login', {
+                // const response = await axios.post('http://192.168.1.238:8080/auth/login', {
+                const response = await axios.post('http://localhost:8080/auth/login', {
                 login: login,
                 senha: senha
             });
 
-            Cookies.set('token', response.data.token, { 
+            Cookies.set('token', response.data.token, {
                 expires: 7,               // expira em 7 dias
                 sameSite: 'Lax',        // impede o envio do cookie em solicitações de terceiros
             });
@@ -65,8 +68,16 @@ function Login() {
 
                 const errorMessage = error.response?.data || "Erro desconhecido ao fazer Login";
                 setErrorMessage(errorMessage);
-                
+
             }
+        }
+    };
+
+    const handleToggleSenha = () => {
+        if (mostrarSenha === true) {
+            setMostrarSenha(false);
+        } else {
+            setMostrarSenha(true);
         }
     };
 
@@ -105,14 +116,22 @@ function Login() {
                                     color={'black'}
                                     fontSize={20}
                                 />
-                                <Input
-                                    id="input-senha"
-                                    type={'password'}
-                                    placeholder={'Digite sua Senha'}
-                                    padding={7}
-                                    onChange={(e) => setSenha(e.target.value)}
-                                    value={senha}
-                                />
+                                <div style={{ display: "flex", justifyContent: 'flex-end', alignItems: 'center' }}>
+                                    <Input
+                                        id="input-senha"
+                                        type={mostrarSenha ? "text" : "password"}
+                                        placeholder={'Digite sua Senha'}
+                                        padding={7}
+                                        onChange={(e) => setSenha(e.target.value)}
+                                        value={senha}
+                                    />
+                                    <Icon
+                                        icon={mostrarSenha ? "mdi:eye-off" : "mdi:eye"}
+                                        onClick={handleToggleSenha}
+                                        title={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                                        style={{ position: 'absolute', cursor: 'pointer', marginRight: 10, color: "#999"}}
+                                    />
+                                </div>
                             </div>
 
                         </div>

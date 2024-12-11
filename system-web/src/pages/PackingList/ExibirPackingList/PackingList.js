@@ -31,6 +31,7 @@ function PackingList() {
     const [errorMessage, setErrorMessage] = useState(null);
 
     const [selectedItemId, setSelectedItemId] = useState(null);
+    const [tipoPackinglist, setTipoPackinglist] = useState("");
 
     const [estadoDaPagina, setEstadoDaPagina] = useState('Carregando');
     const [contextLoading, setContextLoading] = useState({ visible: false });
@@ -134,6 +135,12 @@ function PackingList() {
             selectedId: id,
             selectedIdioma: idioma
         });
+        
+        if (idioma === "Espanhol") {
+            setTipoPackinglist("exportacao")
+        } else if (idioma === "Português") {
+            setTipoPackinglist("nacional")
+        }
 
         setSelectedItemId(id);
     };
@@ -288,6 +295,28 @@ function PackingList() {
             document.body.appendChild(link);
             link.click();
             link.remove();  // Remover o link após o clique
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao gerar o PDF";
+            setErrorMessage(errorMessage);
+        }
+    };
+
+    const handleGerarPdfConferencia = async () => {
+        try {
+            const configHeaderPdf = {
+                responseType: 'arraybuffer',
+            };
+
+            const response = await api.get(`/packinglist/pdf-pl-conferencia-exportacao/${contextMenu.selectedId}`, configHeaderPdf);
+
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `packinglist_${contextMenu.selectedId}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Erro desconhecido ao gerar o PDF";
             setErrorMessage(errorMessage);
@@ -558,6 +587,12 @@ function PackingList() {
                             <Icon icon="tdesign:file-pdf" id='icone-menu' />
                             <p>Gerar PDF</p>
                         </div>
+                        {tipoPackinglist === "exportacao" && (
+                            <div id='container-icon-menu' onClick={handleGerarPdfConferencia}>
+                                <Icon icon="tdesign:file-pdf" id='icone-menu' />
+                                <p>Gerar PDF Conferência</p>
+                            </div>
+                        )}
                         {(userRole === "A" || userRole === "G") && (
                             <div id='container-icon-menu-excluir' onClick={handleDelete} >
                                 <Icon icon="material-symbols:delete-outline" id='icone-menu' />

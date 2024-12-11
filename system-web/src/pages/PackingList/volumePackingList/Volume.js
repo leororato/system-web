@@ -1225,6 +1225,7 @@ function Volume() {
                                 <div>Ordem de Produção</div>
                                 <div>Total Peso Líquido</div>
                                 <div>Total Peso Bruto</div>
+                                <div>Número de Série</div>
                             </li>
 
                             {loading ? (
@@ -1260,6 +1261,7 @@ function Volume() {
                                             <div>{produtoSelecionado.ordemProducao}</div>
                                             <div>{produtoSelecionado.totalPesoLiquido}</div>
                                             <div>{produtoSelecionado.totalPesoBruto}</div>
+                                            <div>{produtoSelecionado.numeroSerie}</div>
                                         </li>
                                     )}
                                 </>

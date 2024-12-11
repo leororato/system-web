@@ -5,6 +5,7 @@ const Input = ({
     type,
     placeholder,
     backgroundColor,
+    color,
     fontSize,
     padding,
     cursor,
@@ -51,6 +52,7 @@ const Input = ({
                     fontSize: fontSize,
                     padding: padding,
                     cursor: cursor,
+                    color: color,
                     // Estilos para remover as flechinhas
                     appearance: type === 'number' ? 'none' : 'auto',
                     MozAppearance: type === 'number' ? 'textfield' : 'auto',

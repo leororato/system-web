@@ -55,6 +55,7 @@ function PackingListProduto() {
 
     const [selectedItemId, setSelectedItemId] = useState(null);
 
+    const [numeroSerie, setNumeroSerie] = useState("");
     const [infoProdutoParaExibirNoModoEdicao, setInfoProdutoParaExibirNoModoEdicao] = useState({
         idPackinglist: id,
         seq: "",
@@ -62,14 +63,15 @@ function PackingListProduto() {
         ordemProducao: "",
         totalPesoLiquido: "",
         totalPesoBruto: "",
-        comprimento: ""
+        comprimento: "",
+        numeroSerie: ""
     });
     const [formDataProduto, setFormDataProduto] = useState({
         idPackinglist: id,
         idProduto: '',
         codigoMaquina: '',
         nomeMaquina: '',
-        codigoOrdem: ''
+        codigoOrdem: '',
     });
 
 
@@ -210,7 +212,7 @@ function PackingListProduto() {
     };
 
 
-    const handleRightClick = (e, selectedIdPl, idProduto, seq, produto, descricaoProduto, ordemProducao, totalPesoLiquido, totalPesoBruto, comprimento, largura, altura) => {
+    const handleRightClick = (e, selectedIdPl, idProduto, seq, produto, descricaoProduto, ordemProducao, totalPesoLiquido, totalPesoBruto, comprimento, largura, altura, numeroSerie) => {
         e.preventDefault();
         setContextMenu({
             visible: true,
@@ -232,13 +234,27 @@ function PackingListProduto() {
             totalPesoBruto: totalPesoBruto,
             comprimento: comprimento,
             largura: largura,
-            altura: altura
+            altura: altura,
+            numeroSerie: numeroSerie
         })
 
         setSelectedItemId(idProduto)
     };
 
     const handleEdit = () => {
+        setContextMenu({
+            visible: false,
+            x: 0,
+            y: 0,
+            selectedIdPl: null,
+            selectedIdProduto: null,
+            selectedSeq: null
+        });
+
+        setContextEditar({ visible: true, selectedIdPackinglist: id, selectedIdProduto: contextMenu.selectedId, selectedSeq: contextMenu.selectedSeq });
+    }
+
+    const handleEditExportacao = () => {
         setContextMenu({
             visible: false,
             x: 0,
@@ -277,6 +293,10 @@ function PackingListProduto() {
         setInfoProdutoParaExibirNoModoEdicao({ ...infoProdutoParaExibirNoModoEdicao, [name]: value });
     }
 
+    const handleChangeNumeroSerie = (e) => {
+        setInfoProdutoParaExibirNoModoEdicao({ ...infoProdutoParaExibirNoModoEdicao, numeroSerie: e.target.value });
+    }
+
     const handleAtualizarProduto = async () => {
         setEstadoDaPagina('Salvando');
         setContextLoading({ visible: true });
@@ -293,7 +313,8 @@ function PackingListProduto() {
             totalPesoBruto: infoProdutoParaExibirNoModoEdicao.totalPesoBruto,
             comprimento: infoProdutoParaExibirNoModoEdicao.comprimento,
             largura: infoProdutoParaExibirNoModoEdicao.largura,
-            altura: infoProdutoParaExibirNoModoEdicao.altura
+            altura: infoProdutoParaExibirNoModoEdicao.altura,
+            numeroSerie: infoProdutoParaExibirNoModoEdicao.numeroSerie
         }
 
         const produtoRequest = {
@@ -329,7 +350,8 @@ function PackingListProduto() {
             seq: '',
             codigoMaquina: '',
             nomeMaquina: '',
-            codigoOrdem: ''
+            codigoOrdem: '',
+            numeroSerie: ''
         })
     }
 
@@ -501,7 +523,7 @@ function PackingListProduto() {
             idProduto: item.idProduto,
             codigoMaquina: item.codigoMaquina,
             nomeMaquina: item.nomeMaquina,
-            codigoOrdem: item.codigoOrdem
+            codigoOrdem: item.codigoOrdem,
         }));
     }
 
@@ -646,9 +668,11 @@ function PackingListProduto() {
                             />
                             <div className="container-autocomplete">
                                 <div id="div-desc-prod">
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', width: '100%'}}>
                                     <Text
                                         text={'Pesquisar por Produto ou Ordem:'}
                                     />
+                                    </div>
                                     <Autocomplete
                                         id="input-autocomplete-adicionar-prod"
                                         data={produtoNomus}
@@ -694,11 +718,12 @@ function PackingListProduto() {
                                 {tipoPackinglist === "reposicao" && (
                                     <div>Dimensão</div>
                                 )}
+                                <div>Número de Série</div>
                             </li>
                             {filteredProdutos.length > 0 ? (
                                 filteredProdutos.map((p) => (
                                     <li key={`${p.id.idProduto}-${p.id.seq}`} onContextMenu={(e) =>
-                                        handleRightClick(e, packingList.idPackinglist, p.id.idProduto, p.id.seq, p.produto, p.descricaoProduto, p.ordemProducao, p.totalPesoLiquido, p.totalPesoBruto, p.comprimento, p.largura, p.altura)}
+                                        handleRightClick(e, packingList.idPackinglist, p.id.idProduto, p.id.seq, p.produto, p.descricaoProduto, p.ordemProducao, p.totalPesoLiquido, p.totalPesoBruto, p.comprimento, p.largura, p.altura, p.numeroSerie)}
                                         className={`lista-prod-1 ${selectedItemId === p.id.idProduto ? 'lista-prod-1-com-cor' : 'lista-prod-1-sem-cor'}`}
                                         id='lista-prod-1'>
 
@@ -713,6 +738,7 @@ function PackingListProduto() {
                                         {tipoPackinglist === "reposicao" && (
                                             <div>{p.comprimento + ' X ' + p.largura + ' X ' + p.altura}</div>
                                         )}
+                                        <div>{p.numeroSerie}</div>
                                     </li>
                                 ))
                             ) : (
@@ -735,8 +761,8 @@ function PackingListProduto() {
                 <div className='context-menu' style={{
                     top: `${contextMenu.y}px`, left: `${contextMenu.x}px`
                 }}>
-                    {(userRole === "A" || userRole === "G") && tipoPackinglist === "reposicao" && (
-                        <div id='container-icon-menu' onClick={handleEdit}>
+                    {(userRole === "A" || userRole === "G") && (tipoPackinglist === "reposicao" || tipoPackinglist === "maquina") && (
+                        <div id='container-icon-menu' onClick={tipoPackinglist === "reposicao" ? handleEdit : handleEditExportacao}>
                             <Icon icon="mdi:edit" id='icone-menu' />
                             <p>Editar</p>
                         </div>
@@ -862,52 +888,70 @@ function PackingListProduto() {
                                                     title={'Altere o peso bruto total...'}
                                                     value={infoProdutoParaExibirNoModoEdicao.totalPesoBruto}
                                                     onChange={handleChangePesoBruto}
+                                                    readOnly={tipoPackinglist === "maquina"}
+                                                    className={tipoPackinglist === "maquina" && "input-sem-edicao"}
                                                 />
                                             </div>
 
-                                            <div id="container-edit-prod-dims">
+                                            {tipoPackinglist === "maquina" && (
+                                                <div>
+                                                    <label>Número de série:</label>
+                                                    <Input
+                                                        type={'number'}
+                                                        title={'Digite o número de série...'}
+                                                        placeholder={infoProdutoParaExibirNoModoEdicao.numeroSerie || "Ainda não possui..."}
+                                                        name={'comprimento'}
+                                                        value={infoProdutoParaExibirNoModoEdicao.numeroSerie}
+                                                        onChange={handleChangeNumeroSerie}
+                                                    />
+                                                </div>
+                                            )}
 
-                                                <label>Dimensões:</label>
+                                            {tipoPackinglist === "reposicao" && (
+                                                <div id="container-edit-prod-dims">
 
-                                                <div id="sub-dimensao-container">
-                                                    <div className="container-inputs-dimensao-produto">
-                                                        <div>
-                                                            <label>Comprimento (cm):</label>
-                                                            <Input
-                                                                type={'number'}
-                                                                title={'Digite o comprimento do volume...'}
-                                                                placeholder={infoProdutoParaExibirNoModoEdicao.comprimento || "Ainda não possui..."}
-                                                                name={'comprimento'}
-                                                                value={infoProdutoParaExibirNoModoEdicao.comprimento}
-                                                                onChange={handleChangeDimensao}
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <label>Largura (cm):</label>
-                                                            <Input
-                                                                type={'number'}
-                                                                title={'Digite a largura do volume...'}
-                                                                placeholder={infoProdutoParaExibirNoModoEdicao.largura || "Ainda não possui..."}
-                                                                name={'largura'}
-                                                                value={infoProdutoParaExibirNoModoEdicao.largura}
-                                                                onChange={handleChangeDimensao}
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <label>Altura (cm)</label>
-                                                            <Input
-                                                                type={'number'}
-                                                                title={'Digite a altura do volume...'}
-                                                                placeholder={infoProdutoParaExibirNoModoEdicao.altura || "Ainda não possui..."}
-                                                                name={'altura'}
-                                                                value={infoProdutoParaExibirNoModoEdicao.altura}
-                                                                onChange={handleChangeDimensao}
-                                                            />
+                                                    <label>Dimensões:</label>
+
+                                                    <div id="sub-dimensao-container">
+                                                        <div className="container-inputs-dimensao-produto">
+                                                            <div>
+                                                                <label>Comprimento (cm):</label>
+                                                                <Input
+                                                                    type={'number'}
+                                                                    title={'Digite o comprimento do volume...'}
+                                                                    placeholder={infoProdutoParaExibirNoModoEdicao.comprimento || "Ainda não possui..."}
+                                                                    name={'comprimento'}
+                                                                    value={infoProdutoParaExibirNoModoEdicao.comprimento}
+                                                                    onChange={handleChangeDimensao}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label>Largura (cm):</label>
+                                                                <Input
+                                                                    type={'number'}
+                                                                    title={'Digite a largura do volume...'}
+                                                                    placeholder={infoProdutoParaExibirNoModoEdicao.largura || "Ainda não possui..."}
+                                                                    name={'largura'}
+                                                                    value={infoProdutoParaExibirNoModoEdicao.largura}
+                                                                    onChange={handleChangeDimensao}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label>Altura (cm)</label>
+                                                                <Input
+                                                                    type={'number'}
+                                                                    title={'Digite a altura do volume...'}
+                                                                    placeholder={infoProdutoParaExibirNoModoEdicao.altura || "Ainda não possui..."}
+                                                                    name={'altura'}
+                                                                    value={infoProdutoParaExibirNoModoEdicao.altura}
+                                                                    onChange={handleChangeDimensao}
+                                                                />
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                            </div>
+                                                </div>
+                                            )}
 
 
                                         </div>

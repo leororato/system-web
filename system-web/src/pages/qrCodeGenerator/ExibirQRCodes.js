@@ -237,9 +237,7 @@ const ExibirQRCodes = () => {
                                                 </div>
                                                 <div id='subdiv-texto-etiqueta'>
                                                     <div id="textos-etiqueta-div">
-                                                        <p><strong>{item.descricaoProduto}{item.ordemProducao && (
-                                                            <span> - {item.ordemProducao}</span>
-                                                        )} </strong></p>
+                                                        <p><strong>{item.descricaoProduto}</strong></p>
                                                         <p><strong>Cliente: {item.nomeCliente} </strong></p>
                                                         <p><strong>Desc: {item.descricaoVolume}</strong></p>
                                                         <div id='div-qtd-nserie'>
@@ -247,7 +245,7 @@ const ExibirQRCodes = () => {
                                                                 <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
                                                             </div>
                                                             <div>
-                                                                <p><strong>N° Série:</strong></p>
+                                                                <p><strong>N° Série: {item.numeroSerie}</strong></p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -291,9 +289,7 @@ const ExibirQRCodes = () => {
                                                 </div>
                                                 <div id='subdiv-texto-etiqueta'>
                                                     <div id="textos-etiqueta-div">
-                                                        <p><strong>{item.descricaoProduto}{item.ordemProducao && (
-                                                            <span> - {item.ordemProducao}</span>
-                                                        )} </strong></p>
+                                                        <p><strong>{item.descricaoProduto}</strong></p>
                                                         <p><strong>Cliente: {item.nomeCliente} </strong></p>
                                                         <p><strong>Desc: {item.descricaoVolume}</strong></p>
                                                         <div id='div-qtd-nserie'>
@@ -301,7 +297,7 @@ const ExibirQRCodes = () => {
                                                                 <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
                                                             </div>
                                                             <div>
-                                                                <p><strong>N° Série:</strong></p>
+                                                                <p><strong>N° Série: {item.numeroSerie}</strong></p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -353,7 +349,7 @@ const ExibirQRCodes = () => {
                                                                 <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
                                                             </div>
                                                             <div>
-                                                                <p><strong>N° Série:</strong></p>
+                                                                <p><strong>N° Série: {item.numeroSerie}</strong></p>
                                                             </div>
                                                         </div>
                                                     </div>
