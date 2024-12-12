@@ -63,8 +63,6 @@
     page-break-inside: avoid;
 }
 
-.sub-qr-code-item {}
-
 /* .qr-code-img {
     min-width: 36mm;
     min-height: 36mm;
@@ -200,7 +198,7 @@
         height: 20mm;
         min-width: 20mm;
         min-height: 20mm;
-        margin-left: 0px;
+        margin-left: 20px;
     }
 
     .sub-qr-code-item {

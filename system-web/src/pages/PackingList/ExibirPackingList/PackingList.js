@@ -135,7 +135,7 @@ function PackingList() {
             selectedId: id,
             selectedIdioma: idioma
         });
-        
+
         if (idioma === "Espanhol") {
             setTipoPackinglist("exportacao")
         } else if (idioma === "Português") {
@@ -524,6 +524,9 @@ function PackingList() {
                                             ordemServico = p.ordemServico.split('$');
                                         }
 
+                                        const pesoLiquidoFormatado = parseFloat(p.pesoLiquidoTotal).toFixed(3);
+                                        const pesoBrutoFormatado = parseFloat(p.pesoBrutoTotal).toFixed(3);
+
                                         return (
                                             <li
                                                 key={p.idPackinglist} onContextMenu={(event) => handleRightClick(event, p.idPackinglist, p.idioma)}
@@ -534,8 +537,8 @@ function PackingList() {
                                                 <div>{p.localDestino}</div>
                                                 <div>{p.invoice}</div>
                                                 <div>{p.tipoTransporte}</div>
-                                                <div>{p.pesoLiquidoTotal}</div>
-                                                <div>{p.pesoBrutoTotal}</div>
+                                                <div>{pesoLiquidoFormatado}</div>
+                                                <div>{pesoBrutoFormatado}</div>
                                                 <div>
                                                     {ordemServico.map((item, index) => (
                                                         <span key={index}>

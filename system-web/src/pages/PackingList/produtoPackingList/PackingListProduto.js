@@ -197,6 +197,28 @@ function PackingListProduto() {
         }
     };
 
+    const handleGerarPdfPorProdutoExportacao = async () => {
+        try {
+            const configHeaderPdf = {
+                responseType: 'arraybuffer',  // Definimos o responseType corretamente
+            };
+
+            const response = await api.get(`/packinglist/pdf-produto-exportacao/${contextMenu.selectedIdPl}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`, configHeaderPdf);
+
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `packinglist_${contextMenu.selectedId}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();  // Remover o link após o clique
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "Erro desconhecido ao gerar o PDF";
+            setErrorMessage(errorMessage);
+        }
+    }
+
     const handleClickOutside = () => {
         setContextMenu({
             visible: false,
@@ -597,8 +619,8 @@ function PackingListProduto() {
                                 <div>{packingList.incoterm}</div>
                                 <div>{packingList.invoice}</div>
                                 <div>{packingList.tipoTransporte}</div>
-                                <div>{packingList.pesoLiquidoTotal}</div>
-                                <div>{packingList.pesoBrutoTotal}</div>
+                                <div>{parseFloat(packingList.pesoLiquidoTotal).toFixed(3)}</div>
+                                <div>{parseFloat(packingList.pesoBrutoTotal).toFixed(3)}</div>
                                 <div>{packingList.idioma}</div>
                                 {packingList.finalizado == 0 ? (
                                     <div><Icon icon="pajamas:status-active" style={{ color: 'green', fontSize: '10px' }} /> Em andamento</div>
@@ -668,10 +690,10 @@ function PackingListProduto() {
                             />
                             <div className="container-autocomplete">
                                 <div id="div-desc-prod">
-                                    <div style={{ display: 'flex', alignItems: 'flex-start', width: '100%'}}>
-                                    <Text
-                                        text={'Pesquisar por Produto ou Ordem:'}
-                                    />
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', width: '100%' }}>
+                                        <Text
+                                            text={'Pesquisar por Produto ou Ordem:'}
+                                        />
                                     </div>
                                     <Autocomplete
                                         id="input-autocomplete-adicionar-prod"
@@ -733,8 +755,8 @@ function PackingListProduto() {
                                         <div>{p.produto}</div>
                                         <div>{p.descricaoProduto}</div>
                                         <div>{p.ordemProducao}</div>
-                                        <div>{p.totalPesoLiquido}</div>
-                                        <div>{p.totalPesoBruto}</div>
+                                        <div>{parseFloat(p.totalPesoLiquido).toFixed(3)}</div>
+                                        <div>{parseFloat(p.totalPesoBruto).toFixed(3)}</div>
                                         {tipoPackinglist === "reposicao" && (
                                             <div>{p.comprimento + ' X ' + p.largura + ' X ' + p.altura}</div>
                                         )}
@@ -775,8 +797,8 @@ function PackingListProduto() {
                         <Icon icon="vaadin:qrcode" id='icone-menu' />
                         <p>Gerar QR Code</p>
                     </div>
-                    {(packingList.idioma === "Português" && packingList.tipoTransporte === "Terrestre") && (
-                        <div id='container-icon-menu' onClick={handleGerarPdf}>
+                    {packingList.idioma != "Inglês" && (
+                        <div id='container-icon-menu' onClick={(packingList.idioma === "Português" && packingList.tipoTransporte === "Terrestre") ? handleGerarPdf : handleGerarPdfPorProdutoExportacao}>
                             <Icon icon="tdesign:file-pdf" id='icone-menu' />
                             <p>Gerar PDF</p>
                         </div>

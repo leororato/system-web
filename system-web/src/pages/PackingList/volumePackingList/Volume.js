@@ -220,7 +220,7 @@ function Volume() {
             if (response.data && Array.isArray(response.data)) {
                 setVolumes(response.data);
 
-            } else { 
+            } else {
                 setVolumes([]);
             }
 
@@ -331,7 +331,6 @@ function Volume() {
             idProduto: idProduto,
             seq: seq,
             idVolume: salvarIdVolume.idVolume,
-            qrCodeVolumeProduto: `${id}-${idProduto}-${seq}-${salvarIdVolume.idVolume}`
         }
 
         const volumeRequest = {
@@ -1259,8 +1258,8 @@ function Volume() {
                                             <div>{produtoSelecionado.id.seq}</div>
                                             <div>{produtoSelecionado.descricaoProduto}</div>
                                             <div>{produtoSelecionado.ordemProducao}</div>
-                                            <div>{produtoSelecionado.totalPesoLiquido}</div>
-                                            <div>{produtoSelecionado.totalPesoBruto}</div>
+                                            <div>{parseFloat(produtoSelecionado.totalPesoLiquido).toFixed(3)}</div>
+                                            <div>{parseFloat(produtoSelecionado.totalPesoBruto).toFixed(3)}</div>
                                             <div>{produtoSelecionado.numeroSerie}</div>
                                         </li>
                                     )}
@@ -1382,8 +1381,8 @@ function Volume() {
                                                         <div id="list-vol">{v.altura}</div>
                                                         <div id="list-vol">{v.largura}</div>
                                                         <div id="list-vol">{v.comprimento}</div>
-                                                        <div id="list-vol">{v.pesoLiquido}</div>
-                                                        <div id="list-vol">{v.pesoBruto}</div>
+                                                        <div id="list-vol">{parseFloat(v.pesoLiquido).toFixed(3)}</div>
+                                                        <div id="list-vol">{parseFloat(v.pesoBruto).toFixed(3)}</div>
                                                         <div id="list-vol">{v.observacao}</div>
                                                     </div>
                                                     <div id="container-icon-plus" title='Exibir/Esconder subvolumes'>
