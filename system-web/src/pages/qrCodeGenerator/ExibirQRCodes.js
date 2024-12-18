@@ -242,10 +242,13 @@ const ExibirQRCodes = () => {
                                                         <p><strong>Desc: {item.descricaoVolume}</strong></p>
                                                         <div id='div-qtd-nserie'>
                                                             <div>
-                                                                <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
+                                                                <p><strong>Qtd: {item.quantidadeItens} </strong></p>
                                                             </div>
                                                             <div>
                                                                 <p><strong>N° Série: {item.numeroSerie}</strong></p>
+                                                            </div>
+                                                            <div>
+                                                                <p><strong>Origem: Brasil</strong></p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -294,10 +297,13 @@ const ExibirQRCodes = () => {
                                                         <p><strong>Desc: {item.descricaoVolume}</strong></p>
                                                         <div id='div-qtd-nserie'>
                                                             <div>
-                                                                <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
+                                                                <p><strong>Qtd: {item.quantidadeItens} </strong></p>
                                                             </div>
                                                             <div>
                                                                 <p><strong>N° Série: {item.numeroSerie}</strong></p>
+                                                            </div>
+                                                            <div>
+                                                                <p><strong>Origem: Brasil</strong></p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -346,10 +352,13 @@ const ExibirQRCodes = () => {
                                                         <p><strong>Desc: {item.descricaoVolume}</strong></p>
                                                         <div id='div-qtd-nserie'>
                                                             <div>
-                                                                <p><strong>Qtd: {item.quantidadeItens} {item.quantidadeItens > 1 ? ('itens') : ('item')}</strong></p>
+                                                                <p><strong>Qtd: {item.quantidadeItens} </strong></p>
                                                             </div>
                                                             <div>
                                                                 <p><strong>N° Série: {item.numeroSerie}</strong></p>
+                                                            </div>
+                                                            <div>
+                                                                <p><strong>Origem: Brasil</strong></p>
                                                             </div>
                                                         </div>
                                                     </div>

@@ -192,13 +192,16 @@
         page-break-inside: avoid;
     }
 
+    #container-qrcode {
+        margin-left: 20px;
+    }
+
     .qr-code-img {
         padding: 0;
         width: 20mm;
         height: 20mm;
         min-width: 20mm;
         min-height: 20mm;
-        margin-left: 20px;
     }
 
     .sub-qr-code-item {

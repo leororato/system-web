@@ -508,6 +508,7 @@ function PackingList() {
                                 <div>Peso Bruto Total</div>
                                 <div>Ordem de Serviço</div>
                                 <div>Idioma</div>
+                                <div>Quantidade<br/> Coletas</div>
                                 <div>Status</div>
                             </li>
 
@@ -549,6 +550,7 @@ function PackingList() {
                                                 </div>
 
                                                 <div>{p.idioma}</div>
+                                                <div>{p.numeroColetas}</div>
                                                 {p.finalizado == 0 ? (
                                                     <div><Icon icon="pajamas:status-active" style={{ color: 'green', fontSize: '10px' }} /> Em andamento</div>
                                                 ) : (
