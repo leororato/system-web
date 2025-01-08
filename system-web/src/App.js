@@ -16,6 +16,7 @@ import CadastroPackingListNacional from './pages/PackingList/cadastroPackingList
 import EditarPackingListNacional from './pages/PackingList/EditarPackingListNacional/EditarPackingListNacional';
 import Unauthorized from './pages/Unauthorized/Unauthorized';
 import UsuarioTrocarSenha from './pages/Usuario/usuarioTrocarSenha/UsuarioTrocarSenha';
+import ExibirColetas from './pages/PackingList/ExibirColetas/ExibirColetas';
 
 
 
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/exibir-qrcode/:idVolume" element={<ExibirQRCodes />} />
                 <Route path='/trocar-senha' element={<UsuarioTrocarSenha /> } />
                 <Route path='/exibir-qrcode-packinglist/:idPackinglist' element={<ExibirQRCodes />} />
+                <Route path='/exibir-coletas-packinglist/:idPackinglist' element={<ExibirColetas />} />
                 <Route path={ userRole === 'A' || 'G' ? '/cadastrar-packing-list' : '/unauthorized'} element={<CadastroItem />} />
                 <Route path={ userRole === 'A' || 'G' ? '/cadastrar-packing-list-nacional' : '/unauthorized'} element={<CadastroPackingListNacional />} />
                 <Route path='/clientes' element={<Clientes />} />

@@ -261,6 +261,9 @@ function PackingList() {
         navigate(`/packing-list-produto/${contextMenu.selectedId}`);
     };
 
+    const handleExibirColetas = () => {
+        navigate(`/exibir-coletas-packinglist/${contextMenu.selectedId}`);
+    }
 
     const handleErrorClose = () => {
         setErrorMessage(null);
@@ -508,7 +511,7 @@ function PackingList() {
                                 <div>Peso Bruto Total</div>
                                 <div>Ordem de Serviço</div>
                                 <div>Idioma</div>
-                                <div>Quantidade<br/> Coletas</div>
+                                <div>Quantidade<br /> Coletas</div>
                                 <div>Status</div>
                             </li>
 
@@ -598,6 +601,10 @@ function PackingList() {
                                 <p>Gerar PDF Conferência</p>
                             </div>
                         )}
+                        <div id='container-icon-menu' onClick={handleExibirColetas}>
+                            <Icon icon="ic:round-checklist-rtl" id='icone-menu'/>
+                            <p>Exibir coletas</p>
+                        </div>
                         {(userRole === "A" || userRole === "G") && (
                             <div id='container-icon-menu-excluir' onClick={handleDelete} >
                                 <Icon icon="material-symbols:delete-outline" id='icone-menu' />
