@@ -36,6 +36,7 @@ function App() {
                 <Route path='/trocar-senha' element={<UsuarioTrocarSenha /> } />
                 <Route path='/exibir-qrcode-packinglist/:idPackinglist' element={<ExibirQRCodes />} />
                 <Route path='/exibir-coletas-packinglist/:idPackinglist' element={<ExibirColetas />} />
+                <Route path='/exibir-coletas-produto/:idPackinglist/:idProduto/:seq' element={<ExibirColetas />} />
                 <Route path={ userRole === 'A' || 'G' ? '/cadastrar-packing-list' : '/unauthorized'} element={<CadastroItem />} />
                 <Route path={ userRole === 'A' || 'G' ? '/cadastrar-packing-list-nacional' : '/unauthorized'} element={<CadastroPackingListNacional />} />
                 <Route path='/clientes' element={<Clientes />} />

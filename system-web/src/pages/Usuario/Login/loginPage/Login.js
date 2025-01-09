@@ -36,8 +36,8 @@ function Login() {
         e.preventDefault();
         try {
             // Faz a requisição de login
-                // const response = await axios.post('http://192.168.1.238:8080/auth/login', {
-                const response = await axios.post('http://localhost:8080/auth/login', {
+            // const response = await axios.post('http://192.168.1.238:8080/auth/login', {
+            const response = await axios.post('http://localhost:8080/auth/login', {
                 login: login,
                 senha: senha
             });
@@ -93,21 +93,26 @@ function Login() {
                             <img src={Logo} width={'200px'} height={'80px'} />
                         </div>
                         <div className="login-itens">
-                            <div className="login-container">
+                            <div>
                                 <Text
                                     id="login-text"
                                     text={'Login:'}
                                     color={'black'}
                                     fontSize={20}
                                 />
-                                <Input
-                                    id="input-login"
-                                    type={'text'}
-                                    placeholder={'Digite seu Login'}
-                                    padding={7}
-                                    onChange={(e) => setLogin(e.target.value)}
-                                    value={login}
-                                /></div>
+                                <div className="login-container" style={{ display: "flex", justifyContent: 'flex-end', alignItems: 'center' }}>
+                                    <Input
+                                        id="input-login"
+                                        type={'text'}
+                                        placeholder={'Digite seu Login'}
+                                        padding={7}
+                                        onChange={(e) => setLogin(e.target.value)}
+                                        value={login}
+                                    />
+                                    <Icon icon="mdi:account" width="24" height="24"
+                                        style={{ position: 'absolute', cursor: 'pointer', marginRight: 10, color: "#999" }} />
+                                </div>
+                            </div>
 
                             <div className="password-container">
                                 <Text
@@ -129,7 +134,7 @@ function Login() {
                                         icon={mostrarSenha ? "mdi:eye-off" : "mdi:eye"}
                                         onClick={handleToggleSenha}
                                         title={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
-                                        style={{ position: 'absolute', cursor: 'pointer', marginRight: 10, color: "#999"}}
+                                        style={{ position: 'absolute', cursor: 'pointer', marginRight: 10, color: "#999" }}
                                     />
                                 </div>
                             </div>

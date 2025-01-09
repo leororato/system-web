@@ -120,6 +120,7 @@
     display: table-cell;
     padding: 10px;
     text-align: center;
+    align-content: center;
     width: 112.8px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -139,7 +140,6 @@
     padding-top: 10px;
     padding-bottom: 10px;
     padding-right: 40px;
-
     list-style-type: none;
     color: white;
     border-radius: 5px;
@@ -180,10 +180,6 @@
     border-right: 1px solid #ddd;
 }
 
-.li-listagem-volume #list-vol:last-child {
-    border-right: none;
-}
-
 #container-list-vol {
     display: flex;
     flex-direction: row;
@@ -216,10 +212,6 @@
 .li-listagem-volume div {
     cursor: pointer;
     display: table-row;
-}
-
-.li-listagem-volume #list-vol:last-child {
-    border-right: 1px solid #ddd;
 }
 
 #list-vol-divs:hover {

@@ -555,7 +555,9 @@ function PackingListProduto() {
         navigate(`/exibir-qrcodes/${id}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
     };
 
-
+    const handleExibirColetas = () => {
+        navigate(`/exibir-coletas-produto/${id}/${contextMenu.selectedId}/${contextMenu.selectedSeq}`);
+    }
 
     return (
         <div className="container-produto">
@@ -803,6 +805,10 @@ function PackingListProduto() {
                             <p>Gerar PDF</p>
                         </div>
                     )}
+                    <div id='container-icon-menu' onClick={handleExibirColetas}>
+                        <Icon icon="ic:round-checklist-rtl" id='icone-menu' />
+                        <p>Exibir coletas</p>
+                    </div>
                     {(userRole === "A" || userRole === "G") && (
                         <div id='container-icon-menu-excluir' onClick={handleDelete} >
                             <Icon icon="material-symbols:delete-outline" id='icone-menu' />

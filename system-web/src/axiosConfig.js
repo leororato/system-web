@@ -23,20 +23,20 @@ api.interceptors.request.use(
 
 
 // Interceptor para tratamento de erros
-api.interceptors.response.use(
-    response => response,
-    error => {
-        if (error.response && error.response.status === 401) {
-            const errorMessage = encodeURIComponent(error.response.data?.message || "Sua sessão expirou");
-            window.location.href = `/login?error=${errorMessage}`;
-            Cookies.remove('token');
-            Cookies.remove('nomeUsuario');
-            Cookies.remove('userId');
-            Cookies.remove('nivelAcesso');
-        }
-        return Promise.reject(error);
-    }
-);
+// api.interceptors.response.use(
+//     response => response,
+//     error => {
+//         if (error.response && error.response.status === 401) {
+//             const errorMessage = encodeURIComponent(error.response.data?.message || "Sua sessão expirou");
+//             window.location.href = `/login?error=${errorMessage}`;
+//             Cookies.remove('token');
+//             Cookies.remove('nomeUsuario');
+//             Cookies.remove('userId');
+//             Cookies.remove('nivelAcesso');
+//         }
+//         return Promise.reject(error);
+//     }
+// );
 
 
 // Interceptor para verificar roles
