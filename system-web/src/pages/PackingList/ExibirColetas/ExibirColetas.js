@@ -6,32 +6,60 @@ import { Box, CircularProgress } from "@mui/material";
 import Text from "../../../components/Text";
 import './ExibirColetas.css';
 import { format } from "date-fns";
+import Loading from "../../../components/Loading/Loading";
+import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
 
 function ExibirColetas() {
+
+    const [contextLoading, setContextLoading] = useState({ visible: false });
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [estadoDoLoading, setEstadoDoLoading] = useState("Carregando");
 
     const [coletas, setColetas] = useState([]);
     const { idPackinglist, idProduto, seq } = useParams();
     const [loading, setLoading] = useState(false);
     // 0 == nenhum --- 1 == packinglist --- 2 == produto
     const [estadoDaPagina, setEstadoDaPagina] = useState(0);
-
+    const [nomeTitulo, setNomeTitulo] = useState("Não encontrado");
+    const [nomeCliente, setNomeCliente] = useState("Não encontrado");
 
     useEffect(() => {
         const verificarEstadoDaPagina = async () => {
-            if (idPackinglist && !idProduto && !seq) {
-                setEstadoDaPagina(1);
-                const response = await api.get(`/coletas/buscar-coletas-packinglist/${idPackinglist}`);
-                setColetas(response.data);
-                console.log('Coletas carregadas:', response.data)
-                console.log("estado 1")
-                return;
-            } else if (idPackinglist && idProduto && seq) {
-                setEstadoDaPagina(2);
-                const response = await api.get(`/coletas/buscar-coletas-produto/${idPackinglist}/${idProduto}/${seq}`);
-                setColetas(response.data);
-                console.log('Coletas carregadas:', response.data);
-                console.log("estado 1")
-                return;
+            try {
+                setEstadoDoLoading("Carregando")
+                setContextLoading({ visible: true });
+
+                if (idPackinglist && !idProduto && !seq) {
+                    setEstadoDaPagina(1);
+                    const response = await api.get(`/coletas/buscar-coletas-packinglist/${idPackinglist}`);
+                    setColetas(response.data);
+
+                    const responseBuscaNomeImportador = await api.get(`/packinglist/buscar-nome-importador/${idPackinglist}`)
+                    setNomeCliente(responseBuscaNomeImportador.data);
+
+                    console.log('Coletas carregadas:', response.data)
+                    console.log("estado 1")
+                    return;
+                } else if (idPackinglist && idProduto && seq) {
+                    setEstadoDaPagina(2);
+                    const response = await api.get(`/coletas/buscar-coletas-produto/${idPackinglist}/${idProduto}/${seq}`);
+                    setColetas(response.data);
+
+                    const responseNomeProduto = await api.get(`/pl-produto/buscar-nome-produto/${idPackinglist}/${idProduto}/${seq}`);
+                    setNomeTitulo(responseNomeProduto.data);
+
+                    const responseBuscaNomeImportador = await api.get(`/packinglist/buscar-nome-importador/${idPackinglist}`)
+                    setNomeCliente(responseBuscaNomeImportador.data);
+
+                    console.log('Coletas carregadas:', response.data);
+                    console.log("estado 1")
+                    return;
+                }
+            } catch (error) {
+                const errorMessage = error.response?.data?.message || "Erro desconhecido ao carregar coletas";
+                setErrorMessage(errorMessage);
+            } finally {
+                setContextLoading({ visible: false });
             }
         }
 
@@ -51,14 +79,19 @@ function ExibirColetas() {
     return (
         <div>
             <Header />
+            <ErrorNotification message={errorMessage} onClose={() => setErrorMessage(null)} id="message" />
 
             <div style={{ widh: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex', marginTop: '40px' }}>
                 <h1 style={{ color: '#1780e2' }}>
-                    {estadoDaPagina === 1 ? `Coletas do PackingList ${idPackinglist}` : `Coletas do Produto ${idPackinglist} - Seq ${seq}`}
+                    {estadoDaPagina === 1
+                        ? <>Coletas do PackingList {idPackinglist} <br /> Cliente: {nomeCliente}</>
+                        :  <>Coletas do Produto {nomeTitulo} <br /> Cliente: {nomeCliente}`</>
+                    }
                 </h1>
+
             </div>
 
-            <div className="container-lista-coleta">
+            <div className="container-lista-coleta" style={{ marginTop: '-50px'}}>
                 <div className='container-listagem-volume' style={{ marginTop: '100px' }}>
                     <ul>
                         <li className="header-volume">
@@ -121,6 +154,12 @@ function ExibirColetas() {
                 </div>
 
             </div>
+
+            {contextLoading.visible ? (
+                <Loading message={estadoDoLoading === "Carregando" ? "Carregando..." : estadoDoLoading === "Atualizando" ? "Atualizando..." : estadoDoLoading === "Salvando" ? "Salvando..." : "Excluindo..."} />
+            ) : (
+                <></>
+            )}
         </div>
     )
 }

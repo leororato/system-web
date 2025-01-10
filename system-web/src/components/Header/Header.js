@@ -229,6 +229,10 @@ const Header = () => {
     });
   }
 
+  const handleClickOutsideMenu = (e) => {
+    setContextHeaderMenu(false);
+  }
+
   const handleClickOutside = (e) => {
     setContextMenu({
       visible: false,
@@ -267,6 +271,14 @@ const Header = () => {
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
+
+useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [])
 
   const handleCancelarVolume = () => {
     navigate(0);

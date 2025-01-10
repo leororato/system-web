@@ -10,6 +10,7 @@ import Button from "../../../../components/Button";
 import Logo from "../../../../assets/logo.png"
 import axios from "axios";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import api from "../../../../axiosConfig";
 
 function Login() {
     const navigate = useNavigate();
@@ -30,14 +31,36 @@ function Login() {
         }
     }, [errorTokenMessage])
 
+    useEffect(() => {
+        const verificarToken = async () => {
+            const token = Cookies.get('token');
 
+            if (token != null) {
+                const payload = {
+                    token: token
+                }
+                const response = await api.post(`/usuario/validate-token`, payload);
+                if (response.data) {
+                    navigate('/inicio');
+                }
+            } else {
+                Cookies.remove('token');
+                Cookies.remove('nomeUsuario');
+                Cookies.remove('userId');
+                Cookies.remove('nivelAcesso');
+                navigate('/login');
+            }
+        }
+
+        verificarToken();
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             // Faz a requisição de login
-            // const response = await axios.post('http://192.168.1.238:8080/auth/login', {
-            const response = await axios.post('http://localhost:8080/auth/login', {
+            const response = await axios.post('http://192.168.1.238:8080/auth/login', {
+                // const response = await axios.post('http://localhost:8080/auth/login', {
                 login: login,
                 senha: senha
             });
