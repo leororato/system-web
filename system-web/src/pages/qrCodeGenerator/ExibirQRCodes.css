@@ -148,8 +148,10 @@
 
 #div-qtd-nserie {
     display: flex;
-    width: 95%;
+    width: 100%;
+    flex-wrap: nowrap;
     justify-content: space-between;
+    gap: 5px;
 }
 
 @media print {

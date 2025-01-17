@@ -8,6 +8,7 @@ import './ExibirColetas.css';
 import { format } from "date-fns";
 import Loading from "../../../components/Loading/Loading";
 import ErrorNotification from "../../../components/ErrorNotification/ErrorNotification";
+import Input from "../../../components/Input";
 
 function ExibirColetas() {
 
@@ -16,12 +17,15 @@ function ExibirColetas() {
     const [estadoDoLoading, setEstadoDoLoading] = useState("Carregando");
 
     const [coletas, setColetas] = useState([]);
+    const [filteredColetas, setFilteredColetas] = useState([]);
     const { idPackinglist, idProduto, seq } = useParams();
     const [loading, setLoading] = useState(false);
     // 0 == nenhum --- 1 == packinglist --- 2 == produto
     const [estadoDaPagina, setEstadoDaPagina] = useState(0);
     const [nomeTitulo, setNomeTitulo] = useState("Não encontrado");
     const [nomeCliente, setNomeCliente] = useState("Não encontrado");
+
+    const [buscaDescricao, setBuscaDescricao] = useState("");
 
     useEffect(() => {
         const verificarEstadoDaPagina = async () => {
@@ -76,23 +80,45 @@ function ExibirColetas() {
         return format(new Date(dtCriacao), 'dd/MM/yyyy - HH:mm');
     };
 
+    useEffect(() => {
+        const filterColetas = coletas.filter(c =>
+            (c.descricao ? c.descricao.toLowerCase() : '').includes(buscaDescricao.toLowerCase())
+        );
+        setFilteredColetas(filterColetas);
+    }, [buscaDescricao, coletas]);
+
     return (
         <div>
+
             <Header />
             <ErrorNotification message={errorMessage} onClose={() => setErrorMessage(null)} id="message" />
 
-            <div style={{ widh: '100%', justifyContent: 'center', alignItems: 'center', display: 'flex', marginTop: '40px' }}>
-                <h1 style={{ color: '#1780e2' }}>
-                    {estadoDaPagina === 1
-                        ? <>Coletas do PackingList {idPackinglist} <br /> Cliente: {nomeCliente}</>
-                        :  <>Coletas do Produto {nomeTitulo} <br /> Cliente: {nomeCliente}`</>
-                    }
-                </h1>
-
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <div className="div-info-coletas">
+                    <h1 style={{ color: '#1780e2' }}>
+                        {estadoDaPagina === 1
+                            ? <>Coletas do packinglist: N° {idPackinglist} <br /> Cliente: {nomeCliente}</>
+                            : <>Coletas do Produto {nomeTitulo} <br /> Cliente: {nomeCliente}`</>
+                        }
+                        <><br />Total de Coletas: {coletas.length}</>
+                    </h1>
+                </div>
             </div>
 
-            <div className="container-lista-coleta" style={{ marginTop: '-50px'}}>
+
+            <div className="container-lista-coleta" style={{ marginTop: '-50px' }}>
                 <div className='container-listagem-volume' style={{ marginTop: '100px' }}>
+                    <div style={{ marginBottom: '20px'}}>
+                        <div className='busca-invoice-input'>
+                            <Input
+                                type={'text'}
+                                placeholder={'Descrição'}
+                                title={'Pesquise pela descrição...'}
+                                value={buscaDescricao}
+                                onChange={(e) => setBuscaDescricao(e.target.value)}
+                            />
+                        </div>
+                    </div>
                     <ul>
                         <li className="header-volume">
                             <div id="list-coletas">ID Coleta</div>
@@ -127,8 +153,8 @@ function ExibirColetas() {
                             </Box>
                         ) : (
                             <>
-                                {coletas && coletas.length > 0 ? (
-                                    coletas.map((c) => (
+                                {filteredColetas && filteredColetas.length > 0 ? (
+                                    filteredColetas.map((c) => (
                                         <li key={c.idColeta} className='li-listagem-coletas'>
                                             <div id="container-list-coletas">
 
